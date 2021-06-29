@@ -28,6 +28,9 @@ X1, X2, ..., XN에 좌표 압축을 적용한 결과 X'1, X'2, ..., X'N를 출�
 예제 출력 2
 1 0 1 0 1 0
  */
+//아래 코드의 시간복잡도는 Arrays.sort의 경우 dual pivot quicksort를 사용하여 O(nlogn)이고,
+//반복문에서 Map의 get, set, containKey메소드는 O(1)이기 때문에, O(n) 따라서, 전체 함수의 시간복잡도는 O(nlogn)
+       
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
