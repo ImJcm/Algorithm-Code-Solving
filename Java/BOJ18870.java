@@ -30,7 +30,7 @@ X1, X2, ..., XN에 좌표 압축을 적용한 결과 X'1, X'2, ..., X'N를 출�
  */
 //아래 코드의 시간복잡도는 Arrays.sort의 경우 dual pivot quicksort를 사용하여 O(nlogn)이고,
 //반복문에서 Map의 get, set, containKey메소드는 O(1)이기 때문에, O(n) 따라서, 전체 함수의 시간복잡도는 O(nlogn)
-       
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,6 +66,12 @@ public class BOJ18870 {
 }
 
 /*
+//초기 해당 문제를 보고, 계수정렬(Counting Sort)를 생각했었는데, 계수정렬의 경우, 배열의 크기가 크면 효율적이지 못하다는 특징을 생각하여,
+//이 문제는 값의 범위가 -10^9 < X < 10^9이고, 충분히 크다고 생각하여 배재하였는데, 이는 Integer.MAX_VALUE(+-2,147,483,647)보다 작은
+//값을 확인하여, 이 문제는 계수정렬을 통해 풀어도 된다는 결론을 얻었다.
+
+//또는 이 문제를 Dictionary의 Key:Value를 통해서 풀거나 다양한 풀이가 존재한다.
+
 //아래 코드의 결과는 "시간 초과" io부분 변경이 필요해보인다.
 //코드 수정을 위해 블로그 검색함.
 import java.util.Arrays;
