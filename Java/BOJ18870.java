@@ -116,4 +116,57 @@ public class BOJ18870 {
 
     }
 }
+
+//추가적으로, 계수정렬 개념을 이용하여 코드를 짜보았다.
+//https://stackoverflow.com/questions/3038392/do-java-arrays-have-a-maximum-size
+//JVM에서 heap memory size를 조정하므로, 아래와 같이 큰 크기의 배열 선언은 할 수 없다.
+//Counting sort에 저장할 배열의 크기를 줄일 필요가 있다.
+//Xmx의 값을 13G까지 늘리고, 계주정렬의 배열의 크기를 절반으로 나누어 설정해도 JVM Heap space Error을 해결할 수 없었다.
+//결론, 배열의 크기가 크게될 경우, 계수정렬은 사용안하는 것이 좋은 방법이다.
+import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+public class BOJ_test {
+    static int MAX_RANGE = 1_000_000_000;
+    //static int MIN_RANGE = -1_000_000_000;
+    // 음수의 경우, 0~MAX_RANGE-1까지 할당, 양수는 MAX_RANGE+1~2*MAX_RANGE+1, 0 = MAX_RANGE
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
+
+        String[] input = br.readLine().split(" ");
+        int[] Ns = new int[N];
+
+        for(int i=0;i < Ns.length;i++) {
+            Ns[i] = Integer.parseInt(input[i]);
+        }
+        int[] sortNs = Ns.clone();
+        Arrays.sort(sortNs);        //O(NlogN)
+
+        int[] Counting_Sort_plus = new int[MAX_RANGE+1];   //초기값 0, O(N)
+        int[] Counting_Sort_minus = new int[MAX_RANGE];
+        for(int i : sortNs) {
+            if(i >= 0) {
+                Counting_Sort_plus[i]++;
+            }
+            else {
+                Counting_Sort_minus[Math.abs(i) - 1]++;
+            }
+        }
+
+        for(int i=0;i<Ns.length;i++) {
+            if(Ns[i] >= 0) {
+                System.out.printf("%d ",Counting_Sort_plus[MAX_RANGE + Ns[i]]);
+            }
+            else {
+                System.out.printf("%d ",Counting_Sort_minus[Math.abs(Ns[i]) - 1]);
+            }
+
+        }
+        System.out.print("\n");
+    }
+}
+
 */
