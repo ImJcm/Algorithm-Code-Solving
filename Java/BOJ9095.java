@@ -37,6 +37,41 @@ import java.io.BufferedReader;
 44
 274
  */
+/*
+    DP(Dynamic programming)으로 풀 경우. N <= 10
+    dp[1] = 1   //1
+    dp[2] = 2   //1+1,2
+    dp[3] = 4   //1+1+1, 1+2,2+1,3
+    dp[4] = 7   //1+1+1+1,1+1+2,1+2+1,2+1+1,2+2,1+3,3+1
+    ㄴ 여기서 dp[4] = dp[3]+dp[2]+dp[1] = 3을 만들수 있는 경우의수에다가 + 1하면 4가 나오고,
+        2를 만들수 있는 경우의수에다가 +2를 하면 4가나오고,  1를 만들수 있는 경우의수에 +3하면 4가 나오므로,
+        dp[4] = dp[3]+[2]+dp[1]과 같아진다.
+        dp[5]는 4+1 / 3+2 / 2+3 / (1+4는 쓸수있는숫자가 1,2,3이므로 제외)
+        ㄴ dp[4]+ dp[3] + dp[2]
+    dp[5] = 13
+    ...
+    dp[10] = 274라는 결과를 도출할 수 있으므로, dp[10]까지 구한 뒤, N을 입력받아 출력하면 된다.
+ */
+public class BOJ9095{
+    static int[] dp = new int[11];
+
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N=Integer.parseInt(br.readLine());
+        dp[1]=1;
+        dp[2]=2;
+        dp[3]=4;
+
+        for(int i=4;i<11;i++) {
+            dp[i] = dp[i-1]+dp[i-2]+dp[i-3];
+        }
+
+        for(int i=0;i<N;i++) {
+            System.out.println(dp[Integer.parseInt(br.readLine())]);
+        }
+    }
+}
+/*
 //문제를 처음보고 DFS에서 Depth를 정수 n으로 잡고 base-case를 n과 같으면 개수를 출력
 public class BOJ9095 {
     static int count;
@@ -78,3 +113,4 @@ public class BOJ9095 {
         }
     }
 }
+*/
