@@ -75,7 +75,7 @@ public class BOJ15655 {
         }
         Arrays.sort(input);
 
-        DFS(0,0);
+        Combination(0,0);
     }
     /*
      * Combination : 조합이라고 생각은 했지만 어떻게 구현할지 몰라서 삽질을 많이했다.
@@ -83,7 +83,7 @@ public class BOJ15655 {
      * 자기자신부터 시작하여 다음 index만 접근하므로, 조합으로 중복을 허용하지않고 출력한다.
      */
 
-    static void DFS(int depth,int s) {
+    static void Combination(int depth,int s) {
         if(depth == M) {
             for(int i=0;i<M;i++) {
                 System.out.print(box[i] + " ");
@@ -98,7 +98,7 @@ public class BOJ15655 {
             }
             box[depth] = input[i];
             visited[i] = true;
-            DFS(depth+1,i);
+            Combination(depth+1,i);
             visited[i] = false;
         }
     }
