@@ -122,4 +122,21 @@ public class BOJ6603 {
             visited[i] = false;
         }
     }
+
+    //6중 for문으로도 가능해보인다.
+    static void six_for_make_permutation() {
+        for(int c1=1;c1<=s[0]-5;c1++) {
+            for(int c2=c1+1;c2<=s[0]-4;c2++) {
+                for(int c3=c2+1;c3<=s[0]-3;c3++) {
+                    for(int c4=c3+1;c4<=s[0]-2;c4++) {
+                        for(int c5=c4+1;c5<=s[0]-1;c5++) {
+                            for(int c6=c5+1;c6<=s[0];c6++) {
+                                System.out.println(s[c1] + " " +s[c2] + " " + s[c3] + " " + s[c4] + " " + s[c5] + " " + s[c6] + "\n");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
