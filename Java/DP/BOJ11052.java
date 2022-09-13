@@ -70,6 +70,7 @@ P1 = 5, P2 = 2, P3 = 8, P4 = 10인 경우에는 카드가 1개 들어있는 카�
 /*
     A1. DFS - 완전 탐색 = 시간초과
     A2. DP - topdown / bottomup  성공
+    ㄴ 1 + (N-1)를 이루는 최대 값, 2 + (N-2)를 이루는 최대 값, ...  N + (0)
  */
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
