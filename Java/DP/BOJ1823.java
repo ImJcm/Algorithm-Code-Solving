@@ -89,7 +89,7 @@ public class BOJ1823 {
 
         for(int i=1;i<=n;i++) {
             for(int j=i-1;j>=0;j--) {
-                dp_bot[j][i] = Math.max(dp[j+1][i] + v[j] * (n-i+j), dp[j][i-1] + v[i] * (n-i+j));
+                dp_bot[j][i] = Math.max(dp_bot[j+1][i] + v[j] * (n-i+j), dp_bot[j][i-1] + v[i] * (n-i+j));
             }
         }
         return dp_bot[1][n];
