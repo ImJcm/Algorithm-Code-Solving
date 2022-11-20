@@ -52,6 +52,7 @@ public class BOJ5214 {
     static ArrayList<Station>[] hyperTube;
     static boolean[] visited;
     static ArrayList<Integer> End_point = new ArrayList<>();
+    static int minCost = Integer.MAX_VALUE;
 
     static class Station {
         int station;
@@ -91,6 +92,7 @@ public class BOJ5214 {
 
         BFS();
 
+        //Case_1 - output
         //N=1, K=1, M=1일 경우, 하이퍼튜브를 거쳐서 들어가면 안되기 때문에,
         //1 -> 2 -> 1이 아닌, 1 -> 1이므로, "1" 출력
         if(N==1 && K == 1) System.out.println("1");
@@ -110,6 +112,10 @@ public class BOJ5214 {
                 System.out.println("-1");
             }
         }
+
+        //Case_2
+//        if(N==1 && K == 1) System.out.println("1");
+//        else System.out.println(minCost);
     }
 
     static void BFS() {
@@ -133,7 +139,11 @@ public class BOJ5214 {
                 }
 
                 if(NextStation.station == N) {
+                    //Case_1
                     End_point.add(s.station);
+
+                    //Case_2
+                    //minCost = Math.min(minCost, s.dist - s.transfer);
                 }
             }
         }
