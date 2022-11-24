@@ -1,5 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -100,6 +98,7 @@ public class BOJ1765 {
                 DFS(i);
             }
         }
+        System.out.println(cnt);
 
     }
 
