@@ -47,7 +47,7 @@ T(=5) = A[1] + B[1] + B[2]
 public class BOJ2143 {
     static int N;
     static ArrayList<Integer> aArr, bArr;
-    static ArrayList<Integer> saArr, sbArr;
+    static ArrayList<Long> saArr, sbArr;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -72,7 +72,7 @@ public class BOJ2143 {
         //부분 배열에서 가능한 배열 원소들의 합 배열
         saArr = new ArrayList<>();
         for(int i=0;i<an;i++) {
-            int sum = 0;
+            long sum = 0;
             for(int j=i;j<an;j++) {
                 sum += aArr.get(j);
                 saArr.add(sum);
@@ -81,7 +81,7 @@ public class BOJ2143 {
 
         sbArr = new ArrayList<>();
         for(int i=0;i<bn;i++) {
-            int sum = 0;
+            long sum = 0;
             for(int j=i;j<bn;j++) {
                 sum += bArr.get(j);
                 sbArr.add(sum);
@@ -95,26 +95,28 @@ public class BOJ2143 {
     }
 
     //Two-point 알고리즘 사용으로 목표값 가능한 경우의 수 찾기
-    static int solve() {
+    static long solve() {
         int pa = 0;
         int pb = sbArr.size()-1;
-        int equalCnt = 0;
+        //부분 배열의 합 쌍의 개수가 int 범위를 넘어가는 경우의 수가 나올 수 있으므로,
+        //long type 선언
+        long equalCnt = 0;
 
         while(pa < saArr.size() && pb >= 0) {
-            int sum = saArr.get(pa) + sbArr.get(pb);
+            Long sum = saArr.get(pa) + sbArr.get(pb);
 
             if(sum == N) {
                 long a = saArr.get(pa);
                 long b = sbArr.get(pb);
-                int cntA = 0, cntB = 0;
+                long cntA = 0, cntB = 0;
 
                 //목표값에 부분배열의 합으로 동일한 경우 count
-                while(pa < saArr.size() && pb >= 0 && saArr.get(pa) == a) {
+                while(pa < saArr.size() && saArr.get(pa) == a) {
                     cntA++;
                     pa++;
                 }
 
-                while(pa < saArr.size() && pb >= 0 && sbArr.get(pb) == b) {
+                while(pb >= 0 && sbArr.get(pb) == b) {
                     cntB++;
                     pb--;
                 }
