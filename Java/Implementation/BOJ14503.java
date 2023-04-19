@@ -63,6 +63,9 @@ import java.util.StringTokenizer;
 /*
     처음 접근하려고 했던 방식은 로봇청소기의 작동방식에서 DFS를 생각했지만, 3,4번 조건에서 바라보는 방향과 반대방향으로 후진한다는 조건을 보고
     이전 작동 함수로 돌아가는 재귀형식의 DFS방식은 옳지 않은 것으로 판단하고, 조건문 + 반복문을 활용하여 알고리즘 구현함
+
+    + 초기 작성 코드 제출 시, "틀렸습니다" 결과 발생. 이유: 2,3번 과정의 로직을 서로 반대로 구현하였고, 2번 과정에서 인덱스범위만을 조건에
+    넣는 것이 아닌 후방의 좌표가 벽인지 방인지 여부또한 조건으로 추가했어야 했다.
  */
 public class BOJ14503 {
     static int N,M,r,c,d,count=0;
@@ -100,34 +103,34 @@ public class BOJ14503 {
         boolean doing = true;
         int doing_stack = 0;
         while(doing) {
-            //3,4
-            if(doing_stack == 4) {
-                if(d==0) {
-                    if(r+1 < N) {
+            //2
+            if (doing_stack == 4) {
+                if (d == 0) {
+                    if (r + 1 < N && map[r+1][c] == 0) {
                         r = r + 1;
                         doing_stack = 0;
                     } else {
                         doing = false;
                     }
                     continue;
-                } else if(d==1) {
-                    if(c-1 > 0) {
+                } else if (d == 1) {
+                    if (c - 1 > 0 && map[r][c-1] == 0) {
                         c = c - 1;
                         doing_stack = 0;
                     } else {
                         doing = false;
                     }
                     continue;
-                } else if(d==2) {
-                    if(r-1 > 0) {
+                } else if (d == 2) {
+                    if (r - 1 > 0 && map[r-1][c] == 0) {
                         r = r - 1;
                         doing_stack = 0;
                     } else {
                         doing = false;
                     }
                     continue;
-                } else if(d==3) {
-                    if(c+1 < M) {
+                } else if (d == 3) {
+                    if (c + 1 < M && map[r][c+1] == 0) {
                         c = c + 1;
                         doing_stack = 0;
                     } else {
@@ -138,39 +141,44 @@ public class BOJ14503 {
             }
 
             //1
-            if(map[r][c] == 0 && !visited[r][c]) {
+            if (map[r][c] == 0 && !visited[r][c]) {
                 count++;
                 visited[r][c] = true;
                 doing_stack = 0;
             }
-
-            //2
-            if(d==0) {
-                if(c-1 > 0 && map[r][c-1] == 0 && !visited[r][c-1]) {
+            /*
+                d = 0 - 북
+                d = 1 - 동
+                d = 2 - 남
+                d = 3 - 서
+             */
+            //3
+            if (d == 0) {
+                if (c - 1 > 0 && map[r][c-1] == 0 && !visited[r][c-1]) {
                     c = c - 1;
                 } else {
                     doing_stack++;
                 }
                 d = 3;
                 continue;
-            } else if(d==1) {
-                if(r-1 > 0 && map[r-1][c] == 0 && !visited[r-1][c]) {
+            } else if (d == 1) {
+                if (r - 1 > 0 && map[r-1][c] == 0 && !visited[r-1][c]) {
                     r = r - 1;
                 } else {
                     doing_stack++;
                 }
                 d = 0;
                 continue;
-            } else if(d==2) {
-                if(c+1 < M && map[r][c+1] == 0 && !visited[r][c+1]) {
+            } else if (d == 2) {
+                if (c + 1 < M && map[r][c+1] == 0 && !visited[r][c+1]) {
                     c = c + 1;
                 } else {
                     doing_stack++;
                 }
                 d = 1;
                 continue;
-            } else if(d==3) {
-                if(r+1 < N && map[r+1][c] == 0 && !visited[r+1][c]) {
+            } else if (d == 3) {
+                if (r + 1 < N && map[r+1][c] == 0 && !visited[r+1][c]) {
                     r = r + 1;
                 } else {
                     doing_stack++;
@@ -179,6 +187,7 @@ public class BOJ14503 {
                 continue;
             }
         }
+
         System.out.println(count);
     }
 }
