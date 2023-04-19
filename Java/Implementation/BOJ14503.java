@@ -187,7 +187,6 @@ public class BOJ14503 {
                 continue;
             }
         }
-
         System.out.println(count);
     }
 }
