@@ -47,7 +47,7 @@ import java.util.StringTokenizer;
     이 과정을 각 정육면체 별로 수행하여 총 겉넓이 값을 반환한다.
  */
 public class BOJ16931 {
-    static int N,M;
+    static int N,M; 
     static int[][][] paper = new int[101][101][101];
     static int[][] paper_height = new int[101][101];
 
