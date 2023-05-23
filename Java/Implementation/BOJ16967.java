@@ -54,8 +54,8 @@ import java.util.StringTokenizer;
 7 8 9
  */
 /*
-단순히 B배열에서 X,Y까지만 값을 A에 저장하고, 나머지 값은 X,Y를 시작으로 H,W만큼 배열을 뺀 배열에서 X,Y를 시작으로 A에 나머지 배열값으로
-저장하면 A배열이 완성된다.
+단순히 B배열에서 X,Y값 이전의 index 값을 A에 저장하고, 나머지 값은 X,Y를 시작으로 B배열에서 추출한 배열(AtoB)과 A배열에서 X,Y만큼 뺀 좌표의 값
+을 뺀 값을 X,Y를 시작으로 값을 저장하면 원본 A 배열을 만들 수 있다.
  */
 public class BOJ16967 {
     static int[][] A;
