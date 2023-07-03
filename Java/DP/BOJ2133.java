@@ -91,6 +91,8 @@ public class BOJ2133 {
         }
         return mem[n];
     }
+    
+    //DFS - 시간초과 발생
     //0 : 1x2, 1 : 2x1
     static void dfs(int n, int s) {
         //N위치까지 진행됬을 때, 비어있는 블록이 있다면, return, 다 채워졌다면 count++
