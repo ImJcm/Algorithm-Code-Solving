@@ -1,4 +1,4 @@
-/*
+package BackJoon;/*
 연결 요소의 개수
 
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율
@@ -61,10 +61,10 @@ public class BOJ11724 {
         visited = new boolean[N+1];
 
         Arrays.fill(visited,false);
+        for(int i=0;i<N;i++) {
+            Arrays.fill(node[i+1],0);
+        }
         for(int i=0;i<M;i++) {
-            if(i < N) {
-                Arrays.fill(node[i+1],0);
-            }
             st = new StringTokenizer(br.readLine());
             int from = Integer.parseInt(st.nextToken());
             int to = Integer.parseInt(st.nextToken());
@@ -80,7 +80,7 @@ public class BOJ11724 {
         }
         System.out.println(connected_component);
 
-        connected_component = 0;
+        /*connected_component = 0;
         Arrays.fill(visited,false);
         //bfs
         for(int i=1;i<=N;i++) {
@@ -89,7 +89,7 @@ public class BOJ11724 {
             bfs(i);
             connected_component++;
         }
-        System.out.println(connected_component);
+        System.out.println(connected_component);*/
     }
 
     static void dfs(int start) {
