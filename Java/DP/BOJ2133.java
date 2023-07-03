@@ -1,4 +1,4 @@
-/*
+package BackJoon;/*
 타일 채우기 다국어
 
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율
@@ -93,6 +93,7 @@ public class BOJ2133 {
     }
     //0 : 1x2, 1 : 2x1
     static void dfs(int n, int s) {
+        //N위치까지 진행됬을 때, 비어있는 블록이 있다면, return, 다 채워졌다면 count++
         if(n == (3*N)/2) {
             for(int i=0;i<3;i++) {
                 for(int j=0;j<N;j++) {
@@ -107,11 +108,14 @@ public class BOJ2133 {
             for(int i=s;i<3*N;i++) {
                 if(visited[i/N][i%N]) continue;
 
+                // | 2x1 블록 가능 여부 확인
                 if((i / N) + 1 < 3 && (!visited[i/N][i%N] && !visited[(i/N)+1][i%N])) {
                     visited[i/N][i%N] = visited[(i/N)+1][i%N] = true;
                     dfs(n+1,i);
                     visited[i/N][i%N] = visited[i/N+1][i%N] = false;
                 }
+
+                // -- 1x2 블록 가능 여부확인
                 if((i+1) % N != 0 && (!visited[i/N][i%N] && !visited[i/N][(i+1)%N])) {
                     visited[i/N][i%N] = visited[i/N][(i+1)%N] = true;
                     dfs(n+1,i);
