@@ -85,11 +85,12 @@ public class BOJ2003 {
     static void solve_twoPoint() {
         int sum = 0;
         int cnt2 = 0;
-        for (int i = 0,j = 0; i < N && j < N && i <= j;) {
+        for (int i = 0,j = 0; i < N && j <= N && i <= j;) {
             if(sum >= M) {
                 sum -= numbers[i];
                 i++;
             } else {
+                if(j == N) break;
                 sum += numbers[j];
                 j++;
             }
