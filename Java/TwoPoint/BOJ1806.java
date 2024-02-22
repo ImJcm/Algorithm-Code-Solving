@@ -39,7 +39,8 @@ Kotlin (JVM): 1 초
 Java 15: 1 초
  */
 /*
-
+O(N) 시간복잡도를 가지는 투 포인트 부분합 알고리즘으로 코드를 구현하였다.
+end가 N에 도달할 때, sum이 S보다 낮으면, 추가로 end가 N에 도달했는지를 검사하는 조건이 필요하다.
  */
 import java.io.BufferedReader;
 import java.io.IOException;
