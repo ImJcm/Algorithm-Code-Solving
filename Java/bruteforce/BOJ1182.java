@@ -1,4 +1,4 @@
-/*
+package BackJoon;/*
 부분수열의 합
 
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율
@@ -20,7 +20,8 @@ N개의 정수로 이루어진 수열이 있을 때, 크기가 양수인 부분�
  */
 /*
     참고 :
-    https://blog.naver.com/jackandjills/222353332551 - 비트연산을 통한 배열의 부분집합 구하기
+    비트연산을 통한 배열의 부분집합 구하기 -
+    https://velog.io/@94applekoo/%EB%B9%84%ED%8A%B8%EC%97%B0%EC%82%B0%EC%9E%90%EB%A1%9C-%EB%B6%80%EB%B6%84-%EC%A7%91%ED%95%A9%EC%9D%84-%EC%83%9D%EC%84%B1%ED%95%98%EB%8A%94-%EB%B2%95-python
     https://dev-nomad.com/38 - 비트연산
  */
 import java.io.BufferedReader;
