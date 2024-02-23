@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /*
@@ -50,13 +52,60 @@ subArr_down, subArr_up 을 오름차순 정렬시키고, Two-Point 방식으로 
 public class BOJ1208 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
-    static int N,S,cnt = 0;
+    static int N,S;
+    static long cnt = 0;
     static int[] arr,subArr_down,subArr_up;
+    static Map<Integer, Integer> map;
 
     public static void main(String[] args) throws IOException{
         init_setting();
 
         solve();
+    }
+
+    /*
+        BOJ1182 - 부분수열의 합 (백트랙킹)을 응용하여 N이 커짐에 따라 한번에 모든 부분수열의 합을 구할 수 없기 때문에
+        40 = 20 + 20 으로 나누어 반절씩 부분수열의 합을 구한 뒤, 나머지 반쪽 부분수열을 구할 때, S - (반쪽 배열의 부분수열의 합)
+        에 해당하는 값이 map 배열에 존재하면 cnt를 해당 부분수열의 가능한 경우의 수를 누적하여 더한다.
+
+        최종적으로 S = 0인 경우, 공집합을 포함하는 경우의 수가 존재하므로 cnt -1을 수행 후 출력하거나 cnt를 그대로 출력한다.
+     */
+
+    static void another_solve() {
+        map = new HashMap<>();
+
+        make_subArr();
+
+        left_subSequence(0,0);
+        right_subSequence(N/2,0);
+
+        System.out.println(S == 0 ? cnt - 1 : cnt);
+    }
+
+    static void left_subSequence(int size, int sum) {
+        if(size == N/2) {
+            if(map.containsKey(sum)) {
+                map.replace(sum, map.get(sum) + 1);
+            } else {
+                map.put(sum, 1);
+            }
+            return;
+        }
+
+        left_subSequence(size+1, sum + arr[size]);
+        left_subSequence(size+1, sum);
+    }
+
+    static void right_subSequence(int size, int sum) {
+        if(size == N) {
+            if(map.containsKey(S - sum)) {
+                cnt += map.get(S - sum);
+            }
+            return;
+        }
+
+        right_subSequence(size + 1, sum + arr[size]);
+        right_subSequence(size + 1, sum);
     }
 
     // 다른 코드를 참고하고 제출하는데 결과가 틀렸다고 나오는데 이유를 처음에 몰랐는데 알고보니 경우의 수를 누적하는 값이 int의 범위를
