@@ -23,17 +23,23 @@ N개의 정수로 이루어진 수열이 있을 때, 크기가 양수인 부분�
     비트연산을 통한 배열의 부분집합 구하기 -
     https://velog.io/@94applekoo/%EB%B9%84%ED%8A%B8%EC%97%B0%EC%82%B0%EC%9E%90%EB%A1%9C-%EB%B6%80%EB%B6%84-%EC%A7%91%ED%95%A9%EC%9D%84-%EC%83%9D%EC%84%B1%ED%95%98%EB%8A%94-%EB%B2%95-python
     https://dev-nomad.com/38 - 비트연산
+
+    백트랙킹을 통해 int size 매개변수를 통해 부분수열에 속한 수들의 개수를 나타냄을 통해 모든 부분수열의 합을 나타낼 수 있다.
+    참고 : https://jun-codinghistory.tistory.com/220
  */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class BOJ1182 {
     static int N, S;
     static int[] boxs;
     static int pre_result, answer=0;
+    static Map<Integer, Integer> arr;
 
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -47,6 +53,37 @@ public class BOJ1182 {
                 .stream()
                 .mapToInt(Integer::parseInt)
                 .toArray();
+
+        //bitMasking();
+
+        arr = new HashMap<>();
+        backTracking(0,0);
+
+        answer = arr.get(S) == null ? 0 : arr.get(S);
+
+        System.out.println(S == 0 ? answer - 1 : answer);
+    }
+
+    /*
+        부분수열의 합으로 가능한 경우 Map 자료구조로 Key, Value형태로 저장한다.
+        백트랙킹을 통해 size 크기만큼 부분수열의 원소의 개수를 만족할 때 sum의 값이 부분수열의 합이기 때문에
+        모든 백트랙킹 과정이 끝나면 Map 내부는 모든 부분수열의 합과 가능한 경우의 수를 저장하고 있다.
+     */
+    static void backTracking(int size, int sum) {
+        if(size == N) {
+            if(arr.containsKey(sum)) {
+                arr.replace(sum, arr.get(sum) + 1);
+            } else {
+                arr.put(sum, 1);
+            }
+            return;
+        }
+
+        backTracking(size + 1, sum + boxs[size]);
+        backTracking(size + 1, sum);
+    }
+
+    static void bitMasking() {
         /*
             부분합을 계산하기 위한 S의 집합원소들을 배열 boxs에 저장하여 인덱스를 비트로 인식한다
             N번의 부분집합 생성과 부분집합 초기 원소결정 : for(int i=0;i<(1<<N);i++)
@@ -72,6 +109,5 @@ public class BOJ1182 {
                 }
             }
         }
-        System.out.println(answer);
     }
 }
