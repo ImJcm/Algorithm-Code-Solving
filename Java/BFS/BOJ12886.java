@@ -165,6 +165,7 @@ public class BOJ12886 {
         }*/
     }
 
+    //메모리 초과 발생 코드
     public static class BOJ12886_failure {
         public static class BOJ12886_group {
             int A_stones;
@@ -365,5 +366,5 @@ public class BOJ12886 {
         }
     }
 }
-//메모리 초과 발생 코드
+
 
