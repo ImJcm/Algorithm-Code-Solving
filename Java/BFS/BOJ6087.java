@@ -3,7 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 /*
@@ -71,20 +73,129 @@ Olympiad > USA Computing Olympiad > 2008-2009 Season > USACO January 2009 Contes
 로직을 만들어내는게 어려웠다. 그래서 처음부터 4가지 레이저 방향으로 bfs를 수행하도록 하고, 레이저 방향을 기억하고 4가지 상하좌우
 방향으로 이동을 결정 시, 레이저의 방향과 동일한 이동방향인 경우 거울의 개수를 그대로 업데이트하고 90도의 방향으로 진행 시, + 1을
 적용하고 업데이트한다. 이 과정을 수행하여 now에 해당하는 위치가 도착지점인 경우 필요 거울 개수를 최소값으로 업데이트하도록 하였다.
+
+다른 사람의 코드를 보고 좀 더 간결한 방법의 코드이지만 논리는 동일하여 새로 작성하였다.
+
+BOJ6087_A1의 경우, 처음 코드와 동일하지만 PriorityQueue를 적용하여 사용된 Mirror 수가 적은 위치에서 부터 bfs를 수행할 수 있도록 개선한 버전이다.
+
+priorityQueue를 통해 Dijkstra의 개념을 적용한 것이라 생각한다.
  */
+class BOJ6087_A1 {
+    static class BOJ6087_space implements Comparable<BOJ6087_space> {
+        int r,c;
+        char wall;
+        int mirrors;
+        int lazer_direction;
+
+        BOJ6087_space(int r, int c, char w, int m, int r_d) {
+            this.r = r;
+            this.c = c;
+            this.wall = w;
+            this.mirrors = m;
+            this.lazer_direction = r_d;
+        }
+
+        @Override
+        public int compareTo(BOJ6087_space o) {
+            return this.mirrors - o.mirrors;
+        }
+    }
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int W,H,min_mirror_cnt = Integer.MAX_VALUE;
+    static int[][] mirrors;
+    static ArrayList<BOJ6087_space> lazer;
+    static BOJ6087_space[][] maps;
+    static int[][] direction = {{-1,0}, {0,1}, {1,0}, {0,-1}};
+
+
+
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    // 4개의 방향으로 레이저 방향 선택 후, 각 방향별 bfs 수행
+    static void solve() {
+        bfs();
+
+        check_connection_space_min_mirrors();
+    }
+
+    static void bfs() {
+        PriorityQueue<BOJ6087_space> pq = new PriorityQueue<>();
+
+        int sr = lazer.get(0).r;
+        int sc = lazer.get(0).c;
+        mirrors[sr][sc] = 0;
+
+        for(int i=0;i<4;i++) {
+            pq.offer(new BOJ6087_space(sr, sc, maps[sr][sc].wall,0,i));
+
+        }
+
+        while(!pq.isEmpty()) {
+            BOJ6087_space now = pq.poll();
+
+            if(now.r == lazer.get(1).r && now.c == lazer.get(1).c) {
+                System.out.println(now.mirrors);
+                return;
+            }
+
+            for(int k=0;k<4;k++) {
+                int nr = now.r + direction[k][0];
+                int nc = now.c + direction[k][1];
+                int n_mirrorCnt = now.mirrors;
+
+                if(nr < 1 || nr > H || nc < 1 || nc > W || maps[nr][nc].wall == '*') continue;
+                if(now.lazer_direction != k) n_mirrorCnt++;
+                if(mirrors[nr][nc] >= n_mirrorCnt) {
+                    mirrors[nr][nc] = n_mirrorCnt;
+                    pq.offer(new BOJ6087_space(nr,nc,maps[nr][nc].wall,mirrors[nr][nc],k));
+                }
+            }
+        }
+    }
+
+    static void check_connection_space_min_mirrors() {
+        System.out.println(min_mirror_cnt);
+    }
+
+    static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
+
+        W = Integer.parseInt(input[0]);
+        H = Integer.parseInt(input[1]);
+
+        maps = new BOJ6087_space[H+1][W+1];
+        mirrors = new int[H+1][W+1];
+
+        for(int i=1;i<=H;i++) {
+            input = br.readLine().split("");
+            for(int j=1;j<=W;j++) {
+                maps[i][j] = new BOJ6087_space(i,j,input[j-1].charAt(0),0, -1);
+                mirrors[i][j] = Integer.MAX_VALUE;
+                if(maps[i][j].wall == 'C') {
+                    lazer.add(maps[i][j]);
+                }
+            }
+        }
+    }
+}
 public class BOJ6087 {
     static class BOJ6087_space {
         int r,c;
         int mirror_cnt;
         char wall;
-        int razer_direction;
+        int lazer_direction;
 
         BOJ6087_space(int r, int c, int m, char w, int r_d) {
             this.r = r;
             this.c = c;
             this.mirror_cnt = m;
             this.wall = w;
-            this.razer_direction = r_d;
+            this.lazer_direction = r_d;
         }
     }
 
@@ -112,7 +223,7 @@ public class BOJ6087 {
     static void bfs(int r_d) {
         Queue<BOJ6087_space> q = new LinkedList<>();
 
-        maps[sr][sc].razer_direction = r_d;
+        maps[sr][sc].lazer_direction = r_d;
         maps[sr][sc].mirror_cnt = 0;
         q.offer(maps[sr][sc]);
 
@@ -134,7 +245,7 @@ public class BOJ6087 {
                 if(maps[nr][nc].wall == '*') continue;                      // 해당 위치가 벽인 경우
                 if(maps[nr][nc].mirror_cnt < now.mirror_cnt + 1) continue;  // 다음 위치가 현재 위치에서의 최소 거울 개수 + 1보다 작은 경우
 
-                if(now.razer_direction == 0) {
+                if(now.lazer_direction == 0) {
                     /*
                         레이저의 방향이 ↑ 인 경우, 다음 이동할 방향에 따라 다른 로직을 수행한다.
                         ↑ 이동인 경우, 거울의 개수를 now의 최소 거울 개수 그대로 업데이트하고,
@@ -148,7 +259,7 @@ public class BOJ6087 {
                     } else {
                         continue;
                     }
-                } else if(now.razer_direction == 1) {
+                } else if(now.lazer_direction == 1) {
                     /*
                         레이저의 방향이 → 인 경우, 다음 이동할 방향에 따라 다른 로직을 수행한다.
                         → 이동인 경우, 거울의 개수를 now의 최소 거울 개수 그대로 업데이트하고,
@@ -162,7 +273,7 @@ public class BOJ6087 {
                     } else {
                         continue;
                     }
-                } else if(now.razer_direction == 2) {
+                } else if(now.lazer_direction == 2) {
                     /*
                         레이저의 방향이 ↓ 인 경우, 다음 이동할 방향에 따라 다른 로직을 수행한다.
                         ↓ 이동인 경우, 거울의 개수를 now의 최소 거울 개수 그대로 업데이트하고,
@@ -176,7 +287,7 @@ public class BOJ6087 {
                     } else {
                         continue;
                     }
-                } else if(now.razer_direction == 3) {
+                } else if(now.lazer_direction == 3) {
                     /*
                         레이저의 방향이 ← 인 경우, 다음 이동할 방향에 따라 다른 로직을 수행한다.
                         ← 이동인 경우, 거울의 개수를 now의 최소 거울 개수 그대로 업데이트하고,
@@ -192,8 +303,8 @@ public class BOJ6087 {
                     }
                 }
 
-                // 기존의 maps[nr][nc]에 razer_direction을 설정한 상태로 queue에 전달 시, razer의 방향이 올바르지 않을 수 있으므로
-                // 새로운 BOJ6087_space를 생성하여 최소 거울 개수와 razer_direction을 설정하여 queue에 전달한다.
+                // 기존의 maps[nr][nc]에 lazer_direction을 설정한 상태로 queue에 전달 시, lazer의 방향이 올바르지 않을 수 있으므로
+                // 새로운 BOJ6087_space를 생성하여 최소 거울 개수와 lazer_direction을 설정하여 queue에 전달한다.
                 q.offer(new BOJ6087_space(nr,nc,maps[nr][nc].mirror_cnt,maps[nr][nc].wall, i));
             }
         }
