@@ -79,6 +79,10 @@ Olympiad > USA Computing Olympiad > 2008-2009 Season > USACO January 2009 Contes
 BOJ6087_A1의 경우, 처음 코드와 동일하지만 PriorityQueue를 적용하여 사용된 Mirror 수가 적은 위치에서 부터 bfs를 수행할 수 있도록 개선한 버전이다.
 
 priorityQueue를 통해 Dijkstra의 개념을 적용한 것이라 생각한다.
+- 참고
+https://velog.io/@woga1999/BOJ-6087%EB%B2%88-%EB%A0%88%EC%9D%B4%EC%A0%80-%ED%86%B5%EC%8B%A0C
+https://hibee.tistory.com/185
+
  */
 class BOJ6087_A1 {
     static class BOJ6087_space implements Comparable<BOJ6087_space> {
