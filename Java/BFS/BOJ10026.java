@@ -231,7 +231,7 @@ public class BOJ10026 {
             String[] input = br.readLine().split("");
             for(int j=1;j<=N;j++) {
                 sections[i][j] = new BOJ10026_section(i,j,input[j-1].charAt(0),0,0);
-                for(int k=0;k<3;k++) {
+                for(int k=0;k<4;k++) {
                     visited[k][i][j] = false;
                 }
             }
