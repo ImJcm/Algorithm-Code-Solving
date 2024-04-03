@@ -56,8 +56,14 @@ Olympiad > USA Computing Olympiad > 2013-2014 Season > USACO March 2014 Contest 
 깊이 우선 탐색
  */
 /*
-적녹색맹이 없는 경우에서의 BFS와 적녹색맹이 존재하는 경우에서의 rg_BFS를 돌려 구역의 개수를 별도로 구하는 방법으로 작성하였다.
+처음 문제를 읽고 한번의 bfs를 사용하여 적록색맹과 아닌 구역의 개수를 구할 수 있을까 고민하다가 로직이 구현이 안되서 색맹과 아닌 경우를 나누어
+두개의 구역을 탐색하여 적녹색맹이 없는 경우에서의 BFS(DFS)와 적녹색맹이 존재하는 경우에서의 rg_BFS(rg_DFS)를 돌려 구역의 개수를 별도로 구하는 방법으로 작성하였다.
 
+다른 정답 코드를 참조해보면, 다른 코드들 조차 색맹 여부에 따라서 bfs 또는 dfs를 사용하여 구역을 나누어 구하였다.
+
+추가로, 조금이라도 괜찮은 코드를 봤는데 해당 코드는 우선 색맹이 없는 경우를 구한 뒤, R 또는 G 중에 하나의 색으로 변경하는 방식을 통해 동일한
+BFS 또는 DFS를 사용하여 정답을 구할 수 있었다. 아래 방법이 좀 더 깔끔해 보인다.
+해당 코드 - https://velog.io/@dot2__/BOJ-10026%EB%B2%88-%EC%A0%81%EB%A1%9D%EC%83%89%EC%95%BDJava
  */
 public class BOJ10026 {
     static class BOJ10026_section {
@@ -88,7 +94,7 @@ public class BOJ10026 {
     }
 
     static void solve() {
-        //적녹색맹 x
+        //적녹색맹 x - bfs
         for(int i=1;i<=N;i++) {
             for(int j=1;j<=N;j++) {
                 if(visited[0][i][j]) continue;
@@ -96,7 +102,7 @@ public class BOJ10026 {
             }
         }
 
-        //적녹색맹 o
+        //적녹색맹 o - bfs
         for(int i=1;i<=N;i++) {
             for(int j=1;j<=N;j++) {
                 if(visited[1][i][j]) continue;
@@ -105,6 +111,28 @@ public class BOJ10026 {
         }
 
         System.out.println((section_number - 1) + " " + (rg_section_number - 1));
+
+        //init
+        section_number = rg_section_number = 0;
+        //적녹색맹 x - dfs
+        for(int i=1;i<=N;i++) {
+            for(int j=1;j<=N;j++) {
+                if(visited[2][i][j]) continue;
+                section_number++;
+                dfs(sections[i][j]);
+            }
+        }
+
+        //적녹색맹 o - dfs
+        for(int i=1;i<=N;i++) {
+            for(int j=1;j<=N;j++) {
+                if(visited[3][i][j]) continue;
+                rg_section_number++;
+                rg_dfs(sections[i][j]);
+            }
+        }
+
+        System.out.println(section_number + " " + rg_section_number);
     }
 
     static void bfs(BOJ10026_section s, int s_n) {
@@ -163,17 +191,47 @@ public class BOJ10026 {
         }
     }
 
+    static void dfs(BOJ10026_section s) {
+        visited[2][s.r][s.c] = true;
+
+        for(int[] d : direction) {
+            int nr = s.r + d[0];
+            int nc = s.c + d[1];
+
+            if(nr < 1 || nr > N || nc < 1 || nc > N || visited[2][nr][nc]) continue;
+            if(sections[nr][nc].color != s.color) continue;
+            visited[2][nr][nc] = true;
+            dfs(sections[nr][nc]);
+        }
+    }
+
+    static void rg_dfs(BOJ10026_section s) {
+        visited[3][s.r][s.c] = true;
+
+        for(int[] d : direction) {
+            int nr = s.r + d[0];
+            int nc = s.c + d[1];
+
+            if(nr < 1 || nr > N || nc < 1 || nc > N || visited[3][nr][nc]) continue;
+            if(sections[nr][nc].color == s.color || ((sections[nr][nc].color == 'R' && s.color == 'G') || (sections[nr][nc].color == 'G' && s.color == 'R'))) {
+                visited[3][nr][nc] = true;
+                rg_dfs(sections[nr][nc]);
+            }
+
+        }
+    }
+
     static void init_setting() throws IOException {
         N = Integer.parseInt(br.readLine());
 
         sections = new BOJ10026_section[N+1][N+1];
-        visited = new boolean[2][N+1][N+1];
+        visited = new boolean[4][N+1][N+1];
 
         for(int i=1;i<=N;i++) {
             String[] input = br.readLine().split("");
             for(int j=1;j<=N;j++) {
                 sections[i][j] = new BOJ10026_section(i,j,input[j-1].charAt(0),0,0);
-                for(int k=0;k<2;k++) {
+                for(int k=0;k<3;k++) {
                     visited[k][i][j] = false;
                 }
             }
