@@ -139,11 +139,289 @@ M = 3이고, 바이러스를 아래와 같이 놓은 경우 6초면 모든 칸�
 너비 우선 탐색
  */
 /*
+BOJ17141_memoryDump_WrongAnswer.class
 dfs_select_virus_room으로 바이러스가 위치할 수 있는 (r,c) 좌표를 M개 선택하여 bfs를 돌린 후, 걸린 time 중 최소값을 업데이트하는 로직인데
-처음 코드는 dfs로 어떠한 바이러스에 배치하는 과정에서 중복되는 위치에서 bfs를 중복수행하여 "시간초과"가 발생하여서 중복되는 위치를
-제거하기 위해 아래 코드를 구성하였지만, "메모리 초과"가 발생하였다.
+처음 코드는 dfs로 어떠한 바이러스에 배치하는 과정에서 중복되는 위치에서 bfs를 중복수행하여 "시간초과"가 발생하여 중복되는 위치를
+제거하기 위해 정렬과정을 추가하였지만 "메모리 초과"가 발생하였다.
+
+bfs 과정은 아무리 생각해도 문제가 없다고 판단해서 dfs 부분에서 해결해야 한다고 생각했다.
+
+바이러스가 존재할 수 있는 공간에서 M 크기의 바이러스 조합을 구해야 하는데 아래 링크를 참조하여 코드를 구현하였다.
+https://bcp0109.tistory.com/15 - Java Combination 구현 코드
+
+하지만, 그럼에도 "메모리 초과"가 발생하였다.
+
+도저히 아이디어가 떠오르지 않아 정답코드를 참고하였다.
+https://ilmiodiario.tistory.com/29
+
+메모리 초과를 해결할 수 있는 방법으로 bfs를 수행하고 모든 빈칸에 바이러스가 퍼져있는지 확인을 위해 move_station [N+1][N+1] 배열을
+추가로 검사하기 때문이라고 생각한다.
+
+따라서, 0인 빈칸의 개수를 저장한 후, bfs 내부에서 0에 해당하는 공간에 바이러스가 모두 퍼져있는지 여부를 검사하여 최소 시간을 업데이트한다.
+
+BOJ17141_wrongAnswer.class의 경우 97%에서 "틀렸습니다"라는 결과를 나타낸다.
+
+이유가 아래와 같은 예시가 있을 때, 올바른 답은 -1인데 0을 출력하기 때문이다. 즉, 0인 공간만을 고려할 경우 -1이 아닌 0을 출력하기 때문이다.
+4 1
+1 1 1 1
+1 1 1 1
+2 1 2 1
+1 1 1 1
+
+따라서, 0과 2인 공간을 빈공간으로 인식하여 empty_room_cnt를 카운팅하고, 빈공간이 존재하는지 여부를 검사할 때, 남은 빈공간의 개수를
+empty_room_cnt - M을 시작으로 빈공간 즉, 0 or 2인 공간을 발견할 때마다 -1을 누적하여 최종적으로 empty 변수 값이 0이 되면
+최소 시간을 업데이트하는 과정을 수행할 수 있도록 한다.
  */
 public class BOJ17141 {
+    static class BOJ17141_room {
+        int r,c;
+        int move;
+
+        BOJ17141_room(int r,int c,int move) {
+            this.r = r;
+            this.c = c;
+            this.move = move;
+        }
+    }
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,M,empty_room_cnt = 0,min_time = Integer.MAX_VALUE;
+    static int[][] direction = {{-1,0},{0,1},{1,0},{0,-1}};
+    static int[][] labs;
+    static ArrayList<BOJ17141_room> possible_virus;
+    static BOJ17141_room[] virus;
+
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    static void solve() {
+        comb(0,0);
+        System.out.println(min_time == Integer.MAX_VALUE ? -1 : min_time);
+    }
+
+    static void comb(int depth, int combine_depth) {
+        if(combine_depth == M) {
+            bfs();
+            return;
+        }
+
+        if(depth == possible_virus.size()) return;
+
+        virus[combine_depth] = possible_virus.get(depth);
+        comb(depth + 1,combine_depth + 1);
+        comb(depth + 1, combine_depth);
+
+    }
+
+    static void bfs() {
+        int time = 0,empty = empty_room_cnt - M;
+        Queue<BOJ17141_room> q = new LinkedList<>();
+        boolean[][] visit = new boolean[N+1][N+1];
+
+        for(int i=0;i<virus.length;i++) {
+            BOJ17141_room room = virus[i];
+            visit[room.r][room.c] = true;
+            q.offer(new BOJ17141_room(room.r,room.c,0));
+        }
+
+        while(!q.isEmpty()) {
+            BOJ17141_room now = q.poll();
+
+            time = now.move;
+
+            for(int[] d : direction) {
+                int nr = now.r + d[0];
+                int nc = now.c + d[1];
+
+                if(nr < 1 || nr > N || nc < 1 || nc > N || visit[nr][nc] || labs[nr][nc] == 1) continue;
+                visit[nr][nc] = true;
+                q.offer(new BOJ17141_room(nr,nc,now.move + 1));
+                if(labs[nr][nc] == 0 || labs[nr][nc] == 2) {
+                    empty--;
+                }
+            }
+        }
+
+        if(empty == 0) {
+            min_time = Math.min(min_time, time);
+        }
+    }
+
+    static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
+
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+
+        labs = new int[N+1][N+1];
+        possible_virus = new ArrayList<>();
+        virus = new BOJ17141_room[M];
+
+        for(int r=1;r<=N;r++) {
+            input = br.readLine().split(" ");
+            for(int c=1;c<=N;c++) {
+                labs[r][c] = Integer.parseInt(input[c-1]);
+                if(labs[r][c] == 2) {
+                    possible_virus.add(new BOJ17141_room(r,c,0));
+                }
+                if(labs[r][c] == 0 || labs[r][c] == 2) {
+                    empty_room_cnt++;
+                }
+            }
+        }
+    }
+}
+
+class BOJ17141_wrongAnswer {
+    static class BOJ17141_room {
+        int r,c;
+        int move;
+
+        BOJ17141_room(int r,int c,int move) {
+            this.r = r;
+            this.c = c;
+            this.move = move;
+        }
+    }
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,M,zero_cnt = 0,min_time = Integer.MAX_VALUE;
+    static int[][] direction = {{-1,0},{0,1},{1,0},{0,-1}};
+    static int[][] labs;
+    //static int[][] move_station;  // 메모리 초과 원인
+    static ArrayList<BOJ17141_room> possible_virus;
+    static BOJ17141_room[] virus;
+
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    static void solve() {
+        comb(0,0);
+        System.out.println(min_time == Integer.MAX_VALUE ? -1 : min_time);
+    }
+
+    static void comb(int depth, int combine_depth) {
+        if(combine_depth == M) {
+            bfs();
+            return;
+        }
+
+        if(depth == possible_virus.size()) return;
+
+        virus[combine_depth] = possible_virus.get(depth);
+        comb(depth + 1,combine_depth + 1);
+        comb(depth + 1, combine_depth);
+
+    }
+
+    static void bfs() {
+        int time = 0,zero = zero_cnt;
+        Queue<BOJ17141_room> q = new LinkedList<>();
+        boolean[][] visit = new boolean[N+1][N+1];
+
+        for(int i=0;i<virus.length;i++) {
+            BOJ17141_room room = virus[i];
+            visit[room.r][room.c] = true;
+            q.offer(new BOJ17141_room(room.r,room.c,0));
+        }
+
+        while(!q.isEmpty()) {
+            BOJ17141_room now = q.poll();
+
+            time = now.move;
+
+            for(int[] d : direction) {
+                int nr = now.r + d[0];
+                int nc = now.c + d[1];
+
+                if(nr < 1 || nr > N || nc < 1 || nc > N || visit[nr][nc] || labs[nr][nc] == 1) continue;
+                visit[nr][nc] = true;
+                q.offer(new BOJ17141_room(nr,nc,now.move + 1));
+                if(labs[nr][nc] == 0) {
+                    zero--;
+                }
+            }
+        }
+
+        if(zero == 0) {
+            min_time = Math.min(min_time, time);
+        }
+    }
+
+    /*static void bfs_access_1percent_but_memoryDump(BOJ17141_room[] rooms) {
+        int time = 0,zero = zero_cnt;
+        Queue<BOJ17141_room> q = new LinkedList<>();
+
+        // 메모리 초과 원인
+        for(int r=1;r<=N;r++) {
+            for(int c=1;c<=N;c++) {
+                move_station[r][c] = Integer.MAX_VALUE;
+            }
+        }
+
+        for(int i=0;i<rooms.length;i++) {
+            BOJ17141_room room = rooms[i];
+            move_station[room.r][room.c] = 0;
+            q.offer(new BOJ17141_room(room.r,room.c,0));
+        }
+
+        while(!q.isEmpty()) {
+            BOJ17141_room now = q.poll();
+
+            time = now.move;
+
+            for(int[] d : direction) {
+                int nr = now.r + d[0];
+                int nc = now.c + d[1];
+
+                if(nr < 1 || nr > N || nc < 1 || nc > N || labs[nr][nc] == 1) continue;
+                if(now.move + 1 > move_station[nr][nc]) continue;
+                move_station[nr][nc] = now.move + 1;
+                q.offer(new BOJ17141_room(nr,nc, now.move + 1));
+                if(labs[nr][nc] == 0) {
+                    zero--;
+                }
+            }
+        }
+
+        if(zero == 0) {
+            min_time = Math.min(min_time, time);
+        }
+    }*/
+
+    static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
+
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+
+        labs = new int[N+1][N+1];
+        //move_station = new int[N+1][N+1];     // 메모리 초과 원인
+        possible_virus = new ArrayList<>();
+        virus = new BOJ17141_room[M];
+
+        for(int r=1;r<=N;r++) {
+            input = br.readLine().split(" ");
+            for(int c=1;c<=N;c++) {
+                labs[r][c] = Integer.parseInt(input[c-1]);
+                if(labs[r][c] == 2) {
+                    possible_virus.add(new BOJ17141_room(r,c,0));
+                }
+                if(labs[r][c] == 0) {
+                    zero_cnt++;
+                }
+            }
+        }
+    }
+}
+
+class BOJ17141_memoryDump_WrongAnswer {
     static class BOJ17141_room implements Comparable<BOJ17141_room> {
         int r,c;
         int move;
@@ -277,3 +555,4 @@ public class BOJ17141 {
         }
     }
 }
+
