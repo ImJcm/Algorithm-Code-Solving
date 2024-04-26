@@ -56,11 +56,12 @@ public class BOJ11060 {
     public static void main(String[] args) throws IOException {
         init_setting();
 
-        //solve();
+        solve();
         solve_2();
     }
 
     //bottom-up
+    //dp[0] = 0을 기준으로 miro[0]에서 점프가 가능한 구간의 최소 점프 횟수를 업데이트한다.
     static void solve() {
         dp[0] = 0;
 
@@ -82,6 +83,8 @@ public class BOJ11060 {
         System.out.println(min_jump == Integer.MAX_VALUE ? -1 : min_jump);
     }
 
+    //visited를 적용하려면 최소 점프 횟수를 만족해야 하기 때문에 for(int j=1;j<=miro[now.i]가 아닌 for(int j=miro[now.i];j>=1)로
+    //설정하여 최소 점프를 만족하는 이동을 우선으로하여 visited가 잘 적용될 수 있도록 한다.
     static void bfs(BOJ11060_jump jump) {
         Queue<BOJ11060_jump> q = new LinkedList<>();
         boolean[] visited = new boolean[N];
