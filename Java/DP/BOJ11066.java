@@ -105,6 +105,8 @@ gap = 3
 dp[0][3]을 기준으로 보면 dp[0][3] = Min(dp[0][0] + do[1][3] + subtotal(0,3), dp[0][1] + dp[2][3] + subtotal(0,3), dp[0][2] + dp[3][3] + subtotal(0,3))
 
 gap을 늘려가며 최소비용을 만족하는 값을 이전 dp 값을 통해 최소비용 값을 만족한다.
+
+참고 - https://mierminusone.tistory.com/9, https://m.blog.naver.com/tjdwns0920/221135677693
  */
 public class BOJ11066 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
