@@ -68,6 +68,17 @@ SCV의 체력이 0 또는 그 이하가 되어버리면, SCV는 그 즉시 파�
 그래프 탐색
 너비 우선 탐색
  */
+/*
+bfs, dp 방식 모두 N이 1~3의 범위를 갖는 값이기 때문에 visited, memorization 모두 3차원배열을 사용한다.
+또한, N에 따라 뮤탈리스크의 공격하는 경우의 수를 make_orders()를 통해 모두 구한 후 bfs, dp 내부에서 사용한다.
+
+bfs는 scv들의 피통이 처음도달된 시점이 최소 공격횟수를 만족하기 때문에 모든 scv의 피통이 0보다 작아지는 경우 BOJ12869_SCVS의 count의 최소값을 업데이트한다.
+
+dp는 scv들의 처음 피통을 시작으로 뮤탈리스크의 공격할 수 있는 경우의 수 모두를 검사하여 memorization[hp_scv1][hp_scv2][hp_scv3]를 기억할 수 있게 설정하고,
+memorization[hp_scv1][hp_scv2][hp_scv3] = min(memorization[공격당한 후 hp_scv1][공격당한 후 hp_scv2][공격당한 후 hp_scv3] + 1, origin)
+이때, origin은 memorization[][][]의 초기값은 0으로 설정하였기 때문에 min으로 검증 시, 오류가 발생할 수 있으므로 0인 경우 Integer.MAX_VALUE로 설정하여
+비교하여 memorization 값을 업데이트할 수 있도록 한다.
+ */
 public class BOJ12869 {
     static class BOJ12869_SCVS {
         int[] scvs;
@@ -84,8 +95,8 @@ public class BOJ12869 {
 
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,min_attack_count = Integer.MAX_VALUE;
-    static boolean[][][] visited;
-    static int[][][] memorization;
+    static boolean[][][] visited;   // bfs
+    static int[][][] memorization;  // dp
     static BOJ12869_SCVS init;
     static int[] attack_damage = {9,3,1};
     static ArrayList<ArrayList<Integer>> attack_order;
@@ -97,10 +108,12 @@ public class BOJ12869 {
     }
 
     static void solve() {
+        //bfs
         bfs(init);
         System.out.println(min_attack_count);
 
-        //dp(init);
+        //dp
+        dp(init);
     }
 
     static void dp(BOJ12869_SCVS scvs) {
@@ -112,21 +125,21 @@ public class BOJ12869 {
             return 0;
         }
 
-        if(memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]] != Integer.MAX_VALUE &&
-                memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]] != 0) return memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]];
+        if(memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]] != 0) return memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]];
 
         for(ArrayList<Integer> order : attack_order) {
             int[] next_scvs = new int[3];
 
             for(int i=0;i<order.size();i++) {
-                next_scvs[i] = Math.max(scvs.scvs[i] - order.get(i),0);
+                next_scvs[i] = Math.max(scvs.scvs[i] - order.get(i), 0);
             }
 
+            int origin = memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]] == 0 ? Integer.MAX_VALUE : memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]];
+
             memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]] = Math.min(
-                    memorization[next_scvs[0]][next_scvs[1]][next_scvs[2]] + 1,
-                    memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]]
+                    dfs(new BOJ12869_SCVS(next_scvs, scvs.count + 1)) + 1,
+                    origin
             );
-            dfs(new BOJ12869_SCVS(next_scvs,scvs.count + 1));
         }
 
         return memorization[scvs.scvs[0]][scvs.scvs[1]][scvs.scvs[2]];
@@ -170,17 +183,8 @@ public class BOJ12869 {
 
         String[] input = br.readLine().split(" ");
 
-        int s1 = 0,s2 = 0,s3 = 0;
         for(int i=0;i<input.length;i++) {
             arr[i] = Integer.parseInt(input[i]);
-
-            if(i == 0) {
-                s1 = arr[i];
-            } else if (i == 1) {
-                s2 = arr[i];
-            } else {
-                s3 = arr[i];
-            }
         }
 
         init = new BOJ12869_SCVS(arr,0);
@@ -188,14 +192,14 @@ public class BOJ12869 {
         for(int i=0;i<61;i++) {
             for(int j=0;j<61;j++) {
                 for(int k=0;k<61;k++) {
-                    memorization[i][j][k] = Integer.MAX_VALUE;
-                    //memorization[i][j][k] = 0;
+                    //dp
+                    memorization[i][j][k] = 0;
+
+                    //bfs
                     visited[i][j][k] = false;
                 }
             }
         }
-        //memorization[s1][s2][s3] = 0;
-
         attack_order_setting();
     }
 
