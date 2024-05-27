@@ -109,10 +109,12 @@ row\col 0   1   2   3   4   5   6   7   8   9   10
 lcs[x][y] = lcs[x-1][y-1] + 1 (str1[x] = str2[y])
 lcs[x][y] = 0                 (str1[x] != str2[y])
 
+Top_down 방식보다 Bottom_up 방식이 메모리와 시간 모두 우수한 것을 볼 수 있다.
  */
 public class BOJ5582 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static String str1,str2;
+    static int max_len = Integer.MIN_VALUE;
     static int[][] lcs;
 
     public static void main(String[] args) throws IOException {
@@ -122,12 +124,53 @@ public class BOJ5582 {
     }
 
     static void solve() {
-        System.out.println(Top_down(str1.length(),str2.length()));
-        System.out.println("t");
+        //Top_down(str1.length(),str2.length());
+        Bottom_up();
+        System.out.println(max_len);
+    }
+
+    /*
+        메모리     |     시간
+        79884 KB        776 ms
+     */
+    static int Top_down(int str1_idx, int str2_idx) {
+        if(str1_idx == 0 || str2_idx == 0) {
+            return 0;
+        }
+
+        if(lcs[str1_idx][str2_idx] == -1) {
+            if(str1.charAt(str1_idx-1) == str2.charAt(str2_idx-1)) {
+                lcs[str1_idx][str2_idx] = Top_down(str1_idx-1,str2_idx-1) + 1;
+            } else {
+                lcs[str1_idx][str2_idx] = 0;
+            }
+            Top_down(str1_idx-1,str2_idx);
+            Top_down(str1_idx,str2_idx-1);
+        }
+
+        max_len = Math.max(max_len, lcs[str1_idx][str2_idx]);
+        return lcs[str1_idx][str2_idx];
+    }
+
+    /*
+        메모리     |     시간
+        77064 KB        284 ms
+     */
+    static void Bottom_up() {
+        for(int i=1;i<=str1.length();i++) {
+            for(int j=1;j<=str2.length();j++) {
+                if(str1.charAt(i-1) == str2.charAt(j-1)) {
+                    lcs[i][j] = lcs[i-1][j-1] + 1;
+                } else {
+                    lcs[i][j] = 0;
+                }
+                max_len = Math.max(max_len, lcs[i][j]);
+            }
+        }
     }
 
     //Wrong_Answer
-    static int Top_down(int str1_idx, int str2_idx) {
+    static int Top_down_WA(int str1_idx, int str2_idx) {
         if(str1_idx == 0 || str2_idx == 0) {
             return 0;
         }
@@ -156,7 +199,8 @@ public class BOJ5582 {
 
         for(int i=0;i<=str1.length();i++) {
             for(int j=0;j<=str2.length();j++) {
-                lcs[i][j] = -1;
+                //lcs[i][j] = -1;     //Top_down
+                lcs[i][j] = 0;      //Bottom_up
             }
         }
     }
