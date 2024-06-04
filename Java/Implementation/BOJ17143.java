@@ -87,9 +87,6 @@ import java.util.Iterator;
 구현
 시뮬레이션
  */
-/*
-
- */
 public class BOJ17143 {
     static class BOJ17143_shark {
         /*
@@ -113,7 +110,7 @@ public class BOJ17143 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int R,C,M,move,weight;
     static BOJ17143_shark[][] fishing;
-    static ArrayList<BOJ17143_shark> sharks,ready_sharks;
+    static ArrayList<BOJ17143_shark> sharks, ready_sharks, eaten_sharks;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -123,26 +120,32 @@ public class BOJ17143 {
 
     static void solve() {
         while(++move <= C) {
-            catch_fish();
+            catch_shark();
             move_sharks();
             select_bigger_sharks();
         }
         System.out.println(weight);
     }
 
-    static void catch_fish() {
+    static void catch_shark() {
         for(int r=1;r<=R;r++) {
             if(fishing[r][move].z > 0) {
                 weight += fishing[r][move].z;
 
                 sharks.remove(fishing[r][move]);
-                fishing[r][move] = new BOJ17143_shark(r,move,0,0,0);
                 break;
             }
         }
     }
 
+    /*
+        모든 상어들의 이동 좌표를 계산하는 기능
+        모든 상어들이 s만큼 이동하게 되면, (R or C) * M * S -> 촤대 100 * (100 * 100) * 1000 만큼 수행해야하기 때문에 시간초과가 발생할 것으로 생각된다.
+        그래서, 현재 상어 위치에서 1,2 방향일 때, 2 * (C-1)만큼 / 3,4 방향일 때, 2 * (R-1)만큼 이동 시, 원래 위치로 돌아오는 점을 이용하여 큰 값의 s를
+        2 * (C-1) or 2 * (R-1) 만큼 줄여 시간을 단축시키는 방법을 이용
+     */
     static void move_sharks() {
+        ready_sharks = new ArrayList<>();
         for(BOJ17143_shark s : sharks) {
             int r = s.r;
             int c = s.c;
@@ -150,6 +153,29 @@ public class BOJ17143 {
             int spd = s.s;
             int compression_speed = (s.d == 1 || s.d == 2) ? spd % (2 * (R-1)) : spd % (2 * (C-1));
             int cur_direction = s.d;
+
+            switch (s.d) {
+                case 1:
+                    if(r == 1) {
+                        cur_direction = 2;
+                    }
+                    break;
+                case 2:
+                    if(r == R) {
+                        cur_direction = 1;
+                    }
+                    break;
+                case 3:
+                    if(c == C) {
+                        cur_direction = 4;
+                    }
+                    break;
+                case 4:
+                    if(c == 1) {
+                        cur_direction = 3;
+                    }
+                    break;
+            }
 
             for(int i=1;i<=compression_speed;i++) {
                 switch (cur_direction) {
@@ -189,7 +215,34 @@ public class BOJ17143 {
     }
 
     static void select_bigger_sharks() {
+        eaten_sharks = new ArrayList<>();
+        sharks = ready_sharks;
+        for(int r=1;r<=R;r++) {
+            for(int c=1;c<=C;c++) {
+                fishing[r][c] = new BOJ17143_shark(r,c,0,0,0);
+            }
+        }
 
+        /*
+            무게가 큰 상어가 같은 칸의 모든 상어를 먹는 로직
+
+            if(fishing[s.r][s.c].z < s.z) { ... }만 선언 시, 최초로 상어가 위치하고 다음 상어와 무게를 비교한 상어를 제거하지 못하는 문제가 있다.
+            따라서, else { eaten_sharks.add(s) }로 무게가 낮은 상어를 먹는 형태로 제거하는 로직이 필요
+         */
+        for(BOJ17143_shark s : sharks) {
+            if(fishing[s.r][s.c].z < s.z) {
+                if(fishing[s.r][s.c].z != 0) {
+                    eaten_sharks.add(fishing[s.r][s.c]);
+                }
+                fishing[s.r][s.c] = s;
+            } else {
+                eaten_sharks.add(s);
+            }
+        }
+
+        for(BOJ17143_shark s : eaten_sharks) {
+            sharks.remove(s);
+        }
     }
 
     static void init_setting() throws IOException {
@@ -204,7 +257,6 @@ public class BOJ17143 {
 
         fishing = new BOJ17143_shark[R+1][C+1];
         sharks = new ArrayList<>();
-        ready_sharks = new ArrayList<>();
 
         for(int r=1;r<=R;r++) {
             for(int c=1;c<=C;c++) {
@@ -220,7 +272,8 @@ public class BOJ17143 {
             int d = Integer.parseInt(input[3]);
             int z = Integer.parseInt(input[4]);
 
-            sharks.add(new BOJ17143_shark(r,c,s,d,z));
+            fishing[r][c] = new BOJ17143_shark(r,c,s,d,z);
+            sharks.add(fishing[r][c]);
         }
     }
 }
