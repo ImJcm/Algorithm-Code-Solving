@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /*
 새로운 게임
@@ -137,6 +138,17 @@ A, D, F, G가 이동하고, 이동하려는 칸에 말이 E, C, B로 있는 경�
 구현
 시뮬레이션
  */
+/*
+정답 알고리즘 핵심
+1. (N+1) x (N+1) 칸으로 체스판을 구성하여 외곽을 파란색으로 지정하는 것
+2. 흰색, 빨간색, 파란색 로직은 문제에서 주어진 요구사항에 맞춰 구현
+3. 모든 체스는 각 턴마다 순서대로 로직을 수행하므로 순서를 저장하는 별도의 ArrayList를 이용한다. (java 특성상 객체의 주소값을 보관하기 때문에 적합)
+4. 체스말은 같은 칸에 겹칠 수 있고, 가장 아래에 있는 체스말만 움직일 수 있으므로 해당 체스말이 움직일 수 있는 여부를 확인할 수 있는 BOJ17780_chess.move를 통해 움직일 수 있는 체스 구별
+5. 각 흰색, 빨간색, 파란색에서 겹쳐지는 코드가 있었기 때문에 별도의 함수를 호출하여 동작하도록 분리하였다.
+6. common_operation과 uncommon_operation을 나눈 이유는 이동하는 체스말이 다음 이동하는 구역의 색상이 파란색인 경우, 방향을 반대로 한칸 움직이는데 움직인 칸의 색상이 파란색인 경우 방향만 바꿔주는 로직을 수행하고,
+파란색이 아닌 흰색, 빨간색인 경우, 해당하는 색에 함수를 호출하여 로직 수행
+7. 체스말이 4개 이상이 되는 시점에서 종료하므로 체스말이 추가될 수 있는 common_operation 내부에 기저사례로 flag 변수를 설정
+ */
 public class BOJ17780 {
     static class BOJ17780_chess {
         int r,c;
@@ -152,6 +164,7 @@ public class BOJ17780 {
     }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,K,turns;
+    static boolean flag;
     static int[][] boards_color,directions = {{0,0},{0,1},{0,-1},{-1,0},{1,0}}; // (1,→), (2,←), (3,↑), (4,↓)
     static ArrayList<BOJ17780_chess>[][] boards;
     static ArrayList<BOJ17780_chess> orders;
@@ -166,6 +179,11 @@ public class BOJ17780 {
     static void solve() {
         while(turns++ <= 1000) {
             move_chess();
+
+            if(flag) {
+                System.out.println(turns - 1);
+                break;
+            }
         }
 
         if(turns == 1002) {
@@ -173,18 +191,170 @@ public class BOJ17780 {
         }
     }
 
+    static void common_operation(BOJ17780_chess c, int n_r, int n_c) {
+        int o_r = c.r;
+        int o_c = c.c;
+
+        for(BOJ17780_chess cc : boards[c.r][c.c]) {
+            boards[n_r][n_c].add(cc);
+            cc.r = n_r;
+            cc.c = n_c;
+        }
+
+        if(boards[n_r][n_c].size() >= 4) {
+            flag = true;
+        }
+
+        boards[o_r][o_c].clear();
+    }
+
+    static void uncommon_operation(BOJ17780_chess c) {
+        for(BOJ17780_chess cc : boards[c.r][c.c]) {
+            cc.d = c.d;
+        }
+    }
+
+    static void white_operation(BOJ17780_chess c, int n_r, int n_c) {
+        if(!boards[n_r][n_c].isEmpty()) {
+            c.move = false;
+        }
+
+        common_operation(c,n_r,n_c);
+    }
+
+    static void red_operation(BOJ17780_chess c, int n_r, int n_c) {
+        c.move = false;
+        Collections.reverse(boards[c.r][c.c]);
+
+        if(boards[n_r][n_c].isEmpty()) {
+            boards[c.r][c.c].get(0).move = true;
+        }
+
+        common_operation(c,n_r,n_c);
+    }
+
+    static void blue_operation(BOJ17780_chess c) {
+        c.d = (c.d == 1 || c.d == 2) ?
+                (c.d == 1 ? 2 : 1) : (c.d == 3 ? 4 : 3);
+
+        int n_r = c.r + directions[c.d][0];
+        int n_c = c.c + directions[c.d][1];
+
+        if(boards_color[n_r][n_c] != 2) {
+            if(boards_color[n_r][n_c] == 1) {
+                red_operation(c,n_r,n_c);
+            } else {
+                white_operation(c,n_r,n_c);
+            }
+        } else {
+            c.d = (c.d == 1 || c.d == 2) ?
+                    (c.d == 1 ? 2 : 1) : (c.d == 3 ? 4 : 3);
+            uncommon_operation(c);
+        }
+    }
+
     static void move_chess() {
+        for(BOJ17780_chess c : orders) {
+            if (!c.move) continue;
+
+            int n_r = c.r + directions[c.d][0];
+            int n_c = c.c + directions[c.d][1];
+
+            int color = boards_color[n_r][n_c];
+
+            switch (color) {
+                case 0: // white
+                    white_operation(c,n_r,n_c);
+                    break;
+                case 1: // red
+                    red_operation(c,n_r,n_c);
+                    break;
+                case 2: // blue
+                    blue_operation(c);
+                    break;
+            }
+        }
+    }
+
+    /*
+        TC#6 올바르지 않은 결과 도출
+        이유 : 이동하는 칸이 파랑인 경우, 반대방향으로 한칸 이동하는데 이동한 칸의 색을 파란색인 경우만 고려하고 빨간색인 경우를 고려하지 못해서 오답이 나오는 것으로 예상한다.
+        따라서, 흰색, 빨간색, 파란색의 경우에 해당하는 동작을 수행하는 함수를 나누어 호출하는 형태로 바꾸는 것이 좋아보인다.
+     */
+    static void move_chess_WA() {
         for(BOJ17780_chess c : orders) {
             if(!c.move) continue;
 
+            int origin_r = c.r;
+            int origin_c = c.c;
             int nr = c.r + directions[c.d][0];
             int nc = c.c + directions[c.d][1];
 
+            int color = boards_color[nr][nc];
+            boolean dup = true;
+
+            c.r = nr;
+            c.c = nc;
+
+            switch (color) {
+                case 0: // white
+                    if(!boards[nr][nc].isEmpty()) {
+                        c.move = false;
+                    }
+                    break;
+                case 1: // red
+                    c.move = false;
+                    Collections.reverse(boards[origin_r][origin_c]);
+
+                    if(boards[nr][nc].isEmpty()) {
+                        boards[origin_r][origin_c].get(0).move = true;
+                    }
+                    break;
+                case 2: // blue
+                    c.r = origin_r;
+                    c.c = origin_c;
+
+                    c.d = (c.d == 1 || c.d == 2) ?
+                            (c.d == 1 ? 2 : 1) : (c.d == 3 ? 4 : 3);
+
+                    nr = c.r + directions[c.d][0];
+                    nc = c.c + directions[c.d][1];
+
+                    if(boards_color[nr][nc] != 2) {
+                        c.r = nr;
+                        c.c = nc;
+                    } else {
+                        dup = false;
+                        c.d = (c.d == 1 || c.d == 2) ?
+                                (c.d == 1 ? 2 : 1) : (c.d == 3 ? 4 : 3);
+                    }
+                    break;
+            }
+
+            if(dup) {
+                for(BOJ17780_chess cc : boards[origin_r][origin_c]) {
+                    boards[nr][nc].add(cc);
+                    cc.r = nr;
+                    cc.c = nc;
+                }
+
+                if(boards[nr][nc].size() >= 4) {
+                    flag = true;
+                }
+
+                boards[origin_r][origin_c].clear();
+            } else {
+                for(BOJ17780_chess cc : boards[origin_r][origin_c]) {
+                    cc.d = c.d;
+                }
+            }
+
+            // 문제에서 주어진 체스판의 크기 = N * N에서 (N+1) * (N+1)로 설정하여 외곽을 모두 파란색 타일로 지정하여 외곽 체크를 할 필요가 없어진다.
             /*
                 1 : 체스판을 내부인 경우
                 2 : 체스판을 벗어나는 경우
              */
-            int op = 1;
+            /*int op = 1;
 
             if(nr < 1 || nr > N || nc < 1 || nc > N) {
                 op = 2;
@@ -193,31 +363,69 @@ public class BOJ17780 {
             switch (op) {
                 case 1:
                     int color = boards_color[nr][nc];
+                    boolean dup = true;
+
+                    c.r = nr;
+                    c.c = nc;
 
                     switch (color) {
                         case 0: // white
                             if(!boards[nr][nc].isEmpty()) {
                                 c.move = false;
                             }
-
-                            for(BOJ17780_chess cc : boards[c.r][c.c]) {
-                                boards[nr][nc].add(cc);
-                            }
-
-                            boards[c.r][c.c].clear();
                             break;
                         case 1: // red
+                            c.move = false;
+                            Collections.reverse(boards[origin_r][origin_c]);
 
+                            if(boards[nr][nc].isEmpty()) {
+                                boards[origin_r][origin_c].get(0).move = true;
+                            }
                             break;
                         case 2: // blue
+                            c.r = origin_r;
+                            c.c = origin_c;
+
+                            c.d = (c.d == 1 || c.d == 2) ?
+                                    (c.d == 1 ? 2 : 1) : (c.d == 3 ? 4 : 3);
+
+                            nr = c.r + directions[c.d][0];
+                            nc = c.c + directions[c.d][1];
+
+                            if(boards_color[nr][nc] != 2) {
+                               c.r = nr;
+                               c.c = nc;
+                            } else {
+                                dup = false;
+                                c.d = (c.d == 1 || c.d == 2) ?
+                                        (c.d == 1 ? 2 : 1) : (c.d == 3 ? 4 : 3);
+                            }
                             break;
+                    }
+
+                    if(dup) {
+                        for(BOJ17780_chess cc : boards[origin_r][origin_c]) {
+                            boards[nr][nc].add(cc);
+                            cc.r = nr;
+                            cc.c = nc;
+                        }
+
+                        if(boards[nr][nc].size() >= 4) {
+                            flag = true;
+                        }
+
+                        boards[origin_r][origin_c].clear();
+                    } else {
+                        for(BOJ17780_chess cc : boards[origin_r][origin_c]) {
+                            cc.d = c.d;
+                        }
                     }
                     break;
                 case 2:
                     c.d = (c.d == 1 || c.d == 2) ?
                             (c.d == 1 ? 2 : 1) : (c.d == 3 ? 4 : 3);
                     break;
-            }
+            }*/
         }
     }
 
@@ -226,10 +434,11 @@ public class BOJ17780 {
 
         N = Integer.parseInt(input[0]);
         K = Integer.parseInt(input[1]);
-        turns = 0;
+        turns = 1;
+        flag = false;
 
-        boards = new ArrayList[N+1][N+1];
-        boards_color = new int[N+1][N+1];
+        boards = new ArrayList[N+2][N+2];
+        boards_color = new int[N+2][N+2];
         orders = new ArrayList<>();
 
         for(int i=1;i<=N;i++) {
@@ -238,6 +447,14 @@ public class BOJ17780 {
                 boards[i][j] = new ArrayList<>();
                 boards_color[i][j] = Integer.parseInt(input[j-1]);
             }
+        }
+
+        // 외곽 파란색 칸 처리
+        for(int i=0;i<=N+1;i++) {
+            boards_color[0][i] = 2;
+            boards_color[i][0] = 2;
+            boards_color[N+1][i] = 2;
+            boards_color[i][N+1] = 2;
         }
 
         for(int i=1;i<=K;i++) {
