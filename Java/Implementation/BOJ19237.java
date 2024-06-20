@@ -1,5 +1,11 @@
 package BackJoon;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 /*
 어른 상어
 
@@ -170,4 +176,280 @@ N×N 크기의 격자 중 M개의 칸에 상어가 한 마리씩 들어 있다. 
 예제의 그림은 https://www.acmicpc.net/problem/19237 에서 참고
  */
 public class BOJ19237 {
+    static class BOJ19237_shark {
+        int r,c,n,d;
+
+        BOJ19237_shark(int r, int c, int n, int d) {
+            this.r = r;
+            this.c = c;
+            this.n = n;
+            this.d = d;
+        }
+    }
+    static class BOJ19237_space {
+        int n,k;
+
+        BOJ19237_space(int n, int k) {
+            this.n = n;
+            this.k = k;
+        }
+    }
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,M,K,T;
+    static boolean flag;
+    static BOJ19237_space[][] space;
+    static ArrayList<BOJ19237_shark> sharks;
+    static int[][][] priority_directions;
+    static int[][] directions = {{0,0},{-1,0},{1,0},{0,-1},{0,1}};
+
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    static void solve() {
+        T = 0;
+
+        /*while(T <= 1000 && !flag) {
+            move_sharks();
+            smell_deduction();
+            smelling_sharks();
+            T++;
+            is_there_one_shark_check();
+        }*/
+
+        while(T <= 1000 && !is_there_one_shark_check()) {
+            move_sharks();
+            smell_deduction();
+            smelling_sharks();
+            T++;
+        }
+
+        if(T > 1000) {
+            System.out.println(-1);
+        }
+    }
+
+    /*static void is_there_one_shark_check() {
+        if(sharks.size() == 1) {
+            System.out.println(T);
+            flag = true;
+        }
+    }*/
+
+    static boolean is_there_one_shark_check() {
+        if(sharks.size() == 1) {
+            System.out.println(T);
+            return true;
+        }
+        return false;
+    }
+
+    static void smell_deduction() {
+        for(int r=0;r<N;r++) {
+            for(int c=0;c<N;c++) {
+                if(space[r][c].n != 0) {
+                    space[r][c].k -= 1;
+
+                    if(space[r][c].k == 0) {
+                        space[r][c].n = 0;
+                        space[r][c].k = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+        sharks 내부의 shark 객체들이 n을 기준으로 오름차순으로 정렬되어 있어야 같은 장소에 있는 상어들을 방출할 수 있다.
+     */
+    static void smelling_sharks() {
+        ArrayList<BOJ19237_shark> kicked_out_sharks = new ArrayList<>();
+
+        for(BOJ19237_shark s : sharks) {
+            int n = s.n;
+            int r = s.r;
+            int c = s.c;
+
+            /*if(space[r][c].n == 0) {
+                space[r][c].k = K;
+                space[r][c].n = n;
+            } else {
+                if(space[r][c].k == K) {
+                    if(space[r][c].n < n) {
+                        sharks.remove(s);
+                    } else {
+                        // space[r][c].n >= n의 경우로, sharks의 상어들의 순서는 n이 낮은 순서를 보장하고
+                        // 해당 공간이 k가 K로 업데이트된 상태라면 n이 작은 상어가 이미 스멜링을 마친 공간이므로
+                        // space[r][c].n이 n보다 큰 경우가 올 수 없다. (상어의 넘버링은 중복이 없으므로)
+                    }
+                } else {
+                    space[r][c].n = n;
+                    space[r][c].k = K;
+                }
+            }*/
+            if(space[r][c].k == K && space[r][c].n < n) {
+                kicked_out_sharks.add(s);
+                continue;
+            }
+
+            space[r][c].n = n;
+            space[r][c].k = K;
+        }
+
+        for(BOJ19237_shark s : kicked_out_sharks) {
+            sharks.remove(s);
+        }
+    }
+
+    static void move_sharks() {
+        ArrayList<Integer> empty_space;
+        ArrayList<Integer> smelled_space;
+
+        for(BOJ19237_shark s : sharks) {
+            empty_space = new ArrayList<>();
+            smelled_space = new ArrayList<>();
+
+            for(int d=1;d<=4;d++) {
+                int nr = s.r + directions[d][0];
+                int nc = s.c + directions[d][1];
+
+                if(nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+
+                if(space[nr][nc].n == 0) {
+                    empty_space.add(d);
+                } else if(space[nr][nc].n == s.n) {
+                    smelled_space.add(d);
+                }
+            }
+
+            select_next_space(s, empty_space, smelled_space);
+        }
+    }
+
+    static void select_next_space(BOJ19237_shark s, ArrayList<Integer> empty_space, ArrayList<Integer> smelled_space) {
+        int d = 0;
+        if(empty_space.size() > 1) {
+            for(int p=0;p<4;p++) {
+                d = priority_directions[s.n][s.d][p];
+
+                if(empty_space.contains(d)) {
+                    break;
+                }
+            }
+        } else if(empty_space.size() == 1){
+            d = empty_space.get(0);
+        } else {
+            if(smelled_space.size() > 1) {
+                for(int p=0;p<4;p++) {
+                    d = priority_directions[s.n][s.d][p];
+
+                    if(smelled_space.contains(d)) {
+                        break;
+                    }
+                }
+            } else if(smelled_space.size() == 1) {
+                d = smelled_space.get(0);
+            } else {
+                // 빈 공간도 없고, 해당 상어의 냄새가 남은 공간이 없는 경우
+                // 이런 경우가 있을 수 있나?
+            }
+        }
+
+        update_position_shark(s, d);
+    }
+
+    static void update_position_shark(BOJ19237_shark s, int d) {
+        s.r += directions[d][0];
+        s.c += directions[d][1];
+        s.d = d;
+    }
+
+    static void print() {
+        System.out.println("# space -n | k-------------------- #");
+        for(int r=0;r<N;r++) {
+            for(int c=0;c<N;c++) {
+                System.out.print(space[r][c].n + " ");
+            }
+
+            System.out.print("  |  ");
+
+            for(int c=0;c<N;c++) {
+                System.out.print(space[r][c].k + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("##### space end -n | k-------------------- #");
+
+        /*for(BOJ19237_shark s : sharks) {
+            System.out.println("#shark" + s.n + " | r : " + s.r + " | c : " + s.c + " | d : " + s.d);
+        }*/
+
+        System.out.println("# sharks -------------------- #");
+        for(int r=0;r<N;r++) {
+            for(int c=0;c<N;c++) {
+                if(space[r][c].k == K) {
+                    System.out.print(space[r][c].n + " ");
+                } else {
+                    System.out.print(0 + " ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println("##### sharks end -------------------- #");
+    }
+
+    static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
+
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+        K = Integer.parseInt(input[2]);
+
+        flag = false;
+        space = new BOJ19237_space[N][N];
+        sharks = new ArrayList<>();
+        priority_directions = new int[M+1][5][4];
+
+        for(int r=0;r<N;r++) {
+            input = br.readLine().split(" ");
+            for(int c=0;c<N;c++) {
+                int n = Integer.parseInt(input[c]);
+
+                space[r][c] = new BOJ19237_space(n,0);
+
+                if(n != 0) {
+                    space[r][c].k = K;
+                    sharks.add(new BOJ19237_shark(r,c,n,0));
+                }
+            }
+        }
+
+        // 상어의 순서를 n을 기준으로 오름차순
+        sharks.sort(new Comparator<BOJ19237_shark>() {
+            @Override
+            public int compare(BOJ19237_shark o1, BOJ19237_shark o2) {
+                return o1.n - o2.n;
+            }
+        });
+
+        input = br.readLine().split(" ");
+        for(int i=0;i<M;i++) {
+            sharks.get(i).d = Integer.parseInt(input[i]);
+        }
+
+        for(int m=1;m<=M;m++) {
+            for(int d=1;d<=4;d++) {
+                input = br.readLine().split(" ");
+
+                // (1,↑), (2,↓), (3,←), (4,→)
+                for(int k=0;k<4;k++) {
+                    int direction = Integer.parseInt(input[k]);
+
+                    priority_directions[m][d][k] = direction;
+                }
+            }
+        }
+    }
 }
