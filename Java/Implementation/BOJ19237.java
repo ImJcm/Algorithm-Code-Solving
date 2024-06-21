@@ -211,40 +211,45 @@ public class BOJ19237 {
     static void solve() {
         T = 0;
 
-        /*while(T <= 1000 && !flag) {
+        while(T++ <= 1000 && !flag) {
             move_sharks();
             smell_deduction();
             smelling_sharks();
-            T++;
             is_there_one_shark_check();
-        }*/
-
-        while(T <= 1000 && !is_there_one_shark_check()) {
-            move_sharks();
-            smell_deduction();
-            smelling_sharks();
-            T++;
         }
 
-        if(T > 1000) {
+        /*while(T <= 1000 && !is_there_one_shark_check()) {
+            move_sharks();
+            smell_deduction();
+            smelling_sharks();
+            T++;
+        }*/
+
+        /*
+            T가 1000초일 때, 상어#1만 남게될 경우, 1000을 출력한 후, T는 1001된다.
+            이때, -1 출력 조건으로 (T > 1001)만 조건을 세우면 1000출력과 -1출력이 동시에 이루어져 6% 또는 26%에서 WA처리가 된다.
+            따라서,
+         */
+
+        if(T > 1000 && !flag) {
             System.out.println(-1);
         }
     }
 
-    /*static void is_there_one_shark_check() {
+    static void is_there_one_shark_check() {
         if(sharks.size() == 1) {
             System.out.println(T);
             flag = true;
         }
-    }*/
+    }
 
-    static boolean is_there_one_shark_check() {
+    /*static boolean is_there_one_shark_check() {
         if(sharks.size() == 1) {
             System.out.println(T);
             return true;
         }
         return false;
-    }
+    }*/
 
     static void smell_deduction() {
         for(int r=0;r<N;r++) {
