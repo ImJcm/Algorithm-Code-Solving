@@ -3,7 +3,6 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /*
@@ -56,6 +55,7 @@ I, V, X, L을 만들 수 있다.
 이루는 결과값이 같을 수 있다.
 예로,n=10, (I,5) + (V,1) + (X,4) = 50, (V,10) = 50와 같이 문자는 다르지만 결과값이 갖으면 서로 다른 수로 보지않는다.
 
+backTracking과 dfs 모두 로마 문자열을 구성할 때, 직전에 사용하여 문자열을 구성한 문자를 제외한 이전 문자들은 조합에서 제외한다.
  */
 public class BOJ16922 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -72,45 +72,31 @@ public class BOJ16922 {
 
     static void solve() {
         dfs(0,0);
+        backTracking(0,0, str);
 
         System.out.println(cnt);
     }
 
-    static void backTracking(int n, int s, int result) {
+    static void backTracking(int n, int s_idx, String str) {
         if(n == N) {
-            if(!visited.contains(result)) {
+            int result = cal_roman_script(str);
+
+            if(!visited.contains(result) && result != 0) {
                 visited.add(result);
                 cnt++;
             }
             return;
         }
 
-        backTracking(n+1, s, result);
-        backTracking(n+1, s+1, result);
+        if(s_idx > 3) return;
+
+        backTracking(n, s_idx + 1, str);
+        backTracking(n+1, s_idx, str + roman_script[s_idx]);
     }
 
     static void dfs(int n, int s) {
         if(n == N) {
-            int result = 0;
-            for(int i=0;i<str.length();i++) {
-                int value = 0;
-                char c = str.charAt(i);
-                switch (c) {
-                    case 'I':
-                        value = 1;
-                        break;
-                    case 'V':
-                        value = 5;
-                        break;
-                    case 'X':
-                        value = 10;
-                        break;
-                    case 'L':
-                        value = 50;
-                        break;
-                }
-                result += value;
-            }
+            int result = cal_roman_script(str);
 
             if(!visited.contains(result)) {
                 visited.add(result);
@@ -124,6 +110,31 @@ public class BOJ16922 {
             dfs(n+1, i);
             str = str.substring(0,n);
         }
+    }
+
+    static int cal_roman_script(String str) {
+        int result = 0;
+        for(int i=0;i<str.length();i++) {
+            int value = 0;
+            char c = str.charAt(i);
+            switch (c) {
+                case 'I':
+                    value = 1;
+                    break;
+                case 'V':
+                    value = 5;
+                    break;
+                case 'X':
+                    value = 10;
+                    break;
+                case 'L':
+                    value = 50;
+                    break;
+            }
+            result += value;
+        }
+
+        return result;
     }
 
     static void init_setting() throws IOException {
