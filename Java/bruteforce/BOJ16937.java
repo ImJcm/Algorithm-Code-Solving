@@ -59,6 +59,13 @@ import java.util.Comparator;
 기하학
 많은 조건 분기
  */
+/*
+알고리즘의 핵심
+1. 스터커는 회전할 수 있고 두 개의 스티커는 접할 수 있다.
+2. 임의의 두 스티커를 고르고 모형을 만들었을 때, 입력으로 주어진 H와 W보다 작은 높이와 너비를 갖는 모형의 넓이를 구한다.
+3. 두 스티커를 선택하여 만들 수 있는 모형의 경우의 수는 총 8가지
+4. (스티커1 회전/회전x) * (스티커2 회전/회전x) * (스티커1, 스티커2를 위아래/좌우로 붙이기) = 2 x 2 x 2 = 8가지
+ */
 public class BOJ16937 {
     static class BOJ16937_sticker {
         int h,w;
@@ -107,7 +114,7 @@ public class BOJ16937 {
                                 s1/0 s2/0
                              */
                             sum_h = Math.max(s1.h, s2.h);
-                            sum_w = s1.w + s2.h;
+                            sum_w = s1.w + s2.w;
                             break;
                         case 2:
                             /*
@@ -136,7 +143,7 @@ public class BOJ16937 {
                             /*
                                 s1/90 s2/0
                              */
-                            sum_h = Math.max(s1.h, s2.h);
+                            sum_h = Math.max(s1.w, s2.h);
                             sum_w = s1.h + s2.w;
                             break;
                         case 6:
