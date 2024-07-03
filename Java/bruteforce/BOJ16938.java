@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
 
 /*
 캠프 준비
@@ -65,12 +66,15 @@ import java.util.BitSet;
 0. 문제로 주어지는 문제들의 난이도를 오름차순으로 정렬 - 선택
 1. dfs로 가능한 모든 경우의 조합을 만들어낸다.
 2. 만들어진 조합으로 문제에서 요구하는 조건을 검사
+
+비트마스킹을 이용하는 경우, 2^15승 만큼의 값만큼 각 문제지의 난이도와 2^n 자리수의 값으로 매핑하여 가능한 문제 조합을 만들고 검사한다.
  */
 public class BOJ16938 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,L,R,X,ans;
     static int[] A;
     static boolean[] visited;
+    static HashSet<String> visited_bitmask;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -80,7 +84,7 @@ public class BOJ16938 {
 
     static void solve() {
         create_bitmask(0,1);
-        //select_section(new ArrayList<>(),0);
+        select_section(new ArrayList<>(),0);
 
         System.out.println(ans);
     }
@@ -104,30 +108,34 @@ public class BOJ16938 {
         int sum = s.stream().mapToInt(i->i).sum();
 
         if(max - min >= X && L <= sum && sum <= R) {
-            s.forEach((i) -> System.out.print(i+","));
-            System.out.println();
             ans++;
         }
     }
 
     static void create_bitmask(int idx, int b) {
         if(idx == N) {
+            String bit = Integer.toBinaryString(b);
+            if(visited_bitmask.contains(bit)) return;
+            visited_bitmask.add(bit);
+
             if(Integer.bitCount(b) < 2) return;
 
-            int max = A[(int) Math.sqrt(Integer.highestOneBit(b))];
-            int min = A[(int) Math.sqrt(Integer.lowestOneBit(b))];
+            double m = Math.sqrt(Integer.highestOneBit(b));
+            double mm = Math.sqrt(Integer.lowestOneBit(b));
+            int max = A[m > (int) (m) ? (int) (m) + 1 : (int) m];
+            int min = A[Integer.lowestOneBit(b) > 1 ? (int) (mm) : 0];
 
             int sum = 0;
-            String bit = Integer.toBinaryString(b);
+
             for(int i=0;i<bit.length();i++) {
                 char c = bit.charAt(i);
 
-                if(c == 1) {
-                    sum += A[A.length - 1 - i];
+                if(c == '1') {
+                    sum += A[bit.length() - 1 - i];
                 }
             }
 
-            if(L <= sum && sum <= R) {
+            if(L <= sum && sum <= R && max - min >= X) {
                 ans++;
             }
 
@@ -136,7 +144,6 @@ public class BOJ16938 {
 
         create_bitmask(idx+1, b << 1);
         create_bitmask(idx+1, b+1);
-
     }
 
 
@@ -150,6 +157,7 @@ public class BOJ16938 {
         X = Integer.parseInt(input[3]);
         ans = 0;
         visited = new boolean[N];
+        visited_bitmask = new HashSet<>();
 
         A = Arrays.stream(br.readLine().split(" "))
                 .mapToInt(Integer::parseInt)
