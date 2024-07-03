@@ -83,8 +83,8 @@ public class BOJ16938 {
     }
 
     static void solve() {
-        create_bitmask(0,1);
-        select_section(new ArrayList<>(),0);
+        create_bitmask(0,0,0);
+        //select_section(new ArrayList<>(),0);
 
         System.out.println(ans);
     }
@@ -112,9 +112,10 @@ public class BOJ16938 {
         }
     }
 
-    static void create_bitmask(int idx, int b) {
-        if(idx == N) {
+    static void create_bitmask(int depth, int idx, int b) {
+        if(depth == N) {
             String bit = Integer.toBinaryString(b);
+            if(bit.length() > N) return;
             if(visited_bitmask.contains(bit)) return;
             visited_bitmask.add(bit);
 
@@ -142,8 +143,11 @@ public class BOJ16938 {
             return;
         }
 
-        create_bitmask(idx+1, b << 1);
-        create_bitmask(idx+1, b+1);
+        for(int i=idx;i<N;i++) {
+            int a = (int) Math.pow(2,idx);
+            create_bitmask(depth + 1, i + 1, b + a);
+            create_bitmask(depth + 1, i + 1, b);
+        }
     }
 
 
