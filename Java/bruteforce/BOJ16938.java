@@ -73,8 +73,6 @@ public class BOJ16938 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,L,R,X,ans;
     static int[] A;
-    static boolean[] visited;
-    static HashSet<String> visited_bitmask;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -84,7 +82,7 @@ public class BOJ16938 {
 
     static void solve() {
         create_bitmask(0,0,0);
-        //select_section(new ArrayList<>(),0);
+        select_section(new ArrayList<>(),0);
 
         System.out.println(ans);
     }
@@ -115,9 +113,6 @@ public class BOJ16938 {
     static void create_bitmask(int depth, int idx, int b) {
         if(depth == N) {
             String bit = Integer.toBinaryString(b);
-            if(bit.length() > N) return;
-            if(visited_bitmask.contains(bit)) return;
-            visited_bitmask.add(bit);
 
             if(Integer.bitCount(b) < 2) return;
 
@@ -150,8 +145,6 @@ public class BOJ16938 {
         }
     }
 
-
-
     static void init_setting() throws IOException {
         String[] input = br.readLine().split(" ");
 
@@ -160,14 +153,10 @@ public class BOJ16938 {
         R = Integer.parseInt(input[2]);
         X = Integer.parseInt(input[3]);
         ans = 0;
-        visited = new boolean[N];
-        visited_bitmask = new HashSet<>();
 
         A = Arrays.stream(br.readLine().split(" "))
                 .mapToInt(Integer::parseInt)
                 .toArray();
-
-        Arrays.fill(visited, false);
 
         Arrays.sort(A);
     }
