@@ -88,6 +88,32 @@ import java.util.ArrayList;
 브루트포스 알고리즘
 백트래킹
  */
+/*
+첫 접근으로 1~M까지 폐업하지 않는 치킨집을 구성한 후, 해당 치킨집과 모든 집과의 치킨거리르 계산해서 최솟값을 업데이트한다.
+이때, 잘못된 점은 이미 폐업하지 않는 치킨집으로 지정한 치킨집을 또 검사하지 않기 위해 for(int i=depth)로 설정한 곳이다.
+
+static void dfs(int depth, int M) {
+    ...
+    for(int i=depth;i<chickens.size();i++) {
+        ...
+        dfs(depth + 1, M);
+        ...
+    }
+}
+
+검사하는 인덱스의 출발을 depth로 하는 것이 아니라, i값이 마지막으로 사용된 지점에서 i+1을 넘겨주어야 했다.
+
+따라서, 아래와 같이 중복검사를 방지하여 시간초과를 해결할 수 있었다.
+
+static void dfs(int depth, int s_idx, int M) {
+    ...
+    for(int i=s_idx;i<chickens.size();i++) {
+        ...
+        dfs(depth + 1, i+1, M);
+        ...
+    }
+}
+ */
 public class BOJ15686 {
     static class BOJ15686_building {
         int r,c;
@@ -101,7 +127,6 @@ public class BOJ15686 {
     }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,M,ans;
-    static int[][] cities;
     static ArrayList<BOJ15686_building> houses;
     static ArrayList<BOJ15686_building> chickens;
 
@@ -113,22 +138,22 @@ public class BOJ15686 {
 
     static void solve() {
         for(int i=1;i<=M;i++) {
-            dfs(0,i);
+            dfs(0,0, i);
         }
 
         System.out.println(ans);
     }
 
-    static void dfs(int depth, int M) {
+    static void dfs(int depth, int s_idx, int M) {
         if(depth == M) {
             check_chicken_distance();
             return;
         }
 
-        for(int i=depth;i<chickens.size();i++) {
+        for(int i=s_idx;i<chickens.size();i++) {
             if(!chickens.get(i).close) continue;
             chickens.get(i).close = false;
-            dfs(depth + 1, M);
+            dfs(depth + 1, i+1, M);
             chickens.get(i).close = true;
         }
     }
@@ -137,12 +162,15 @@ public class BOJ15686 {
         int total_d = 0;
         for(BOJ15686_building h : houses) {
             int d = Integer.MAX_VALUE;
+
             for(BOJ15686_building c : chickens) {
                 if(!c.close) {
                     d = Math.min(d, Math.abs(h.r - c.r) + Math.abs(h.c - c.c));
                 }
             }
+
             total_d += d;
+            if(total_d >= ans) break;
         }
 
         ans = Math.min(ans, total_d);
