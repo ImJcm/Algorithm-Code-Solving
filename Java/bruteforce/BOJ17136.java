@@ -137,9 +137,19 @@ import java.io.InputStreamReader;
 브루트포스 알고리즘
 백트래킹
  */
+/*
+알고리즘 핵심
+1. dfs로 1인 paper에서 색종이를 붙이는 작업 수행
+2. 색종이의 넓이가 큰 순서부터 색종이를 붙이는 작업 수행
+3. dfs 기저사례로 붙인 색종이의 넓이와 남은 1 공간의 크키가 같은 경우, 사용한 최소 색종이의 개수를 업데이트
+4. 최초로 사용된 색종이의 개수가 업데이트 되어있다면, 최소 갯수보다 많이 사용되는 dfs의 경우, 가지치기
+5. 181~189의 코드는 5가지의 색종이를 모두 붙일 수 있는지 없는지 검사를 한다. 이때, 해당 조건에 만족하지 못하는 경우는
+나머지 색종이를 붙여도 불가능한 경우이므로 이전에 붙인 색종이가 잘못된 경우임을 의미하므로 해당 반복문이 종료되면 190줄의 return를 수행
+이후, 1인 공간에서의 색종이를 붙이는 조건 검사를 할 필요가 없기 때문이다.
+5번 알고리즘 핵심이 중요 - https://www.acmicpc.net/board/view/101322
+ */
 public class BOJ17136 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static boolean flag;
     static int[][] paper;
     static int[] remain_colored_paper;
     static int ans,one_spaces;
@@ -159,24 +169,39 @@ public class BOJ17136 {
 
     static void dfs(int depth, int nr, int nc, int use_paper_cnt) {
         if(depth == one_spaces) {
-            ans = Math.min(ans, use_paper_cnt);
-            flag = false;
-            return;
+           if(check_isFull_attach()) {
+               ans = Math.min(ans, use_paper_cnt);
+           }
+           return;
         }
 
-        for(int r = nr; r < 10 && flag; r++) {
-            for(int c = (r == nr ? nc : 0); c < 10 && flag; c++) {
+        if(ans <= use_paper_cnt) return;
+
+        for(int r = nr; r < 10; r++) {
+            for(int c = (r == nr ? nc : 0); c < 10; c++) {
                 if(paper[r][c] == 0) continue;
 
                 for(int i = 4; i >= 0; i--) {
                     if(check_attach_paper(r,c,i)) {
                         attach_paper(r,c,i);
-                        dfs(depth + (int) Math.pow(i+1,2), r, c,use_paper_cnt + 1);
+                        int next_r = c + 1 == 10 ? r + 1 : r;
+                        int next_c = c + 1 == 10 ? 0 : c + 1;
+                        dfs(depth + (int) Math.pow(i+1,2), next_r, next_c,use_paper_cnt + 1);
                         detach_paper(r,c,i);
                     }
                 }
+                return;
             }
         }
+    }
+
+    static boolean check_isFull_attach() {
+        for(int i = 0; i < 10 ; i++) {
+            for(int j = 0; j < 10; j++) {
+                if(paper[i][j] == 1) return false;
+            }
+        }
+        return true;
     }
 
     static boolean check_attach_paper(int r, int c, int i) {
@@ -208,10 +233,19 @@ public class BOJ17136 {
         }
     }
 
+    static void print() {
+        for(int i = 0; i < 10; i++) {
+            for(int j = 0; j < 10; j++) {
+                System.out.print(paper[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("-------------------");
+    }
+
     public static void init_setting() throws IOException{
         ans = Integer.MAX_VALUE;
         one_spaces = 0;
-        flag = true;
 
         remain_colored_paper = new int[] {5, 5, 5, 5, 5};
         paper = new int[10][10];
