@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -272,7 +271,21 @@ Maaaaaaaaaze
 너비 우선 탐색
  */
 /*
+알고리즘 핵심
+1. 큐브를 쌓은 결과가 중복없는 상태의 데이터 필요 - dfs
+2. 1과정에서 나온 결과인 큐브들을 각 큐브 층마다 회전을 상태의 데이터 필요 - dfs
+3. 2과정에서 나온 결과로 [1][1][1] -> [5][5][5]로 갈 수 있는지 경로 탐색 - bfs
+(3에서 출발지와 도착지를 확정지을 수 있는 이유 : 문제에서 출발지가 속하는 면과 접하지 않은 면의 꼭짓점을 도착지로 정의하며, 각 큐브의 회전을 통해
+최상단의 큐브면에서 나머지 3개의 꼭짓점에서 다른 도착지를 구하는 큐브는 중복되기 때문이다.
+즉, 큐브의 회전을 통해 모든 출발과 도착의 꼭짓점의 상태를 [1][1][1] -> [5][5][5]의 출발지와 도착지로 큐브 상태를 정의할 수 있다.)
+예시, 회전을 수행하지 않은 큐브에서 출발지 - 도착지의 쌍 ({(1,1,1) - (5,5,5)},{(1,5,1) - (5,1,5)}, {(1,1,5) - (5,5,1)}, {(1,5,5) - (5,1,1)})
+{(1,5,1) - (5,1,5)} -> z=1,5, 90도 회전
+{(1,1,5) - (5,5,1)} -> z=1,5, 270도 회전
+{(1,5,5) - (5,1,1)} -> z=1,5, 180도 회전
+을 통해 [1][1][1] -> [5][5][5]의 출발과 도착의 쌍으로 만들 수 있다.
 
+순서 중복없이 큐브를 쌓은 큐브 데이터의 ArrayList + 각 회전을 수행한 큐브 데이터의 ArrayList => 메모리 1056928 KB	시간 2904 ms
+순서 중복없이 큐브를 쌓은 큐브 데이터의 ArrayList                                       => 메모리 301424 KB     시간 1304 ms
  */
 public class BOJ16985 {
     static class BOJ16985_space {
@@ -290,9 +303,9 @@ public class BOJ16985 {
     }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int ans;
-    static int[][] directions = {{-1,0},{1,0},{0,-1},{0,1}};
+    static int[][] directions = {{0,-1,0},{0,1,0},{0,0,-1},{0,0,1},{1,0,0},{-1,0,0}};
     static BOJ16985_space[][][] cube;
-    static ArrayList<BOJ16985_space[][][]> cube_orders, cube_apply_order_rotate;
+    static ArrayList<BOJ16985_space[][][]> cubes;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -301,13 +314,19 @@ public class BOJ16985 {
     }
 
     static void solve() {
-        cube_stacking_rotating();
-        cube_4_edge_maze_escape();
+        cube_stacking_rotating_And_search_path();
+        //cube_4_edge_maze_escape();
 
         System.out.println(ans == Integer.MAX_VALUE ? -1 : ans);
     }
 
-    static void cube_4_edge_maze_escape() {
+    /**
+     * 중복되지 않은 순서의 큐브를 쌓은 것으로 부터 각 층의 큐브를 90도 회전한 상태를 별도의 ArrayList에 저장하고 bfs를 수행하는 메서드
+     * 이 부분에서 별도의 ArrayList로 저장하기 때문에 메모리가 크게 증가하는 원인이다.
+     *
+     * 따라서, 큐브를 중복없이 쌓은 ArrayList(=cubes)에서 회전을 수행한 후 기저사례 조건 만족 시 bfs를 수행하여 메모리를 줄이고 수행시간도 줄일 수 있었다.
+     */
+    /*static void cube_4_edge_maze_escape() {
         for(BOJ16985_space[][][] cube : cube_apply_order_rotate) {
             int s = cube[1][1][1].in_able;
             int e = cube[5][5][5].in_able;
@@ -316,8 +335,7 @@ public class BOJ16985 {
 
             path_search_bfs(cube);
         }
-
-    }
+    }*/
 
     static void path_search_bfs(BOJ16985_space[][][] cube) {
         Queue<BOJ16985_space> q = new LinkedList<>();
@@ -329,60 +347,51 @@ public class BOJ16985 {
         while(!q.isEmpty()) {
             BOJ16985_space now = q.poll();
 
+            if(now.x == 5 && now.y == 5 && now.z == 5) {
+                ans = Math.min(ans, now.move);
+            }
+
             for(int[] d : directions) {
-                int nx = now.x;
-                int ny = now.y;
-                int nz = now.z;
+                int nz = now.z + d[0];
+                int nx = now.x + d[1];
+                int ny = now.y + d[2];
 
-                if(now.x == 5) {
-                    if(nz + d[0] < 1 || ny + d[1] < 1 || nz + d[0] > 5 || ny + d[1] > 5) continue;
-                    if(visited[nz + d[0]][nx][ny + d[1]]) continue;
+                if(nz < 1 || nx < 1 || ny < 1 || nz > 5 || nx > 5 || ny > 5) continue;
+                if(visited[nz][nx][ny]) continue;
+                if(cube[nz][nx][ny].in_able == 0) continue;
 
-                    visited[nz + d[0]][nx][ny + d[1]] = true;
-                    q.offer(new BOJ16985_space(nz + d[0],nx,ny + d[1],now.in_able,now.move + 1));
-                }
-
-                if(now.y == 5) {
-                    if(nz + d[1] < 1 || nx + d[0] < 1 || nz + d[1] > 5 || nx + d[0] > 5) continue;
-                    if(visited[nz + d[1]][nx + d[0]][ny]) continue;
-
-                    visited[nz + d[1]][nx + d[0]][ny] = true;
-                    q.offer(new BOJ16985_space(nz + d[1],nx + d[0],ny,now.in_able,now.move + 1));
-                }
-
-                if(now.x != 5 && now.y != 5) {
-                    if(nx + d[0] < 1 || ny + d[1] < 1 || nx + d[0] > 5 || ny + d[1] > 5) continue;
-
-                }
+                visited[nz][nx][ny] = true;
+                q.offer(new BOJ16985_space(nz,nx,ny,now.in_able,now.move + 1));
             }
         }
-
     }
 
-    static void cube_stacking_rotating() {
+    static void cube_stacking_rotating_And_search_path() {
         order_dfs(0, new int[5], new boolean[5]);
 
-        for(BOJ16985_space[][][] cube : cube_orders) {
+        for(BOJ16985_space[][][] cube : cubes) {
             rotate_dfs(0, cube);
         }
     }
 
     static void rotate_dfs(int depth, BOJ16985_space[][][] cube) {
         if(depth == 5) {
-            cube_apply_order_rotate.add(copy_cube(cube));
+            //cube_apply_order_rotate.add(copy_cube(cube));
+            if(cube[1][1][1].in_able == 1 && cube[5][5][5].in_able == 1) {
+                path_search_bfs(cube);
+            }
             return;
         }
 
         for(int i = 0; i < 4; i++) {
-            rotate_90_degrees_cube(depth + 1, cube);
             rotate_dfs(depth + 1, cube);
+            rotate_90_degrees_cube(depth + 1, cube);
         }
-        rotate_90_degrees_cube(depth + 1, cube);    //270 degrees 회전 후, 원상태 복귀 회전
     }
 
     static void order_dfs(int depth, int[] order, boolean[] visited) {
         if(depth == 5) {
-            cube_orders.add(copy_cube(order));
+            cubes.add(copy_cube(order));
             return;
         }
 
@@ -413,19 +422,20 @@ public class BOJ16985 {
             for(int i = x; i <= l; i++) {
                 cube[z][i][x].in_able = cube[z][cube.length - x][i].in_able;
             }
+
             // 하단
-            for(int i = x; i <= l; i++) {
+            for(int i = x; i < l; i++) {
                 cube[z][cube.length - x][i].in_able = cube[z][cube.length - i][cube.length - x].in_able;
             }
 
             // 우측
             for(int i = x; i <= l; i++) {
-                cube[z][cube.length - i][cube.length - x].in_able = storage[i - x];
+                cube[z][i][cube.length - x].in_able = storage[i - x];
             }
         }
     }
 
-    static BOJ16985_space[][][] copy_cube(BOJ16985_space[][][] cube) {
+    /*static BOJ16985_space[][][] copy_cube(BOJ16985_space[][][] cube) {
         BOJ16985_space[][][] renew_cube = new BOJ16985_space[6][6][6];
 
         for(int z = 1; z <= 5; z++) {
@@ -436,7 +446,7 @@ public class BOJ16985 {
             }
         }
         return renew_cube;
-    }
+    }*/
 
     static BOJ16985_space[][][] copy_cube(int[] order) {
         BOJ16985_space[][][] renew_cube = new BOJ16985_space[6][6][6];
@@ -453,8 +463,8 @@ public class BOJ16985 {
     }
     private static void init_setting() throws IOException {
         cube = new BOJ16985_space[6][6][6];
-        cube_orders = new ArrayList<BOJ16985_space[][][]>();
-        cube_apply_order_rotate = new ArrayList<BOJ16985_space[][][]>();
+        cubes = new ArrayList<>();
+        //cube_apply_order_rotate = new ArrayList<BOJ16985_space[][][]>();
 
         ans = Integer.MAX_VALUE;
 
@@ -469,13 +479,25 @@ public class BOJ16985 {
     }
 
     static void test_rotate_90() {
-        /*rotate_90_degrees_cube(1, cube);
-
+        //rotate_90_degrees_cube(1, cube);
         for(int i = 1; i <= 5 ; i++) {
             for(int j = 1; j <= 5; j++) {
                 System.out.print(cube[1][i][j].in_able + " ");
             }
             System.out.println();
-        }*/
+        }
+    }
+
+    static void test_cube_shape(BOJ16985_space[][][] cube) {
+        for(int k = 1; k <= 5; k++) {
+            for(int i = 1; i <= 5 ; i++) {
+                for(int j = 1; j <= 5; j++) {
+                    System.out.print(cube[k][i][j].in_able + " ");
+                }
+                System.out.println();
+            }
+            System.out.println("l -----");
+        }
+        System.out.println("n -----");
     }
 }
