@@ -62,6 +62,26 @@ B[i][j] = A[i][j] + A[i+1][j] + A[i+1][j+1] + A[i][j+1] (1 ≤ i < N, 1 ≤ j < 
 그리디 알고리즘
 누적 합
  */
+/*
+첫 접근으로 원본 상태의 B배열의 값과 중복없는 행 교환, 열 교환 이후 B배열의 값중 최댓값을 구하도록 코드를 구현하였다.
+결과는 시간초과가 발생하였다. 행,열 교환에서 O(N^3), B배열 계산에서 O(N^2)으, 로 총 O(N^5)로 시간초과가 발생한 것같다.
+
+이를 해결하기 위해 두번쨰 방법은 연산과정을 단축하기 위해 스왑과정을 없애는 코드를 구현하여도 여전히 시간복잡도가 컸다.
+O(N^4)
+
+어떻게 풀이를 할 수 있을까 고민하다가 규칙성을 발견하고자 생각한 아이디어로
+B배열의 값을 계산할 때, 꼭짓점의 수는 1번만 더해지고, 양 사이드는 2번씩 내부는 4번씩 더해진다는 것을 알게되었는데
+이때, N이 커지고 내부로 갈수록 2^n만큼 더해지는 것으로 예상하고 자세히 시뮬레이션을 돌려보지 않았다.
+
+결국은 아이디어를 생각하지 못하고 정답 코드의 도움을 빌려 코드를 구현하게 되었다.
+
+알고리즘 핵심
+1. 수학적으로 규칙이 존재한다.
+2. 양 끝 행,열은 양끝은 1번씩 더하고 나머지는 2번씩 더하고, 중간 행,열은 양 끝은 2번씩 더하고, 나머지는 4번씩 더해진다.
+3. 그리드 알고리즘을 적용할 수 있는 부분으로 행,열 교환에 적용할 대상은 양 끝의 행,열 중 합이 큰 행과 양끝을 제외한 행,열 중 합이 적은 라인과 교환하는 것이 B배열이 최댓값을 보장한다.
+4. 행,열의 합을 계산하기 위해 별도의 인자를 적용하여 해당 행,열이 양 끝라인의 행,열로 적용할지 적용하지 않을지 결정할 수 있어야 한다.
+
+ */
 public class BOJ16971 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,M,ans;
@@ -75,7 +95,131 @@ public class BOJ16971 {
     }
 
     private static void solve() {
+        int sum = 0;
+        for(int n = 1; n <= N; n++) {
+            if(n == 1 || n == N) sum += sumRow(true, n);
+            else sum += sumRow(false, n);
+        }
 
+        ans = Math.max(ans, sum);
+
+        int maxSumRow = sumRow(true, 1) > sumRow(true, N) ? 1 : N;
+        int minSumRow = findMinRowSum();
+
+        sum = 0;
+
+        if(minSumRow != 0) {
+            for(int n = 1; n <= N; n++) {
+                if(n == 1 || n == N) {
+                    if(n == maxSumRow) sum += sumRow(false, n);
+                    else sum += sumRow(true, n);
+                } else {
+                    if(n == minSumRow) sum += sumRow(true, n);
+                    else sum += sumRow(false, n);
+                }
+            }
+
+            ans = Math.max(ans, sum);
+        }
+
+
+        int maxSumCol = sumCol(true, 1) > sumCol(true, M) ? 1 : M;
+        int minSumCol = findMinColSum();
+
+        sum = 0;
+
+        if(minSumCol != 0) {
+            for(int m = 1; m <= M; m++) {
+                if(m == 1 || m == M) {
+                    if(m == maxSumCol) sum += sumCol(false, m);
+                    else sum += sumCol(true, m);
+                } else {
+                    if(m == minSumCol) sum += sumCol(true, m);
+                    else sum += sumCol(false, m);
+                }
+            }
+
+            ans = Math.max(ans, sum);
+        }
+
+        System.out.println(ans);
+
+    }
+
+    private static int findMinRowSum() {
+        int row = 0, sum = 0, minSum = Integer.MAX_VALUE;
+        for(int n = 2; n <= N - 1; n++) {
+            sum = sumRow(false, n);
+
+            if(sum < minSum) {
+                row = n;
+                minSum = sum;
+            }
+        }
+
+        return row;
+    }
+
+    private static int findMinColSum() {
+        int col = 0, sum = 0, minSum = Integer.MAX_VALUE;
+        for(int m = 2; m <= M - 1; m++) {
+            sum = sumCol(false, m);
+
+            if(sum < minSum) {
+                col = m;
+                minSum = sum;
+            }
+        }
+
+        return col;
+    }
+
+    private static int sumRow(boolean isside, int n) {
+        int sum = 0;
+
+        if(isside) {
+            for(int m = 1; m <= M; m++) {
+                if(m == 1 || m == M) {
+                    sum += A[n][m];
+                } else {
+                    sum += (2 * A[n][m]);
+                }
+            }
+        } else {
+            for(int m = 1; m <= M; m++) {
+                if(m == 1 || m == M) {
+                    sum += (2 * A[n][m]);
+                } else {
+                    sum += (4 * A[n][m]);
+                }
+            }
+        }
+
+        return sum;
+    }
+
+    private static int sumCol(boolean isside, int m) {
+        int sum = 0;
+
+        if(isside) {
+            for(int n = 1; n <= N; n++) {
+                if(n == 1 || n == N) {
+                    sum += A[n][m];
+                } else {
+                    sum += (2 * A[n][m]);
+                }
+            }
+        } else {
+            for(int n = 1; n <= N; n++) {
+                if(n == 1 || n == N) {
+                    sum += (2 * A[n][m]);
+                } else {
+                    sum += (4 * A[n][m]);
+                }
+            }
+        }
+
+        return sum;
     }
 
     private static void solve_timeOut2() {
