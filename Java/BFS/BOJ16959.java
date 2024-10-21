@@ -212,10 +212,11 @@ public class BOJ16959 {
                             if(nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
                             if(visited[nr][nc][now.target_pos][now.chess]) continue;
 
-                            visited[nr][nc][now.target_pos][now.chess] = true;
                             if(board[nr][nc] == now.target_pos) {
+                                visited[nr][nc][now.target_pos + 1][now.chess] = true;
                                 q.add(new BOJ16959_chess(2,nr,nc,board[nr][nc],now.target_pos + 1,now.total_time + 1));
                             } else {
+                                visited[nr][nc][now.target_pos][now.chess] = true;
                                 q.add(new BOJ16959_chess(2,nr,nc,board[nr][nc],now.target_pos,now.total_time + 1));
                             }
                         }
