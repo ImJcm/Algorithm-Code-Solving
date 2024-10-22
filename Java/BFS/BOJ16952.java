@@ -3,9 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 /*
@@ -86,22 +84,40 @@ import java.util.Queue;
 최단 경로
 플로이드–워셜
  */
+/*
+BOJ16959인 체스판 여행1과 동일하지만 최소 시간을 만족하면서 N^2인 위치에 도착하는 방법이 여러가지인 경우 체스말을 최소한으로 교체한 방법으로 최소 시간과 최소 교체 횟수를 출력하는 조건이 추가되었다.
+
+기존에는 특정 위치에 최초로 도달하는 것이 최소 시간임을 만족하여 방문 여부를 최초인지만 검사하였지만 최소 시간을 만족하면서 최소 교체 횟수인 방법이 존재한다면 queue에 추가해야 한다.
+
+따라서, 특정 위치의 최초 방문 시간과 이미 방문한 곳에서 최소 시간과 체스말의 교환 횟수를 비교해야 한다.
+
+알고리즘 핵심
+BFS
+1. 체스말의 종류, r과 c의 위치 정보, 현재 위치의 정수값, 다음 목표의 정수값, 걸린 시간, 체스말을 교체한 횟수 정보를 저장하는 class
+2. 1인 위치에서 나이트, 룩, 비숍의 체스말을 하니씩 두고 출발하기 위해 초기 데이터를 queue에 저장한다.
+3. 각 위치에서 target 값과 체스말의 종류에 따라 최초 도달 시간을 저장하는 visited_time을 통해 중복을 방지하고, 최소 시간을 만족하는 중복 방문을 처리하기 위해 체스말의 교체 횟수를 저장하는 visited_change를 이용하여 방법 추가 여부를 결정한다.
+4. 현재 체스말이 아닌 체스말로 교체하는 과정을 현재 위치의 visited_time으로 최초 방문 여부를 검사하고, 이미 방문한 곳이라면 visited_change를 통해 최소 횟수를 만족하면 queue에 추가한다.
+5. 현재 체스말로 이동할 수 있는 곳을 계산하고 다음으로 이동할 곳의 최초 방문 여부와 체스말의 교환 횟수를 검사하여 queue에 이동 방법을 추가한다.
+6. 5번 과정에서 이동할 곳의 방문 여부의 조건으로 visited_time의 값을 통해 확인하고, 이 값이 now.total_time과 같다면, 체스말을 교환한 횟수를 해당 위치에 최초 도달 시 최초 말 교체 횟수(visited_change)와 비교하여 만족하는지 확인한다.
+7. now.cur_pos가 N^2을 만족하고 다음 목표 정수 값이 N^2 + 1을 만족하는 방법 중에 최소 시간과 최소 교환 횟수를 만족하는 것을 ans_time, ans_change에 저장한다.
+8. 모든 큐가 빈 경우, ans_time, ans_change를 출력한다.
+ */
 public class BOJ16952 {
     static class BOJ16952_chess {
         int chess;
         int r,c;
         int cur_pos,target_pos;
         int total_time;
-        int move_cnt;
+        int change_cnt;
 
-        BOJ16952_chess(int chess, int r, int c, int c_p, int t_p, int t_t, int m_c) {
+        BOJ16952_chess(int chess, int r, int c, int c_p, int t_p, int t_t, int c_c) {
             this.chess = chess;
             this.r = r;
             this.c = c;
             this.cur_pos = c_p;
             this.target_pos = t_p;
             this.total_time = t_t;
-            this.move_cnt = m_c;
+            this.change_cnt = c_c;
         }
     }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -132,21 +148,25 @@ public class BOJ16952 {
 
     private static void bfs() {
         Queue<BOJ16952_chess> q = new LinkedList<>();
-        int[][][][] visited = new int[N][N][N*N + 2][3];
+        int[][][][] visited_time = new int[N][N][N*N + 2][3];
+        int[][][][] visited_change = new int[N][N][N*N + 2][3];
 
         for(int r = 0; r < N; r++) {
             for(int c = 0; c < N; c++) {
                 for(int n = 1; n <= N*N + 1; n++) {
                     for(int k = 0; k < 3; k++) {
-                        visited[r][c][n][k] = Integer.MAX_VALUE;
+                        visited_time[r][c][n][k] = visited_change[r][c][n][k] = Integer.MAX_VALUE;
                     }
                 }
             }
         }
 
         for(int i = 0; i < 3; i++) {
-            q.add(new BOJ16952_chess(i,start.r, start.c, start.cur_pos, start.target_pos, start.total_time,start.move_cnt));
-            visited[start.r][start.c][start.target_pos][i] = start.move_cnt;
+            q.add(new BOJ16952_chess(i,start.r, start.c, start.cur_pos, start.target_pos, start.total_time,start.change_cnt));
+            visited_time[start.r][start.c][start.cur_pos][i] = start.total_time;
+            visited_time[start.r][start.c][start.target_pos][i] = start.total_time;
+            visited_change[start.r][start.c][start.cur_pos][i] = start.change_cnt;
+            visited_change[start.r][start.c][start.target_pos][i] = start.change_cnt;
         }
 
         while(!q.isEmpty()) {
@@ -155,10 +175,10 @@ public class BOJ16952 {
             if((now.cur_pos == (int) Math.pow(N,2)) && (now.target_pos == now.cur_pos + 1)) {
                 if(ans_time > now.total_time) {
                     ans_time = now.total_time;
-                    ans_change_cnt = now.move_cnt;
+                    ans_change_cnt = now.change_cnt;
                 } else if(ans_time == now.total_time) {
-                    if(ans_change_cnt > now.move_cnt) {
-                        ans_change_cnt = now.move_cnt;
+                    if(ans_change_cnt > now.change_cnt) {
+                        ans_change_cnt = now.change_cnt;
                     }
                 }
                 continue;
@@ -168,9 +188,11 @@ public class BOJ16952 {
 
             for(int c = 0; c < 3; c++) {
                 if(c == now.chess) continue;
-                if(visited[now.r][now.c][now.target_pos][now.chess] == Integer.MAX_VALUE || visited[now.r][now.c][now.target_pos][now.chess] > now.move_cnt) {
-                    visited[now.r][now.c][now.target_pos][now.chess] = now.move_cnt + 1;
-                    q.add(new BOJ16952_chess(c,now.r,now.c,now.cur_pos,now.target_pos,now.total_time + 1,now.move_cnt + 1));
+                if(visited_time[now.r][now.c][now.target_pos][c] == Integer.MAX_VALUE
+                        || possible_move(visited_time[now.r][now.c][now.target_pos][c],now.total_time + 1,visited_change[now.r][now.c][now.target_pos][c],now.change_cnt + 1)) {
+                    visited_time[now.r][now.c][now.target_pos][c] = now.total_time + 1;
+                    visited_change[now.r][now.c][now.target_pos][c] = now.change_cnt + 1;
+                    q.add(new BOJ16952_chess(c,now.r,now.c,now.cur_pos,now.target_pos,now.total_time + 1,now.change_cnt + 1));
                 }
             }
 
@@ -188,9 +210,11 @@ public class BOJ16952 {
                             next_target = now.target_pos + 1;
                         }
 
-                        if(visited[nr][nc][next_target][now.chess] == Integer.MAX_VALUE || visited[nr][nc][next_target][now.chess] > now.move_cnt) {
-                            visited[nr][nc][next_target][now.chess] = now.move_cnt;
-                            q.add(new BOJ16952_chess(now.chess,nr,nc,board[nr][nc],next_target,now.total_time + 1,now.move_cnt));
+                        if(visited_time[nr][nc][next_target][now.chess] == Integer.MAX_VALUE
+                                || possible_move(visited_time[nr][nc][next_target][now.chess],now.total_time + 1,visited_change[nr][nc][next_target][now.chess],now.change_cnt)) {
+                            visited_time[nr][nc][next_target][now.chess] = now.total_time + 1;
+                            visited_change[nr][nc][next_target][now.chess] = now.change_cnt;
+                            q.add(new BOJ16952_chess(now.chess,nr,nc,board[nr][nc],next_target,now.total_time + 1,now.change_cnt));
                         }
                     }
                     break;
@@ -208,9 +232,11 @@ public class BOJ16952 {
                                 next_target = now.target_pos + 1;
                             }
 
-                            if(visited[nr][nc][next_target][now.chess] == Integer.MAX_VALUE || visited[nr][nc][next_target][now.chess] > now.move_cnt) {
-                                visited[nr][nc][next_target][now.chess] = now.move_cnt;
-                                q.add(new BOJ16952_chess(now.chess,nr,nc,board[nr][nc],next_target,now.total_time + 1,now.move_cnt));
+                            if(visited_time[nr][nc][next_target][now.chess] == Integer.MAX_VALUE
+                                    || possible_move(visited_time[nr][nc][next_target][now.chess],now.total_time + 1,visited_change[nr][nc][next_target][now.chess],now.change_cnt)) {
+                                visited_time[nr][nc][next_target][now.chess] = now.total_time + 1;
+                                visited_change[nr][nc][next_target][now.chess] = now.change_cnt;
+                                q.add(new BOJ16952_chess(now.chess,nr,nc,board[nr][nc],next_target,now.total_time + 1,now.change_cnt));
                             }
                         }
                     }
@@ -229,15 +255,26 @@ public class BOJ16952 {
                                 next_target = now.target_pos + 1;
                             }
 
-                            if(visited[nr][nc][next_target][now.chess] == Integer.MAX_VALUE || visited[nr][nc][next_target][now.chess] > now.move_cnt) {
-                                visited[nr][nc][next_target][now.chess] = now.move_cnt;
-                                q.add(new BOJ16952_chess(now.chess,nr,nc,board[nr][nc],next_target,now.total_time + 1,now.move_cnt));
+                            if(visited_time[nr][nc][next_target][now.chess] == Integer.MAX_VALUE
+                                    || possible_move(visited_time[nr][nc][next_target][now.chess],now.total_time + 1,visited_change[nr][nc][next_target][now.chess],now.change_cnt)) {
+                                visited_time[nr][nc][next_target][now.chess] = now.total_time + 1;
+                                visited_change[nr][nc][next_target][now.chess] = now.change_cnt;
+                                q.add(new BOJ16952_chess(now.chess,nr,nc,board[nr][nc],next_target,now.total_time + 1,now.change_cnt));
                             }
                         }
                     }
                     break;
             }
         }
+    }
+
+    private static boolean possible_move(int v_t, int n_t, int v_c, int n_c) {
+        if(v_t > n_t) {
+            return true;
+        } else if(v_t == n_t) {
+            if(v_c > n_c) return true;
+        }
+        return false;
     }
 
     private static void init_setting() throws IOException {
