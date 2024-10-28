@@ -77,6 +77,15 @@ ICPC > Regionals > Europe > Northwestern European Regional Contest > Benelux Alg
 그래프 탐색
 너비 우선 탐색
  */
+/*
+알고리즘 핵심
+BFS
+1. h,w 위치 좌표 정보를 갖는 class 사용
+2. 기존에 가지고 있는 key를 기준으로 bfs를 수행하여 $를 수집하여 ans를 업데이트한다.
+3. bfs를 수행하는 과정에서 대문자 알파벳에 도달시 keys에 존재하는지 여부를 검사하여 이동할 수 있는지 여부로 bfs를 수행한다.
+4. 소문자 알파벳에 도달 시 새로운 key(소문자 알파벳)인 경우 keys에 추가하고 bfs를 새로 돌릴 수 있도록 re_flag를 업데이트한다.
+5. bfs를 수행하여 queue가 모두 비었을 때 새로운 키가 추가되지 않는다면(re_flag = true) 더 이상 bfs를 돌리지 않아도 되므로 문서를 수집한 개수인 ans를 출력한다.
+ */
 public class BOJ9328 {
     static class BOJ9328_pos {
         int h,w;
