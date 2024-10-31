@@ -161,8 +161,6 @@ public class BOJ17779 {
 
         int[][] sections = divide_section_number(s);
 
-        System.out.println("break");
-
         for(int r=1;r<=N;r++) {
             for(int c=1;c<=N;c++) {
                 switch (sections[r][c]) {
@@ -200,10 +198,10 @@ public class BOJ17779 {
 
     static int[][] divide_section_number(BOJ17779_divide_electoral_district_standard s) {
         int[][] ns = new int[N+1][N+1];
-        /*int boundary_1 = s.x + s.y;
+        int boundary_1 = s.x + s.y;
         int boundary_2 = s.x - s.y;
         int boundary_3 = (s.x + s.d1) - (s.y - s.d1);
-        int boundary_4 = s.x + s.y + s.d2;*/
+        int boundary_4 = s.x + s.y + s.d2;
 
 
         // 경계 표현
@@ -227,26 +225,7 @@ public class BOJ17779 {
                         continue;
                     }
 
-                    if(r < s.x+s.d1 && c <= s.y) {
-                        ns[r][c] = 1;
-                        continue;
-                    }
-
-                    if(r <= s.x+s.d2 && c > s.y) {
-                        ns[r][c] = 2;
-                        continue;
-                    }
-
-                    if(r >= s.x+s.d1 && c < s.y-s.d1+s.d2) {
-                        ns[r][c] = 3;
-                        continue;
-                    }
-                    if(r > s.x+s.d2 && c >= s.y-s.d1+s.d2) {
-                        ns[r][c] = 4;
-                        continue;
-                    }
-
-                    /*if(r < s.x+s.d1 && c <= s.y && r + c < boundary_1) {
+                    if(r < s.x+s.d1 && c <= s.y && r + c < boundary_1) {
                         ns[r][c] = 1;
                         continue;
                     }
@@ -263,7 +242,7 @@ public class BOJ17779 {
                     if(r > s.x+s.d2 && c >= s.y-s.d1+s.d2 && r + c > boundary_4) {
                         ns[r][c] = 4;
                         continue;
-                    }*/
+                    }
                 } else {
                     if(r == s.x || r == s.x+s.d1+s.d2) continue;
                     five_section = !five_section;
