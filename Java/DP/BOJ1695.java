@@ -32,6 +32,16 @@ import java.util.Arrays;
 알고리즘 분류
 다이나믹 프로그래밍
  */
+/*
+알고리즘 핵심
+DP
+1. left,right로 구간을 나누어 팰린드롬을 구성하기 위해 최소한의 추가할 수를 dp에 저장한다.
+2. 기저사례로 left가 right를 넘어가는 경우 0을 반환한다.
+3. dp에 중복되는 구간의 최소 팰린드럼 수가 0이 아니면 반환한다.
+4. left,right의 수가 같으면 left + 1, right - 1로 구간을 좁힌 dfs를 수행한다.
+5. left,right의 수가 같지 않으면, left + 1, right 또는 left, right - 1 중 작은 값에 + 1한 값을 dp에 저장한다.
+6. dfs(left, right) dp[left][right]를 반환한다.
+ */
 public class BOJ1695 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,ans;
@@ -45,18 +55,34 @@ public class BOJ1695 {
     }
 
     private static void solve() {
+        ans = dfs(0,N-1);
 
+        System.out.println(ans);
+    }
+
+    private static int dfs(int left, int right) {
+        if(left > right) return 0;
+
+        if(dp[left][right] != 0) return dp[left][right];
+
+        if(numbers[left] == numbers[right]) {
+            dp[left][right] = dfs(left + 1, right - 1);
+        } else {
+            dp[left][right] = Math.min(dfs(left + 1,right), dfs(left,right - 1)) + 1;
+        }
+
+        return dp[left][right];
     }
 
     private static void solve_dfs() {
         for(int i = 0; i < N; i++) {
-            dfs(i-1,i+1,0);
+            dfs_2(i-1,i+1,0);
         }
 
         System.out.println(ans);
     }
 
-    private static void dfs(int l, int r, int a) {
+    private static void dfs_2(int l, int r, int a) {
         if(l < 0 || r >= N) {
             int remain_left = l + 1;
             int remain_right = N - r;
@@ -66,10 +92,10 @@ public class BOJ1695 {
         }
 
         if(numbers[l] == numbers[r]) {
-            dfs(l-1,r+1,a);
+            dfs_2(l-1,r+1,a);
         } else {
-            dfs(l-1,r,a+1);
-            dfs(l,r+1,a+1);
+            dfs_2(l-1,r,a+1);
+            dfs_2(l,r+1,a+1);
         }
     }
 
@@ -82,6 +108,6 @@ public class BOJ1695 {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        dp = new int[N + 1][N + 1];
+        dp = new int[N][N];
     }
 }
