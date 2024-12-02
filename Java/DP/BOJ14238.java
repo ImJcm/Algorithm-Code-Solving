@@ -48,11 +48,20 @@ BAB
 그래프 탐색
 깊이 우선 탐색
  */
+/*
+알고리즘 핵심
+DP
+1. A,B,C로 구성되는 문자열의 순서에 따라 중복 연산의 여부가 결정되므로 dp는 A,B,C의 개수 + 어제 출근 사원 + 그제 출근 사원을 나타내는
+5차원 배열을 사용한다.
+2. 각 dfs의 len마다 A,B,C 사원의 출근이 가능한지 조건을 검사하여 다음 재귀호출이 이루어져야 한다.
+3. dfs의 재귀 호출 이후, dp를 업데이트한다.
+4. dp에 A,B,C,y_d,yy_d에 출근한 사원을 검사하여 중복 여부를 확인하여 수행 여부를 결정한다.
+ */
 public class BOJ14238 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int A,B,C,L;
     static char[] ans;
-    static boolean[][][][] dp;
+    static boolean[][][][][] dp;
     static boolean flag;
 
     public static void main(String[] args) throws IOException {
@@ -62,33 +71,42 @@ public class BOJ14238 {
     }
 
     private static void solve() {
-        dfs(0,A,B,C);
+        dfs(0,0,0,0,0,0);
 
         if(flag) {
-            for(char c : ans) {
-                System.out.print(c);
+            for(int i = 0; i < ans.length; i++) {
+                System.out.print(ans[i]);
             }
         } else {
             System.out.println("-1");
         }
     }
 
-    private static void dfs(int len, int a, int b, int c) {
-        if(flag) return;
+    private static void dfs(int len, int a, int b, int c,int y_d, int yy_d) {
         if(len == L) {
-
+            flag = true;
+            return;
         }
 
-        if(dp[len][a][b][c]) return;
+        if(dp[a][b][c][y_d][yy_d]) return;
 
-        dp[len][a][b][c] = true;
-
-        if(a != 0) {
+        if(a + 1 <= A && !flag) {
             ans[len] = 'A';
-            dfs(len + 1, a - 1, b, c);
+            dfs(len + 1, a + 1, b, c,0,y_d);
+            dp[a + 1][b][c][0][y_d] = true;
         }
 
-        if(len != 0)
+        if(b + 1 <= B && y_d != 1 && !flag) {
+            ans[len] = 'B';
+            dfs(len + 1, a, b + 1, c,1,y_d);
+            dp[a][b + 1][c][1][y_d] = true;
+        }
+
+        if(c + 1 <= C && y_d != 2 && yy_d != 2 && !flag) {
+            ans[len] = 'C';
+            dfs(len + 1, a, b, c + 1,2,y_d);
+            dp[a][b][c + 1][2][y_d] = true;
+        }
     }
 
     private static void init_setting() throws IOException {
@@ -111,6 +129,81 @@ public class BOJ14238 {
             }
         }
 
-        dp = new boolean[L][A][B][C];
+        dp = new boolean[A + 1][B + 1][C + 1][3][3];
     }
 }
+
+/*
+// dfs의 반환 타입을 boolean으로 적용하는 방법
+public class Algor_test2 {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int A,B,C,L;
+    static char[] ans;
+    static boolean[][][][][] dp;
+
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    private static void solve() {
+        if(dfs(0,0,0,0,0,0)) {
+            for(int i = 0; i < ans.length; i++) {
+                System.out.print(ans[i]);
+            }
+        } else {
+            System.out.println("-1");
+        }
+    }
+
+    private static boolean dfs(int len, int a, int b, int c, int y_d, int yy_d) {
+        if(len == L) {
+            return true;
+        }
+
+        if(dp[a][b][c][y_d][yy_d]) return false;
+
+        dp[a][b][c][y_d][yy_d] = true;
+
+        ans[len] = 'A';
+        if(a < A) {
+            if(dfs(len + 1, a + 1, b, c,0,y_d)) return true;
+        }
+
+        ans[len] = 'B';
+        if(b < B && y_d != 1) {
+            if(dfs(len + 1, a, b + 1, c,1,y_d)) return true;
+        }
+
+        ans[len] = 'C';
+        if(c < C && y_d != 2 && yy_d != 2) {
+            if(dfs(len + 1, a, b, c + 1,2,y_d)) return true;
+        }
+
+        return false;
+    }
+
+    private static void init_setting() throws IOException {
+        String[] input = br.readLine().split("");
+
+        A = B = C = 0;
+
+        L = input.length;
+
+        ans = new char[L];
+
+        for(String s : input) {
+            if(s.equals("A")) {
+                A++;
+            } else if(s.equals("B")) {
+                B++;
+            } else if(s.equals("C")) {
+                C++;
+            }
+        }
+
+        dp = new boolean[A + 1][B + 1][C + 1][3][3];
+    }
+}
+ */
