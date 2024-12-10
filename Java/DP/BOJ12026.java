@@ -68,9 +68,21 @@ BJBOJOJOOJOBOOO
 알고리즘 분류
 다이나믹 프로그래밍
  */
+/*
+알고리즘 핵심
+DP
+1. 시작 지점과 끝 지점을 나타내는 2차원 배열의 DP 배열을 사용한다.
+2. start - end 지점 사이에 점프가 불가능한 것을 표현하기 위해 e 변수에 Integer.MAX_VALUE를 설정하여 여부를 결정하였다.
+3. start 지점에서의 문자를 기준으로 N개의 문자열까지 다음 점프 지점으로 가능한 위치를 모두 고른 후, dfs_dp의 시작지점을 업데이트하여 호출한다.
+4. dfs_dp의 호출결과 Integer.MAX_VALUE의 경우 start에서 end까지 점프 가능한 구간이 없는 것으로 판단하여 다른 점프 구간으로 넘어간다.
+5. start == end 의 경우 더 이상 점프할 구간이 없으므로 return 0을 호출한다.
+6. start - end 구간에서 점프하는 구간이 존재하는 경우 e, r(= dfs_dp(start,end)) + (i - start)^2인 값에서 최소인 값으로 dp[start][end]을 업데이트한다.
+7. dfs_dp(0,N - 1) 구간을 호출하여 반환된 값을 구분하여 값을 출력한다.
+ */
 public class BOJ12026 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,ans;
+    static int[][] dp;
     static char[] blocks;
 
 
@@ -84,6 +96,37 @@ public class BOJ12026 {
         //dfs(0,0,0);
 
         //System.out.println(ans == Integer.MAX_VALUE ? -1 : ans);
+
+        ans = dfs_dp(0,N - 1);
+
+        System.out.println(ans == Integer.MAX_VALUE ? -1 : ans);
+    }
+
+    private static int dfs_dp(int start, int end) {
+        if(start == end) {
+            return 0;
+        }
+
+        if(dp[start][end] != 0) return dp[start][end];
+
+        int next_target = blocks[start] == 'B' ? 1 : blocks[start] == 'O' ? 2 : 0;
+        int e = Integer.MAX_VALUE;
+
+        for(int i = start + 1; i < N; i++) {
+            int now = blocks[i] == 'B' ? 0 : blocks[i] == 'O' ? 1 : 2;
+
+            if(now != next_target) continue;
+
+            int r = dfs_dp(i,end);
+
+            if(r == Integer.MAX_VALUE) continue;
+
+            e = Math.min(e, r + (int) Math.pow(i - start,2));
+        }
+
+        dp[start][end] = e;
+
+        return dp[start][end];
     }
 
     private static void dfs(int depth, int now_target, int total_energy) {
@@ -110,5 +153,7 @@ public class BOJ12026 {
         blocks = br.readLine().toCharArray();
 
         ans = Integer.MAX_VALUE;
+
+        dp = new int[N][N];
     }
 }
