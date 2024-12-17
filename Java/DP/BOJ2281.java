@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 데스노트
@@ -45,12 +46,25 @@ import java.io.InputStreamReader;
 알고리즘 분류
 다이나믹 프로그래밍
  */
+/*
+알고리즘 핵심
+DP
+첫번째 접근 dp로 [이름 순서 값][이름이 작성된 줄 번호][남은 폭 너비]의 3차원 배열을 사용하여 메모리제이션 배열을 구성하였지만 메모리 초과 발생
+두번째 접근 dp로 [이름 순서 값][남은 폭 너비]로 구성하여 60%의 성공 이후 시간초과 발생까지 도달 - 여기서 도저히 해결방법이 생각나지 않아서 다른 정답 코드를 참고하였다.
+세번째 접근 두번째 접근에서 dp의 값이 0이 될 수 있다는 것을 생각하지 못하여 실패한 것을 인지하고 초기값을 -1로 설정한 후 성공
+
+dp를 사용하여 논리적으로 기능은 정상적이지만 60%에서 시간초과가 발생한 이유로 메모리제이션이 작동하지 않는다는 것은 짐작했지만 왜 그런지 이유를 몰랐다.
+해결
+-> 메모리제이션의 결과값이 0이 될 수 있다는 점을 간과하여 메모리제이션의 값이 0으로 저장될 경우 dp[n][m]을 반환하지 못해 시간초과가 발생한 것이다.
+따라서 ,dp[n][m]의 초기값을 -1로 초기화한 후, 다음 개행부터 이름 적기를 시작하는 dfs_dp() 값을 초기값으로 저장한 후 이름 작성이 같은 줄에 가능한 경우와 값을 비교하여
+최소값을 dp[n][m]에 저장한다.
+ */
 public class BOJ2281 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int N,M,total_name_length,ans;
+    static int N,M,ans;
     static int[] names;
-    static int[][][] dp;
-    static char[][] death_note;
+    //static int[][][] dp;
+    static int[][] dp;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -59,14 +73,53 @@ public class BOJ2281 {
     }
 
     private static void solve() {
-        ans = dfs_dp(0,0,M);
+        ans = dfs_dp(0,M + 1); // time out - 60%
+        // ans = dfs_dp(0,0,M + 1); // memory dump
 
         System.out.println(ans);
     }
 
+    private static int dfs_dp(int n, int m) {
+        if (n == N) return 0;
+
+        if (dp[n][m] != -1) return dp[n][m];
+
+        dp[n][m] = dfs_dp(n + 1,(M + 1) - (names[n] + 1)) + (m * m);
+
+        if(m >= names[n] + 1) {
+            dp[n][m] = Math.min(dp[n][m], dfs_dp(n + 1, m - (names[n] + 1)));
+        }
+
+        return dp[n][m];
+    }
+
+    // Failure - time out (60%)
+    /*private static int dfs_dp(int n, int m) {
+        if (n == N) {
+            return 0;
+        }
+
+        if (dp[n][m] != 0) return dp[n][m];
+
+        int append_name = Integer.MAX_VALUE;
+        int new_line_name = Integer.MAX_VALUE;
+
+        if(m >= names[n] + 1) {
+            append_name = dfs_dp(n + 1, m - (names[n] + 1));
+        }
+
+        new_line_name = dfs_dp(n + 1,(M + 1) - (names[n] + 1)) + (int) Math.pow(m,2);
+
+        dp[n][m] = Math.min(append_name, new_line_name);
+
+        return dp[n][m];
+    }*/
+
+    /*
+    // Failure - Memory Dump
     private static int dfs_dp(int n, int l, int m) {
         if (n == N) {
-            return (int) Math.pow(m, 2);
+            return 0;
         }
 
         if (dp[n][l][m] != 0) return dp[n][l][m];
@@ -75,15 +128,15 @@ public class BOJ2281 {
         int new_line_name = Integer.MAX_VALUE;
 
         if(m >= names[n] + 1) {
-            append_name = dfs_dp(n + 1, l, m - names[n] - 1);
+            append_name = dfs_dp(n + 1, l, m - (names[n] + 1));
         }
 
-        new_line_name = dfs_dp(n + 1, l + 1, M - names[n]) + (int) Math.pow(m,2);
+        new_line_name = dfs_dp(n + 1, l + 1, (M + 1) - (names[n] + 1)) + (int) Math.pow(m,2);
 
         dp[n][l][m] = Math.min(append_name, new_line_name);
 
         return dp[n][l][m];
-    }
+    }*/
 
     private static void init_setting() throws IOException {
         String[] input = br.readLine().split(" ");
@@ -92,15 +145,16 @@ public class BOJ2281 {
         M = Integer.parseInt(input[1]);
 
         names = new int[N];
-        death_note = new char[N][M];
-
-        total_name_length = 0;
 
         for(int i = 0; i < N; i++) {
             names[i] = Integer.parseInt(br.readLine());
-            total_name_length += names[i];
         }
 
-        dp = new int[N + 1][N + 1][M + 1];
+        //dp = new int[N + 1][N + 1][M + 2];
+        dp = new int[N + 1][M + 2];
+
+        for(int i = 0; i < N + 1; i++) {
+            Arrays.fill(dp[i], - 1);
+        }
     }
 }
