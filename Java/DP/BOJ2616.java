@@ -48,6 +48,14 @@ ICPC > Regionals > Asia West Continent > Iran > Iran Internet Programming Contes
 다이나믹 프로그래밍
 누적 합
  */
+/*
+알고리즘 핵심
+DP + 누적합
+1. 남은 소형 기관차의 개수, 객차 탐색 시작지점을 나타내는 2차원 배열의 메모리제이션 배열 DP를 사용한다.
+2. 남은 소형 기관차의 개수가 0이거나 시작 지점 + 남은 소형 기관차 개수 * 기관차가 수용 가능한 객차의 개수가 남은 객차의 개수보다 큰 경우를 기저사례로 검사한다.
+3. dp[시작 지점][남은 소형 기관차 개수] = max(dfs_dp(시작 지점 + 1,남은 기관차 개수), dfs_dp(시작 지점 + 기관차의 수용 객차의 개수, 남은 기관차 개수 - 1))로 재귀호출을 수행한다.
+4. dp[시작 지점][남은 소형 기관차 개수]를 업데이트하여 메모리제이션을 저장하고 결과값을 도출하여 ans에 저장한다.
+ */
 public class BOJ2616 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int coach_cnt, capacity_of_locomotive, ans;
