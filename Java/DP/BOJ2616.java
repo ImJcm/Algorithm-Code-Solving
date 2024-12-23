@@ -52,6 +52,7 @@ public class BOJ2616 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int coach_cnt, capacity_of_locomotive, ans;
     static int[] coachs, cumulative_sum;
+    //static int[] dp;
     static int[][] dp;
 
     public static void main(String[] args) throws IOException {
@@ -61,18 +62,104 @@ public class BOJ2616 {
     }
 
     private static void solve() {
-        ans = dfs_dp(0,coach_cnt,3);
+        //ans = dfs_dp(0,coach_cnt,3);
+        ans = dfs_dp(0,3);
 
         System.out.println(ans);
     }
 
+    // 재귀함수 내에 반복문 존재 시, 최대 시간복잡도는 N^3인 50000 * 50000 * 50000까지 가능하므로 재귀호출 내에 반복문을 제거해야 시간초과
+    // 문제를 해결할 수 있다.
+    // 기저사례로 남아있는 소형 기관차의 개수가 0인 경우와 남은 소형 기관차의 개수에서 현제 지점에서의 객차의 연결가능 여부를 검사하여 최적화한다.
+    private static int dfs_dp(int s, int remain_locomotive) {
+        if(remain_locomotive == 0) return 0;
+        if(s + remain_locomotive * capacity_of_locomotive > coach_cnt) return 0;
+
+        if(dp[s][remain_locomotive] != 0) return dp[s][remain_locomotive];
+
+        int r = 0;
+
+        r = Math.max(dfs_dp(s + 1,remain_locomotive), cumulative_sum[s + capacity_of_locomotive] - cumulative_sum[s]
+                + dfs_dp(s + capacity_of_locomotive, remain_locomotive - 1));
+
+        dp[s][remain_locomotive] = r;
+
+        return dp[s][remain_locomotive];
+    }
+
+    /*
+    // 실패 - 시간초과 4%
+    // 원인 : N이 클때, 재귀함수 내의 연산을 최소화해야 한다. - 반복문 제거
+    private static int dfs_dp(int s, int remain_locomotive) {
+        if(remain_locomotive == 0) {
+            return 0;
+        }
+
+        if(dp[s][remain_locomotive] != 0) return dp[s][remain_locomotive];
+
+        int r = 0;
+
+        for(int i = s; i < coach_cnt; i++) {
+            if(i + (capacity_of_locomotive * remain_locomotive) > coach_cnt) break;
+            r = Math.max(r, cumulative_sum[i + capacity_of_locomotive] - cumulative_sum[i]
+                    + dfs_dp(i + capacity_of_locomotive, remain_locomotive - 1));
+        }
+
+        dp[s][remain_locomotive] = r;
+
+        return dp[s][remain_locomotive];
+    }*/
+
+    /*
+    // 실패 - 3%
+    // 이유 : 1차원 배열로 메모리제이션을 구성하였을 때 올바른 답을 도출하지 못하는 것으로 예상
+    // 반례
+    // 8
+    // 43 5 21 88 54 86 92 59
+    // 2
+    // ans) 400 / output) 368
+    private static int dfs_dp(int s, int remain_locomotive) {
+        if(remain_locomotive == 0) {
+            return 0;
+        }
+
+        if(dp[s] != 0) return dp[s];
+
+        int r = 0;
+
+        for(int i = s; i < coach_cnt; i++) {
+            if(i + capacity_of_locomotive > coach_cnt) break;
+            r = Math.max(r, cumulative_sum[i + capacity_of_locomotive] - cumulative_sum[i]
+                    + dfs_dp(i + capacity_of_locomotive, remain_locomotive - 1));
+        }
+
+        dp[s] = r;
+
+        return dp[s];
+    }*/
+
+    /*
+    // dp - 시작 구간과 끝 구간을 포함하는 2차원 배열의 메모리제이션 배열 - 메모리 초과
+    // 끝 지점 값이 고정이기 때문에 끝 구간을 포함할 이유가 없었다.
     private static int dfs_dp(int s, int e, int remain_locomotive) {
         if(remain_locomotive == 0) {
             return 0;
         }
 
-        //if(dp)
-    }
+        if(dp[s][e] != 0) return dp[s][e];
+
+        int r = 0;
+
+        for(int i = s; i < e; i++) {
+            if(i + capacity_of_locomotive > e) break;
+            r = Math.max(r, cumulative_sum[i + capacity_of_locomotive] - cumulative_sum[i]
+                    + dfs_dp(i + capacity_of_locomotive, e, remain_locomotive - 1));
+        }
+
+        dp[s][e] = r;
+
+        return dp[s][e];
+    }*/
 
     private static void init_setting() throws IOException {
         coach_cnt = Integer.parseInt(br.readLine());
@@ -81,14 +168,18 @@ public class BOJ2616 {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        cumulative_sum = new int[coach_cnt];
+        cumulative_sum = new int[coach_cnt + 1];
 
         int c_s = 0;
-        for(int i = 0; i < coach_cnt; i++) {
-            c_s += coachs[i];
-            coachs[i] = c_s;
+        for(int i = 1; i <= coach_cnt; i++) {
+            c_s += coachs[i - 1];
+            cumulative_sum[i] = c_s;
         }
 
         capacity_of_locomotive = Integer.parseInt(br.readLine());
+
+        //dp = new int[coach_cnt + 1][coach_cnt + 1];
+        //dp = new int[coach_cnt + 1];
+        dp = new int[coach_cnt + 1][4];
     }
 }
