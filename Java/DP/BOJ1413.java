@@ -117,11 +117,13 @@ ex) 1 2 -> A박스를 오픈할 때, 모든 열쇠를 얻기 위해 필요한 �
 2-b) 박스를 마지막에 추가하는 것이 아닌 경우, 마지막 빈칸을 제외한 나머지 빈칸의 갯수를 i-1개의 박스와 j개의 폭탄으로 구성되어 있는 경우의 수를 곱한다.
 
 따라서 점화식은 dp[i][j] = dp[i-1][j-1] + (i-1) * dp[i-1][j]
+
++ dp의 값과 분자와 분모의 값이 int의 범위를 넘어갈 수 있으므로 long을 사용한다.
 */
 public class BOJ1413 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,M;
-    static int[][] dp;
+    static long[][] dp;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -136,8 +138,8 @@ public class BOJ1413 {
             }
         }
 
-        int bunja = 0;
-        int bunmo = 1;
+        long bunja = 0;
+        long bunmo = 1;
 
         // N개의 상자가 있을 때, M개의 폭탄으로 모든 열쇠를 얻을 수 있는 경우의 수
         for(int i = 1; i < M + 1; i++) {
@@ -149,14 +151,31 @@ public class BOJ1413 {
             bunmo *= i;
         }
 
+        //long gcd = gcd(bunja, bunmo);
+        long gcd = gcd_2(bunja, bunmo);
 
-
+        System.out.println((bunja / gcd) + "/" + (bunmo / gcd));
     }
 
-    private static int gcd(int l, int r) {
-        int gcd = 1;
+    // 두 수의 최대 공약수를 찾는 함수 - 시간초과 발생 원인
+    private static long gcd(long l, long r) {
+        long gcd = 1;
 
-        for(int i = 2; i <)
+        long m = Math.min(l, r);
+
+        for(int i = 2; i < m + 1; i++) {
+            if(l % i == 0 && r % i == 0) {
+                gcd *= (i * gcd(l / i, r / i));
+                break;
+            }
+        }
+
+        return gcd;
+    }
+
+    // 두 수의 최대 공약수를 찾는 함수 2
+    private static long gcd_2(long r, long l) {
+        return (l > 0) ? gcd_2(l, r%l) : r;
     }
 
     private static void init_setting() throws IOException {
@@ -165,7 +184,7 @@ public class BOJ1413 {
         N = Integer.parseInt(input[0]);
         M = Integer.parseInt(input[1]);
 
-        dp = new int[21][21];
+        dp = new long[21][21];
 
         dp[1][1] = 1;
     }
