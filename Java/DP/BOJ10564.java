@@ -51,6 +51,22 @@ ICPC > Regionals > North America > Pacific Northwest Regional > 2014 Pacific Nor
 알고리즘 분류
 다이나믹 프로그래밍
  */
+/*
+알고리즘 핵심
+DP
+1. 팔굽혀펴기의 누적된 개수와 경기가 진행되는 라운드 정보를 갖는 2차원 배열 DP
+2. 첫 경기에서 7점을 득점 후 2번째 경기에서 2점을 득점하는 경우, 누적된 팔굽혀펴기의 개수는 다음 예시로 누적됨을 알 수 있다.
+득점 : 7 2 2 3 인 경우, 7 + (7 + 2) + (7 + 2 + 2) + (7 + 2 + 2 + 3)
+득점 : 5 4 3 인 경우, 5 + (5 + 4) + (5 + 4 + 3)
+위 예시에서 총 4경기를 진행한 경우 1번째 경기의 득점 수는 곱하기 4가 적용되고, 2번째 경이의 득점 수는 곱하기 3, 3번째 경기는 곱하기 2, 4번째 경기는 곱하기 1을
+적용하여 누적된 팔굽혀펴기의 개수를 구할 수 있다.
+따라서, 누적된 팔굽혀펴기의 개수와 현재 진행중인 경기의 횟수를 메모리제이션 차원으로 사용한다.
+
+팔굽혀펴기의 누적된 개수는 득점한 점수 값을 더하기 전 팔굽혀펴기의 수에 득점만큼 더해진 값이므로 메모리제이션을 사용하여 총 득점 수를 저장하여 메모리제이션으로 사용한다.
+
+진행되는 경기의 횟수를 i, 팔굽혀펴기의 총 횟수를 j라고 할 때,
+점화식은 dp[j][i] = max(dp[j][i], dp[j - i * score][i - 1] + score)이다.
+ */
 public class BOJ10564 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int T,N,M,push_ups,matches;
@@ -75,10 +91,11 @@ public class BOJ10564 {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        int min_score = Arrays.stream(scores).max().getAsInt();
+        int max_score = Arrays.stream(scores).max().getAsInt();
 
-        matches = 100;
-        push_ups = Math.max(N, min_score);
+        //matches = 100;
+        matches = 5;
+        push_ups = Math.max(N, max_score);
 
         dp = new int[push_ups + 1][matches + 1];
 
@@ -88,9 +105,9 @@ public class BOJ10564 {
 
         // int ans = dfs_2();
 
-        int ans = dfs_3(N,0, 0);
+        int ans = dfs_3(N,0);
 
-        ans = ans == 0 ? -1 : ans;
+        ans = ans == -2 ? -1 : ans;
 
         System.out.println(ans);
     }
@@ -115,21 +132,22 @@ public class BOJ10564 {
         return ans;
     }
 
-    private static int dfs_3(int n, int r, int sc) {
+    // 정답 - 하향식 DP
+    private static int dfs_3(int n, int r) {
         if(n == 0) return 0;
 
         if(dp[n][r] != -1) return dp[n][r];
 
-        int result = 0;
+        int result = -2;
 
         for(int s : scores) {
             if(n - (r + 1) * s < 0) continue;
 
-            int semi_result = dfs_3(n - (r + 1) * s, r + 1, s);
+            int semi_result = dfs_3(n - (r + 1) * s, r + 1);
 
-            if(semi_result == 0) continue;
+            if(semi_result == -2) continue;
 
-            result = Math.max(result, semi_result + s);
+            result = Math.max(result,semi_result + s);
         }
 
         dp[n][r] = result;
@@ -137,6 +155,8 @@ public class BOJ10564 {
         return dp[n][r];
     }
 
+    // 실패 - 시간초과
+    // 원인 : 올바른 메모리제이션이 적용되지 않음
     private static int dfs(int n, int r) {
         if(n == 0) return 0;
 
