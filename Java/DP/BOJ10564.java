@@ -53,7 +53,7 @@ ICPC > Regionals > North America > Pacific Northwest Regional > 2014 Pacific Nor
  */
 public class BOJ10564 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int T,N,M;
+    static int T,N,M,push_ups,matches;
     static int[] scores;
     static int[][] dp;
 
@@ -75,13 +75,66 @@ public class BOJ10564 {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        dp = new int[N + 1][100];
+        int min_score = Arrays.stream(scores).max().getAsInt();
 
-        for(int i = 0; i < N + 1; i++) Arrays.fill(dp[i], -1);
+        matches = 100;
+        push_ups = Math.max(N, min_score);
 
-        int ans = dfs(N,0);
+        dp = new int[push_ups + 1][matches + 1];
+
+        for(int i = 0; i < push_ups + 1; i++) Arrays.fill(dp[i], -1);
+
+        // int ans = dfs(N,0);
+
+        // int ans = dfs_2();
+
+        int ans = dfs_3(N,0, 0);
+
+        ans = ans == 0 ? -1 : ans;
 
         System.out.println(ans);
+    }
+
+    // 정답 - 상향식 DP
+    private static int dfs_2() {
+        for(int s : scores) dp[s][1] = s;
+
+        int ans = -1;
+
+        for(int i = 1; i < matches + 1; i++) {
+            for(int j = 1; j < push_ups + 1; j++) {
+                for(int s : scores) {
+                    if(j <= i * s) continue;
+                    if(dp[j - i * s][i - 1] == -1) continue;
+                    dp[j][i] = Math.max(dp[j][i], dp[j - i * s][i - 1] + s);
+                }
+            }
+            ans = Math.max(ans, dp[N][i]);
+        }
+
+        return ans;
+    }
+
+    private static int dfs_3(int n, int r, int sc) {
+        if(n == 0) return 0;
+
+        if(dp[n][r] != -1) return dp[n][r];
+
+        int result = 0;
+
+        for(int s : scores) {
+            if(n - (r + 1) * s < 0) continue;
+
+            int semi_result = dfs_3(n - (r + 1) * s, r + 1, s);
+
+            if(semi_result == 0) continue;
+
+            result = Math.max(result, semi_result + s);
+        }
+
+        dp[n][r] = result;
+
+        return dp[n][r];
     }
 
     private static int dfs(int n, int r) {
