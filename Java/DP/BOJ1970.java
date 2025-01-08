@@ -45,9 +45,61 @@ public class BOJ1970 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
     static int[] brands;
+    static int[][] dp;
 
     public static void main(String[] args) throws IOException {
         init_setting();
+
+        solve();
+    }
+
+    private static void solve() {
+        /*for(int i = 0; i < N - 1; i++) {
+            for(int j = i + 1; j < N; j++) {
+                int e = 0;
+                if(brands[i] == brands[j]) e = 1;
+                int inner_i = i + 1;
+                int outer_i = j + 1 == N ? 0 : j + 1;
+                int inner_j = j - 1;
+                int outer_j = i - 1 == -1 ? N - 1 : i - 1;
+
+                dp[i][j] = Math.max(dp[i][j], dp[inner_i][inner_j] + dp[outer_i][outer_j] + e);
+            }
+        }*/
+        /*for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                int e = 0;
+                if((i != j) && (brands[i] == brands[j])) e = 1;
+                int inner_i = i + 1 == N ? 0 : i + 1;
+                int outer_i = i - 1 == -1 ? N - 1 : i - 1;
+                int inner_j = j - 1 == -1 ? N - 1 : j - 1;
+                int outer_j = j + 1 == N ? 0 : j + 1;
+
+                //dp[i][j] = Math.max(dp[i][j], dp[inner_i][inner_j] + dp[outer_i][outer_j] + e);
+                dp[i][j] = Math.max(dp[i][j],
+                        Math.max(dp[j][i], dp[inner_i][inner_j] + dp[outer_i][outer_j] + e));
+
+                dp[j][i] = dp[i][j];
+            }
+        }*/
+
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                int e = 0;
+                if(i != j && brands[i] == brands[j]) e = 1;
+                int next_i = i;
+                int next_j = j;
+
+
+                int r = 0;
+                if(next_i < next_j) r = dp[next_i][next_j] + e;
+                else r = dp[next_j][next_i] + e;
+
+                dp[i][j] = Math.max(dp[i][j], r);
+            }
+        }
+
+        System.out.println("break");
     }
 
     private static void init_setting() throws IOException {
@@ -57,6 +109,8 @@ public class BOJ1970 {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
+        dp = new int[N][N];
 
+        //for(int i = 0; i < N; i++) Arrays.fill(dp[i], -1);
     }
 }
