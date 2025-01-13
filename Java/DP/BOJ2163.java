@@ -37,6 +37,14 @@ import java.util.Arrays;
 수학
 사칙연산
  */
+/*
+알고리즘 핵심
+DP
+1. 가로, 세로의 정보를 갖는 메모리제이션을 이용하고, [N][M]의 크기를 갖는 초콜릿이 있을 때 최소 횟수의 자르기 수를 저장한다.
+2. 1x1 크기일 때, 0을 반환한다.
+3. NxM 크기일 때, min(N-1 x M + (M - 1) + 1, N x M-1 + (N - 1) + 1)로 선택한다.
+이때, N or M이 1일 때는 초콜릿 자르기의 횟수는 M - 1 or N - 1로 정해지기 때문이고, + 1은 두 초콜릿을 나누는 과정에서 자르는 횟수를 의미한다.
+ */
 public class BOJ2163 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,M,ans;
@@ -46,14 +54,31 @@ public class BOJ2163 {
         init_setting();
 
         solve();
+        solve2();
+    }
+
+    // 상향식
+    private static void solve2() {
+        for(int i = 0; i < N + 1; i++) Arrays.fill(dp[i], 0);
+
+        for(int n = 1; n < N + 1; n++) {
+            for(int m = 1; m < M + 1; m++) {
+                if(n == 1 && m == 1) continue;
+                dp[n][m] = Math.min(dp[n - 1][m] + m, dp[n][m - 1] + n);
+            }
+        }
+
+        System.out.println(dp[N][M]);
     }
 
     private static void solve() {
-        ans = dfs_dp(N,M);
+        //ans = dfs_dp(N,M);
+        ans = dfs_dp2(N,M);
 
         System.out.println(ans);
     }
 
+    // 하향식_1
     private static int dfs_dp(int n, int m) {
         if(n == 1 && m == 1) return 0;
 
@@ -71,6 +96,18 @@ public class BOJ2163 {
         dp[nn][nm] = r;
 
         return dp[nn][nm];
+    }
+
+    // 하향식_2 - 1에서 단축
+    private static int dfs_dp2(int n, int m) {
+        if(n == 1) return m - 1;
+        if(m == 1) return n - 1;
+
+        if(dp[n][m] != Integer.MAX_VALUE) return dp[n][m];
+
+        dp[n][m] = Math.min(dfs_dp2(n - 1, m) + dfs_dp2(1, m) + 1, dfs_dp2(n, m - 1) + dfs_dp2(n, 1) + 1);
+
+        return dp[n][m];
     }
 
     private static void init_setting() throws IOException {
