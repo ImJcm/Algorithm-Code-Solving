@@ -65,7 +65,8 @@ public class BOJ1913 {
     public static void main(String[] args) throws IOException {
         init_setting();
 
-        solve();
+        //solve();
+        solve2();
     }
 
     private static void solve() {
@@ -95,6 +96,36 @@ public class BOJ1913 {
                     } else {
                         snails[start_x--][start_y] = num++;
                     }
+                }
+            }
+        }
+
+        print();
+    }
+
+    private static void solve2() {
+        int start_x = N / 2 + 1;
+        int start_y = N / 2 + (N % 2 == 1 ? 1 : 0);
+
+        check_target(1,start_x,start_y);
+        snails[start_x--][start_y] = 1;
+
+        int line = 2;
+
+        for(int i = 2; i <= (int) Math.pow(N,2); i++) {
+            check_target(i,start_x,start_y);
+            if(i > (int) Math.pow(line,2)) line++;
+            if(line % 2 == 0) {
+                if(i < (int) Math.pow(line,2) - line + 1) {
+                    snails[start_x][start_y++] = i;
+                } else {
+                    snails[start_x++][start_y] = i;
+                }
+            } else {
+                if(i < (int) Math.pow(line,2) - line + 1) {
+                    snails[start_x][start_y--] = i;
+                } else {
+                    snails[start_x--][start_y] = i;
                 }
             }
         }
