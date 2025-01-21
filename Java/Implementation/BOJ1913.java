@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 달팽이
@@ -48,16 +49,81 @@ N개의 줄에 걸쳐 표를 출력한다. 각 줄에 N개의 자연수를 한 �
 채점 및 기타 정보
 이 문제의 채점 우선 순위는 2이다.
  */
+/*
+알고리즘 핵심
+구현
+1. N으로 주어지는 값으로 홀수,짝수인지에 따라 1의 좌표를 구한다.
+2. 1을 시작으로 N=2,3,...,N까지 진행하는 과정에서 N이 짝수인 경우 우상단의 값, N이 홀수인 경우 좌하단의 값이 채워진다.
+3. N의 값에따라 채워질 수의 개수가 정해지므로 해당 개수만큼 num을 채운다.
+4. num이 채워짐에 따라 target의 값과 같은 위치를 ans_x,ans_y에 저장한다.
+ */
 public class BOJ1913 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int N,target;
+    static int N,target,ans_x,ans_y;
+    static int[][] snails;
 
     public static void main(String[] args) throws IOException {
         init_setting();
+
+        solve();
+    }
+
+    private static void solve() {
+        int start_x = N / 2 + 1;
+        int start_y = N / 2 + (N % 2 == 1 ? 1 : 0);
+
+        int num = 1;
+
+        check_target(num,start_x,start_y);
+        snails[start_x--][start_y] = num++;
+
+        for(int i = 2; i <= N; i++) {
+            if(i % 2 == 0) {
+                for(int j = 1; j <= i * 2 - 1; j++) {
+                    check_target(num,start_x,start_y);
+                    if(j < i) {
+                        snails[start_x][start_y++] = num++;
+                    } else {
+                        snails[start_x++][start_y] = num++;
+                    }
+                }
+            } else {
+                for(int j = 1; j <= i * 2 - 1; j++) {
+                    check_target(num,start_x,start_y);
+                    if(j < i) {
+                        snails[start_x][start_y--] = num++;
+                    } else {
+                        snails[start_x--][start_y] = num++;
+                    }
+                }
+            }
+        }
+
+        print();
+    }
+
+    private static void check_target(int n, int x, int y) {
+        if(n == target) {
+            ans_x = x;
+            ans_y = y;
+        }
+    }
+
+    private static void print() {
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= N; j++) {
+                System.out.print(snails[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println(ans_x + " " + ans_y);
     }
 
     private static void init_setting() throws IOException {
         N = Integer.parseInt(br.readLine());
         target = Integer.parseInt(br.readLine());
+
+        snails = new int[N + 1][N + 1];
     }
 }
