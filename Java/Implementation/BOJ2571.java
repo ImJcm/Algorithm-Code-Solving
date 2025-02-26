@@ -46,9 +46,28 @@ Olympiad > 한국정보올림피아드 > 한국정보올림피아드시․도지
 구현
 누적 합
  */
+/*
+알고리즘 핵심
+구현 + 누적합
+문제를 읽고 접근방법을 힌트에서 주어진 누적합을 사용하는 방법으로 생각해보려 했다.
+누적합의 기준을 입력으로 주어지는 검은색 색종이의 처음 위치를 기준으로 우상방향으로 넓이를 누적합으로 나타내려고 생각했지만
+해당 방법으로 누적합 표현시 색종이가 겹치는 부분에서 어떠한 값을 표현해야할지 오류가 생기는 문제가 있으므로 해당 방법은 옳지 않았다.
+
+도저히 누적합의 기준을 무엇으로 잡야야 풀리는지 생각이 나지않아서 정답 코드를 참고하였다. - https://zoosso.tistory.com/155
+1. 검은색 색종이를 덮은 부분을 1로 표시한다.
+2. 누적합의 기준을 해당 위치에서 사각형을 만들 수 있는 최대 높이를 나타낸다.
+-> paper[i][j] = paper[i - 1][j] + 1 => paper[i][j] += paper[i - 1][j]
+3. x 좌표를 기준으로 1에서 100까지 반복문 수행하고, y 좌표를 기준으로 1에서 100까지 반복문을 수행하고 (x,y)의 좌표를 잡는다.
+4. (x,y)좌표를 기준으로 ny를 y~100까지 반복하여 해당 위치에서 가능한 직사각형의 최대 높이의 값으로 만들어지는 직사각형의 넓이를 area에 저장한다.
+5. area를 최대 넓이를 나타내는 ans에 업데이트한다.
+
+height를 기준으로 누적합을 시행 시, 한 좌표에서 만들 수 있는 직사각형의 최대로 가능한 높이를 알 수 있기 때문에
+width를 우측으로 늘려가면서 가능한 최대 높이와 width를 곱하여 직사각형의 넓이를 구할 수 있다.
+ */
 public class BOJ2571 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int
+    static int N,area,ans;
+    static int[][] paper;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -57,10 +76,67 @@ public class BOJ2571 {
     }
 
     private static void solve() {
+        //print_paper();
+        prefix_sum_height();
 
+        cal_rectangle_area();
+
+        System.out.println(ans);
+    }
+
+    private static void cal_rectangle_area() {
+        int area = 0;
+        for(int x = 1; x < 101; x++) {
+            for(int y = 1; y < 101; y++) {
+                int height = 100;
+                for(int ny = y; ny < 101; ny++) {
+                    height = Math.min(height, paper[x][ny]);
+
+                    if(height == 0) break;
+
+                    area = Math.max(area, height * (ny - y + 1));
+                    ans = Math.max(ans, area);
+                }
+            }
+        }
+    }
+
+    private static void prefix_sum_height() {
+        for(int i = 1; i < 101; i++) {
+            for(int j = 1; j < 101; j++) {
+                if(paper[i][j] == 0) continue;
+                paper[i][j] += paper[i - 1][j];
+            }
+        }
+    }
+
+    private static void print_paper() {
+        for(int j = 0; j <= 100; j++) {
+            for(int k = 0; k <= 100; k++) {
+                System.out.print(paper[j][k] + "");
+            }
+            System.out.println();
+        }
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        ans = 0;
+
+        paper = new int[101][101];
+
+        for(int i = 0; i < N; i++) {
+            String[] input = br.readLine().split(" ");
+
+            int x = Integer.parseInt(input[0]);
+            int y = Integer.parseInt(input[1]);
+
+            for(int j = 0; j < 10; j++) {
+                for(int k = 0; k < 10; k++) {
+                    paper[x + j][y + k] = 1;
+                }
+            }
+        }
     }
 }
