@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 
 /*
 스타트링크 타워 스페셜 저지
@@ -81,6 +82,37 @@ import java.io.InputStreamReader;
 구현
 확률론
  */
+/*
+알고리즘 핵심
+구현
+1. 입력으로 주어지는 안내판과 0~9까지의 아날로그 표현을 저장한다.
+2. 누적하여 더해진 bef_avg와 해당 자리수에서 만들 수 있는 수의 합인 cur_avg의 값이 int의 값이 넘을 수 있으므로 long 타입으로 선언한다
+3. 안내판의 맨 뒷 자리부터 0~9까지 가능한 경우의 수를 자릿수에 맞게 10^n 값을 적용한 값을 cur_avg에 누적하여 더하고, 해당 자리수에서 가능한 경우의 수를 possible_case에 업데이트한다.
+4. 다음 자리수에서 가능한 숫자 + 이전에 누적한 값을 합하여 bef_avg에 누적시키고, multiple_case에 posiible_case를 곱하여 누적하여 총 가능한 경우의 수를 업데이트한다.
+
+3,4번 과정을 구체적으로 예시를 들어 나타내면 다음과 같다.
+ex)
+2
+###.###
+#.#.#.#
+#.#.###
+#.#...#
+###.###
+
+10의 자리에서 가능한 경우의 수 = 0,8
+1의 자리에서 가능한 경우의 수 = 8,9
+이때 만들어질 수 있는 경우의 수는 08, 09, 88, 89
+8 + 9 + 88 + 89 => 80 + 80 + 8 + 8 + 9 + 9 로 나타낼 수 있다.
+
+이 과정을 순서대로 적용하면
+1. 뒷자리의 수는 8,9가 가능하므로, cur_avg = 17 + bef_avg(0 - init value) / possible_case = 2
+2. bef_avg = cur_avg => 17 / multiple_case = possible_case * multiple_case => 1 * 2 = 2
+3. 뒤에서 두번째 자리수에서 가능한 수는 0과 8이므로, 0일 때 이전 자리수에서 가능한 8,9를 더한 값인 17과
+8일 때 이전 자리수에서 가능한 8,9를 더한 값인 17 + 8일 때 88,89에 해당하는 80 + 80을 더한 177을 누적하여 더하면 17 + (160 + 17)로 194가 된다.
+또한, 두번째 십의 자리에 가능한 경우의 수는 0,8이므로 possible_case = 2이므로, multiple_case = possible_case * multiple_case = 2 * 2 = 4
+4. 2,3 과정을 모든 자리수에 적용하여 마치면 bef_avg를 multiple_case로 나누어 평균값을 출력하면 된다.
+이때, double 형태로 출력 시, E를 적용한 지수표현을 나타낼 수 있으므로 BigDecimal 타입으로 만든 후 출력하면 지수표현을 적용하지 않은 원본 값을 출력할 수 있다.
+ */
 public class BOJ1089 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
@@ -95,16 +127,38 @@ public class BOJ1089 {
     }
 
     private static void solve() {
-        for(int n = 0; n < N; n++) {
-            char[][] board = new char[5][3];
+        long multiple_case = 1;
+        long bef_avg = 0;
+        for(int n = N - 1; n >= 0; n--) {
+            long possible_case = 0;
+            long cur_avg = 0;
 
-            for(int r = 0; r < 5; r++) {
-                for(int c = 0; c < 3; c++) {
-                    board[r][c] = signboard[r][4 * n + c];
+            for(int i = 0; i < 10; i++) {
+                boolean possible = true;
+
+                for(int r = 0; r < 5 && possible; r++) {
+                    for(int c = 0; c < 3 && possible; c++) {
+                        if(signboard[r][4 * n + c] == '#' && numberboard[i][3 * r + c] == '.') possible = false;
+                    }
+                }
+
+                if(possible) {
+                    possible_case++;
+                    cur_avg += (long) (((i * (Math.pow(10, N - n - 1))) * multiple_case) + bef_avg);
                 }
             }
 
+            bef_avg = cur_avg;
+            multiple_case *= possible_case;
+        }
 
+        avg = (double) bef_avg;
+
+        if(multiple_case == 0) {
+            System.out.println(-1);
+        } else {
+            BigDecimal bigDecimal = new BigDecimal(avg / multiple_case);
+            System.out.println(bigDecimal.toString());
         }
     }
 
@@ -113,12 +167,12 @@ public class BOJ1089 {
 
         signboard = new char[5][4 * N - 1];
 
-        for(int i = 0; i < N; i++) {
+        for(int i = 0; i < 5; i++) {
             signboard[i] = br.readLine().toCharArray();
         }
 
         numberboard = new char[][] {
-                {'#','#','#','#','.','#','#','#','#','#','.','#','#','#','#'},  // 0
+                {'#','#','#','#','.','#','#','.','#','#','.','#','#','#','#'},  // 0
                 {'.','.','#','.','.','#','.','.','#','.','.','#','.','.','#'},  // 1
                 {'#','#','#','.','.','#','#','#','#','#','.','.','#','#','#'},  // 2
                 {'#','#','#','.','.','#','#','#','#','.','.','#','#','#','#'},  // 3
