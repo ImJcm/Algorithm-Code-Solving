@@ -87,6 +87,26 @@ import java.util.ArrayList;
 구현
 시뮬레이션
  */
+/*
+알고리즘 핵심
+구현
+1. 파이어볼을 행(r),열(c),질량(m),속도(s),방향(d) 정보를 갖는 구조체를 사용한다.
+2. 한번의 명령에 모든 파이어볼이 이동하고 2개 이상의 파이어볼이 위치한 곳에서 분열과정을 수행한다.
+3. 파이어볼이 외곽에서 다음 방향으로 이동 시 외곽을 넘어가는 경우 r or c 중 1보다 작거나 N보다 큰 경우 해당하는 좌표의 값이
+반전되어 나타낸다.
+예시로 나타내면 N = 5일 때, fireball - 4 4 10 7 1
+s = 0       s = 1       s = 2       s = 3       s = 4       s = 5       s = 6       s = 7
+0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 10 0 0 0  0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 0
+0 0 0 0 0   0 0 0 0 0   10 0 0 0 0  0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   10 0 0 0 0
+0 0 0 0 0   0 0 0 0 10  0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 10  0 0 0 0 0
+0 0 0 10 0  0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 10 0  0 0 0 0 0   0 0 0 0 0
+0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 10 0 0  0 0 0 0 0   0 0 0 0 0   0 0 0 0 0
+
+즉, r < 1) r = N, c < 1) c = N, r > N) r = 1, c > N) c = 1이 된다.
+
+처음 문제를 읽고 파이어볼의 이동하는 과정에서 잘못 이해하여 코드의 로직을 잘못 작성하였다.
+문제를 잘 이해할 수 있도록 해야겠다.
+ */
 public class BOJ20056 {
     static class BOJ20056_fireball {
         int r,c,m,s,d;
@@ -110,35 +130,210 @@ public class BOJ20056 {
     }
 
     private static void solve() {
+        print();
         while(K-- > 0) {
             move_fireball();
+            divide_fireball();
+            print();
+        }
+        cal_mass();
+    }
+
+    private static void print() {
+        for(int r = 1; r <= N; r++) {
+            for(int c = 1; c <= N; c++) {
+                int m = 0;
+                for(BOJ20056_fireball f : field[r][c]) {
+                    m += f.m;
+                }
+                System.out.print(m + "(" + field[r][c].size() +")" + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("--");
+    }
+
+    private static void cal_mass() {
+        for(int r = 1; r <= N; r++) {
+            for(int c = 1; c <= N; c++) {
+                for(BOJ20056_fireball f : field[r][c]) ans += f.m;
+            }
+        }
+
+        System.out.println(ans);
+    }
+
+    private static void divide_fireball() {
+        for(int r = 1; r <= N; r++) {
+            for(int c = 1; c <= N; c++) {
+                int size = field[r][c].size();
+
+                if(size > 1) {
+                    int nm = 0;
+                    int ns = 0;
+                    boolean nd_even = false;
+                    boolean nd_odd = false;
+
+                    for(BOJ20056_fireball f : field[r][c]) {
+                        nm += f.m;
+                        ns += f.s;
+
+                        if(f.d % 2 == 0) nd_even = true;
+                        else nd_odd = true;
+                    }
+
+                    nm /= 5;
+                    ns /= size;
+
+                    field[r][c].clear();
+
+                    if(nm == 0) continue;
+
+                    for(int i = 1; i <= 4; i++) {
+                        if((nd_even && !nd_odd) || (!nd_even && nd_odd)) {
+                            field[r][c].add(new BOJ20056_fireball(r,c,nm,ns,(2 * (i - 1))));
+                        } else {
+                            field[r][c].add(new BOJ20056_fireball(r,c,nm,ns,(2 * (i - 1) + 1)));
+                        }
+                    }
+                }
+            }
         }
     }
 
     private static void move_fireball() {
+        int[][] drc = {
+                {-1,0},{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1}
+        };
+
         ArrayList<BOJ20056_fireball>[][] new_field = new_fields();
 
         for(int r = 1; r <= N; r++) {
             for(int c = 1; c <= N; c++) {
                 for(BOJ20056_fireball f : field[r][c]) {
+                    int nm = f.m;
+                    int ns = f.s;
+                    int nd = f.d;
+                    int nr = f.r + drc[nd][0] * (ns % N);
+                    int nc = f.c + drc[nd][1] * (ns % N);
+
+                    if(nr < 1) nr = N - Math.abs(nr);
+                    if(nc < 1) nc = N - Math.abs(nc);
+                    if(nr > N) nr %= N;
+                    if(nc > N) nc %= N;
+
+                    new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                }
+            }
+        }
+
+        field = new_field;
+    }
+
+    /*
+        fireball의 움직임을 N = 4, (3,3,m,3,1)의 경우 (3,3) -> (2,4) -> (4,2) -> (3,3)와 같이 처음 위치를 기준으로 해당 방향을 바라보는
+        직선 형태의 이동으로 순환되는 것으로 생각하여 코드를 작성하였다.
+
+        즉, N = 4, r = 2, c = 3, m = 1, s = 3, d = 1일 때,
+        ///o
+        //o/
+        /o//
+        o///
+        o 표시된 곳이 해당하는 파이어볼의 순환되는 이동 경로인 것으로 생가하였다.
+
+        하지만, 문제에서 제시하는 "1행은 N행, 1열은 N열과 연결되었다"의 의미는 r or c의 값이 0 or N + 1 값이 되었을 때, 해당하는 좌표를 0 -> N, N + 1 -> 1
+        로 변환되는 것을 의미하였다.
+     */
+    private static void move_fireball_wron_logic() {
+        ArrayList<BOJ20056_fireball>[][] new_field = new_fields();
+
+        for(int r = 1; r <= N; r++) {
+            for(int c = 1; c <= N; c++) {
+                for(BOJ20056_fireball f : field[r][c]) {
+                    int nr = f.r;
+                    int nc = f.c;
+                    int nm = f.m;
+                    int ns = f.s;
+                    int nd = f.d;
+                    int t = ns % N;
+                    int a = nr + nc <= N + 1 ? nr + nc - 1 : 2 * N + 1 - nr - nc;
+                    int b = N - Math.abs(nr - nc);
+
                     switch (f.d) {
                         case 0:
-                            f.r = f.r - f.s < 1 ? 1 : f.r - f.s;
+                            nr = nr - t < 1 ? N - t + nr : nr - t;
 
-                            new_field[f.r][f.c].add(new BOJ20056_fireball(f.r,f.c,f.m,f.s,f.d));
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
                             break;
                         case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
+                            t = ns % a;
+                            nr -= t;
+                            nc += t;
 
+                            if(nr < 1 || nc > N) {
+                                nr += a;
+                                nc -= a;
+                            }
+
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                            break;
+                        case 2:
+                            nc = nc + t > N ? nc + t - N : nc + t;
+
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                            break;
+                        case 3:
+                            t = ns % b;
+                            nr += t;
+                            nc += t;
+
+                            if(nr > N || nc > N) {
+                                nr -= b;
+                                nc -= b;
+                            }
+
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                            break;
+                        case 4:
+                            nr = nr + t > N ? nr + t - N : nr + t;
+
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                            break;
+                        case 5:
+                            t = ns % a;
+                            nr += t;
+                            nc -= t;
+
+                            if(nr > N || nc < 1) {
+                                nr -= a;
+                                nc += a;
+                            }
+
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                            break;
+                        case 6:
+                            nc = nc - t < 1 ? N + nc - t : nc - t;
+
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                            break;
+                        case 7:
+                            t = ns % b;
+                            nr -= t;
+                            nc -= t;
+
+                            if(nr < 1 || nc < 1) {
+                                nr += b;
+                                nc += b;
+                            }
+
+                            new_field[nr][nc].add(new BOJ20056_fireball(nr,nc,nm,ns,nd));
+                            break;
                     }
                 }
             }
         }
+
+        field = new_field;
     }
 
     private static ArrayList[][] new_fields() {
@@ -146,7 +341,7 @@ public class BOJ20056 {
 
         for(int r = 1; r <= N; r++) {
             for(int c = 1; c <= N; c++) {
-                field[r][c] = new ArrayList<>();
+                new_field[r][c] = new ArrayList<>();
             }
         }
 
