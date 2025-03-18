@@ -70,7 +70,8 @@ ICPC > Regionals > Europe > Northwestern European Regional Contest > Benelux Alg
 1. 2차원 배열에 큐브 형태를 나타내어 회전한 형태를 구성한다.
 2. 한 면을 회전할 때, 인접한 4개의 면과 맞닿은 곳과 회전의 기준이 되는 면을 회전 대상으로 삼아야한다.
 3. 회전하는 로직은 회전 시 2차원 배열의 큐브 평면도의 위치의 값을 서로 스왑하는 형태로 구성하였다.
-4. 큐브의 윗면을 출력할 때, 2차원 평면도의 (0,3) ~ (2,5) 3x3 배열의 값을 상하 반전하여 출력한다.
+4. 하나의 테스트케이스가 끝날 때마다 큐브를 처음 상태로 초기화한다.
+5. 큐브의 윗면을 출력할 때, 2차원 평면도의 (0,3) ~ (2,5) 3x3 배열의 값을 상하 반전하여 출력한다.
  */
 public class BOJ5373 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
