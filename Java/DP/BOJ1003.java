@@ -65,6 +65,15 @@ fibonacci(3)은 fibonacci(2)와 fibonacci(1)의 결과를 얻고, 2를 리턴한
 알고리즘 분류
 다이나믹 프로그래밍
  */
+/*
+알고리즘 핵심
+DP
+1. 피보나치 수열에서 0,1,2가 0 or 1을 return하는 경우의 수를 초기값으로 dp_zero,dp_one 배열에 초기화한다.
+2. 3 ~ 40까지 0,1이 나오는 경우의 수를 이전 피보나치 값에서 유추할 수 있으므로 dp[i] = dp[i - 1] + dp[i - 2]를 활용한
+dp_zero[i] = dp_zero[i - 1] + dp_zero[i - 2], dp_one[i] = dp_one[i] = dp_one[i - 1] + dp_one[i - 2]
+점화식으로 0 ~ 40까지 dp_zero, dp_one을 미리 구한다.
+3. 입력으로 주어지는 테스트케이스의 값에 해당하는 dp 값을 출력한다.
+ */
 public class BOJ1003 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int T;
