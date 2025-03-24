@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Deque;
+import java.util.LinkedList;
 
 /*
 요세푸스 문제
@@ -33,16 +35,50 @@ N과 K가 주어지면 (N, K)-요세푸스 순열을 구하는 프로그램을 �
 자료 구조
 큐
  */
+/*
+알고리즘 핵심
+자료구조 (큐 - Deque)
+1. 1~N까지 순차적으로 Deque에 First - 1 ~ N - Last 순서로 저장한다.
+2. Deque가 비어있을 때까지 반복한다.
+3. K-1만큼 반복하여 Deque의 Head를 poll()하고, 해당 값을 뒷부분으로 addLast()로 추가한다.
+(addLast를 사용하기 위해 Queue -> Deque를 사용)
+4. Deque에 남은 데이터의 수가 1보다 큰경우, "value, "형태로 StringBuilder에 추가하고,
+Deque에 남은 데이터의 수가 1인 경우, "value"만 추가한다.
+5. 출력 양식에 맞게 < ... >로 출력한다.
+ */
 public class BOJ1158 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int N;
-
+    static int N,K;
+    static Deque<Integer> Josephus;
+    static StringBuilder sb;
 
     public static void main(String[] args) throws IOException {
         init_setting();
+
+        solve();
+    }
+
+    private static void solve() {
+        while(!Josephus.isEmpty()) {
+            int k = K;
+            while(--k > 0) Josephus.addLast(Josephus.poll());
+            if(Josephus.size() != 1) sb.append(Josephus.poll()).append(", ");
+            else sb.append(Josephus.poll());
+        }
+
+        System.out.println("<" + sb.toString() + ">");
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        N = Integer.parseInt(input[0]);
+        K = Integer.parseInt(input[1]);
+
+        sb = new StringBuilder();
+
+        Josephus = new LinkedList<>();
+
+        for(int i = 1; i <= N; i++) Josephus.addLast(i);
     }
 }
