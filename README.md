@@ -12,7 +12,7 @@
 <br>
 
 # BackJoon (main)
-https://github.com/ImJcm/Algorithm-Code-Solving (Used-Language : Java)
+https://github.com/ImJcm/Algorithm-Code-Solving/tree/master/Java
 
 # Programmers
-https://github.com/ImJcm/Programmers (Used-Language : Java)
+https://github.com/ImJcm/Programmers
