@@ -11,7 +11,7 @@
 </div>
 <br>
 
-# BackJoon (default)
+# BackJoon (main)
 https://github.com/ImJcm/Algorithm-Code-Solving (Used-Language : Java)
 
 # Programmers
