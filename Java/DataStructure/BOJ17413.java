@@ -1,5 +1,10 @@
 package BackJoon;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Stack;
+
 /*
 단어 뒤집기 2
 
@@ -57,5 +62,70 @@ one1 two2 three3 4fourr 5five 6six
 문자열
 스택
  */
+/*
+알고리즘 핵심
+자료구조 (Stack)
+1. 입력으로 주어진 문자열을 각 자리의 문자를 대상으로 조건을 수행한다.
+2-1. 해당 문자가 "<"인 경우, stack에 존재하는 문자열을 sb에 추가하고, special = true 설정한 후 "<"를 sb에 추가한다.
+2-2. 해당 문자가 ">"인 경우, special = false 설정한 후 ">"를 sb에 추가한다.
+2-3. 해당 문자가 "<" or ">"가 아닌 경우, special 값의 여부에 따라 다음 로직을 수행한다.
+true인 경우, sb에 해당 문자를 추가한다.
+false인 경우, 해당 문자가 공백인 경우, stack에 담긴 문자열을 sb에 추가하고, " "을 sb에 추가한다.
+해당 문자가 공백이 아닌 경우, stack에 해당 문자를 추가한다.
+3. 2번 과정을 모두 마치면 stack에 남아있는 문자를 sb에 추가하고 sb를 출력한다.
+ */
 public class BOJ17413 {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static String S;
+    static Stack<String> stack;
+    static StringBuilder sb;
+
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    private static void solve() {
+        boolean special = false;
+
+        for(String s : S.split("")) {
+            switch (s) {
+                case "<":
+                    stack_release();
+                    special = true;
+                    sb.append("<");
+                    break;
+                case ">":
+                    special = false;
+                    sb.append(">");
+                    break;
+                default:
+                    if(special) sb.append(s);
+                    else {
+                        if(s.equals(" ")) {
+                            stack_release();
+                            sb.append(" ");
+                        } else stack.push(s);
+                    }
+                    break;
+            }
+        }
+
+        stack_release();
+
+        System.out.println(sb.toString());
+    }
+
+    private static void stack_release() {
+        while(!stack.isEmpty()) sb.append(stack.pop());
+    }
+
+    private static void init_setting() throws IOException {
+        S = br.readLine();
+
+        stack = new Stack<>();
+
+        sb = new StringBuilder();
+    }
 }
