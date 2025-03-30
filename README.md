@@ -11,8 +11,10 @@
 </div>
 <br>
 
-# BackJoon (default)
-https://github.com/ImJcm/Algorithm-Code-Solving (Used-Language : Java)
+# BackJoon (main)
+https://github.com/ImJcm/Algorithm-Code-Solving/tree/master/Java <br>
+
+BackJoon Account info : https://www.acmicpc.net/user/jcm
 
 # Programmers
-https://github.com/ImJcm/Programmers (Used-Language : Java)
+https://github.com/ImJcm/Programmers
