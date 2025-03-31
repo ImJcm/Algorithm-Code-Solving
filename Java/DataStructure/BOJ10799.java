@@ -55,11 +55,26 @@ Olympiad > 한국정보올림피아드 > 한국정보올림피아드시․도지
 자료 구조
 스택
  */
+/*
+알고리즘 핵심
+자료구조 (Stack)
+1. 철 막대기의 시작부분을 저장하는 stack_iron, 막대마다 적용되는 레이저의 개수를 저장하는 stack_razer의 Stack을 사용한다.
+2. 입력으로 주어진 쇠막대기를 앞부분부터 끝부분까지 순차적으로 진행하여 해당 위치의 값에 따라 조건을 수행한다.
+3. 현재 위치에서의 쇠막대기 형태값 = iron, 현재 위치에서 다음 쇠막대기 형태값 = next_iron, 레이저의 수 = razer를 저장한다.
+4. 현재 위치의 쇠막대기 형태가 "("인 경우, 다음 쇠막대기 형태의 값에 따라 로직을 수행한다.
+4-1. "("인 경우, 이전까지 누적된 레이저의 수를 stack_razer에 저장하고, stack_iron에 막대기의 시작부분을 저장한다.
+4-2. ")"인 경우, 레이저를 의미하는 것으로 is_razer의 값을 true로 설정한다.
+5. 현재 위치에서의 쇠막대기 형태가 ")"인 경우, is_razer의 값에 따라 로직을 수행한다.
+5-1. true인 경우, razer를 1을 증가시키고, is_razer를 false로 설정한다.
+5-2. false인 경우, 쇠막대기의 끝부분을 의미하는 것으로 해당 막대에 적용되는 razer의 개수 + 1 만큼 ans에 누적하여 더하고, stack_iron에 해당 쇠막대기 앞부분을 제거하고,
+stack_razer의 최근 값을 제거(pop)한다.
+ */
 public class BOJ10799 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int ans;
-    static String iron_bar;
-    static Stack<String> stack;
+    static String[] iron_bar;
+    static Stack<String> stack_iron;
+    static Stack<Integer> stack_razer;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -71,33 +86,42 @@ public class BOJ10799 {
         int razer = 0;
         boolean is_razer = false;
 
-        for(String iron : iron_bar.split("")) {
-            if(stack.isEmpty()) razer = 0;
+        for(int i = 0; i < iron_bar.length; i++) {
+            String iron = iron_bar[i];
+            String next_iron = iron_bar[i].equals("(") ? iron_bar[i + 1] : "";
+            if(stack_iron.isEmpty()) razer = 0;
 
             switch (iron) {
                 case "(":
-                    stack.push(iron);
-                    is_razer = true;
+                    if(next_iron.equals("(")) {
+                        stack_razer.push(razer);
+                        stack_iron.push(iron);
+                        razer = 0;
+                    } else {
+                        is_razer = true;
+                    }
                     break;
                 case ")":
-                    if(stack.peek().equals("(")) {
-                        if(is_razer) {
-                            razer++;
-                            is_razer = false;
-                        } else {
-                            ans += (razer + 1);
-                        }
-                        stack.pop();
+                    if(is_razer) {
+                        razer++;
+                        is_razer = false;
+                    } else {
+                        ans += (razer + 1);
+                        stack_iron.pop();
+                        razer += (stack_razer.pop());
                     }
                     break;
             }
         }
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException {
-        iron_bar = br.readLine();
+        iron_bar = br.readLine().split("");
 
-        stack = new Stack<>();
+        stack_iron = new Stack<>();
+        stack_razer = new Stack<>();
 
         ans = 0;
     }
