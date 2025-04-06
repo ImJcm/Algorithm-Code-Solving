@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Stack;
 
 /*
 오등큰수
@@ -35,6 +36,12 @@ Ai가 수열 A에서 등장한 횟수를 F(Ai)라고 했을 때, Ai의 오등큰
  */
 public class BOJ17299 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static int[] A,F;
+    static Stack<Integer> stack;
+    static StringBuilder sb;
+
+    static final int MAX_SIZE = 1_000_001;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -42,11 +49,48 @@ public class BOJ17299 {
         solve();
     }
 
+    /*
+        failure 1% : time out
+     */
     private static void solve() {
+        for(int i = A.length - 1; i >= 0; i--) {
+            int target = A[i];
+            int r = -1;
 
+            while(!stack.isEmpty()) {
+                int top = stack.peek();
+
+                if(F[top] > F[target]) {
+                    r = top;
+                    break;
+                } else {
+                    stack.pop();
+                }
+            }
+
+            stack.push(target);
+            sb.insert(0,r + ' ');
+        }
+
+        System.out.println(sb.toString().trim());
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        String[] input = br.readLine().split(" ");
+
+        A = new int[N];
+        F = new int[MAX_SIZE];
+
+        for(int i = 0; i < N; i++) {
+            int n = Integer.parseInt(input[i]);
+            A[i] = n;
+            F[n]++;
+        }
+
+        stack = new Stack<>();
+
+        sb = new StringBuilder();
     }
 }
