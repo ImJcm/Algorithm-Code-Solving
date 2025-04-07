@@ -37,22 +37,114 @@ Ai가 수열 A에서 등장한 횟수를 F(Ai)라고 했을 때, Ai의 오등큰
 public class BOJ17299 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
-    static int[] A,F;
+    static int[] A,F,NGF;
     static Stack<Integer> stack;
     static StringBuilder sb;
 
     static final int MAX_SIZE = 1_000_001;
 
     public static void main(String[] args) throws IOException {
-        init_setting();
-
+        init_setting2();
+        
         solve();
+    }
+
+    private static void solve() {
+        for(int i = A.length - 1; i >= 0; i--) {
+            int target = F[i];
+
+            while(!stack.isEmpty() && F[stack.peek()] <= target) stack.pop();
+
+            if(stack.isEmpty()) sb.insert(0,-1 + " ");
+            else sb.insert(0, stack.peek() + " ");
+
+            stack.push(i);
+        }
+
+        System.out.println(sb.toString());
+    }
+
+    private static void solve_timeout4() {
+        int m_limit = F[A[N - 1]];
+        for(int i = A.length - 1; i >= 0; i--) {
+            int target = A[i];
+
+            if(m_limit <= F[target]) {
+                stack.clear();
+                m_limit = F[target];
+            }
+            while(!stack.isEmpty() && F[stack.peek()] <= F[target]) stack.pop();
+
+            //if(stack.isEmpty()) NGF[i] = -1;
+            //else NGF[i] = stack.peek();
+
+            if(stack.isEmpty()) sb.insert(0,-1 + " ");
+            else sb.insert(0, stack.peek() + " ");
+
+            stack.push(target);
+        }
+
+        System.out.println(sb.toString());
+
+        /*for(int i = 0; i < N; i++) {
+            System.out.print(NGF[i] + " ");
+        }*/
+    }
+
+    private static void solve_timeout3() {
+        for(int i = A.length - 1; i >= 0; i--) {
+            int target = A[i];
+
+            while(!stack.isEmpty() && F[stack.peek()] <= F[target]) stack.pop();
+
+            if(stack.isEmpty()) NGF[i] = -1;
+            else NGF[i] = stack.peek();
+
+            stack.push(target);
+        }
+
+        for(int i = 0; i < N; i++) {
+            System.out.print(NGF[i] + " ");
+        }
     }
 
     /*
         failure 1% : time out
      */
-    private static void solve() {
+    private static void solve_timeout2() {
+        int m = 0;
+
+        for(int i = A.length - 1; i >= 0; i--) {
+            int target = A[i];
+            int r = -1;
+
+            if(m <= F[target]) {
+                stack.clear();
+                m = F[target];
+            }
+
+            while(!stack.isEmpty()) {
+                int top = stack.peek();
+
+                if(F[top] > F[target]) {
+                    r = top;
+                    break;
+                } else {
+                    stack.pop();
+                }
+            }
+
+            stack.push(target);
+            sb.insert(0,r + " ");
+        }
+
+        System.out.println(sb.toString().trim());
+    }
+
+    /*
+        failure 1% : time out
+     */
+    private static void solve_timeout() {
         for(int i = A.length - 1; i >= 0; i--) {
             int target = A[i];
             int r = -1;
@@ -69,7 +161,7 @@ public class BOJ17299 {
             }
 
             stack.push(target);
-            sb.insert(0,r + ' ');
+            sb.insert(0,r + " ");
         }
 
         System.out.println(sb.toString().trim());
@@ -82,11 +174,32 @@ public class BOJ17299 {
 
         A = new int[N];
         F = new int[MAX_SIZE];
+        NGF = new int[N];
+
+        NGF[N - 1] = -1;
 
         for(int i = 0; i < N; i++) {
             int n = Integer.parseInt(input[i]);
             A[i] = n;
             F[n]++;
+        }
+
+        stack = new Stack<>();
+
+        sb = new StringBuilder();
+    }
+
+    private static void init_setting2() throws IOException {
+        N = Integer.parseInt(br.readLine());
+
+        String[] input = br.readLine().split(" ");
+
+        A = new int[N];
+        F = new int[MAX_SIZE];
+
+        for(int i = 0; i < N; i++) {
+            A[i] = Integer.parseInt(input[i]);
+            F[A[i]]++;
         }
 
         stack = new Stack<>();
