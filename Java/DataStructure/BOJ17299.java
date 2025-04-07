@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /*
@@ -34,31 +36,55 @@ Ai가 수열 A에서 등장한 횟수를 F(Ai)라고 했을 때, Ai의 오등큰
 자료 구조
 스택
  */
+/*
+알고리즘 핵심
+자료구조 (Stack + Map)
+1. Map<A,B> 자료구조를 사용하여 A의 값이 나온 횟수를 B의 값으로 저장하고, stack으로 A값을 우측부터 가장 가까운 순으로 저장할 수 있도록 한다.
+2. 우측부터 좌측으로 현재의 인덱스를 기준으로 map(A[i])의 값이 stack의 peek()값과 비교하여 모든 stack이 빌때까지 수행한다.
+비교하는 과정은 map(A[i]) >= map(stack.peek())일 때, 오큰수(NGF)에 해당하는 값이 아니고, i - 1을 기준으로 해당 과정을 수행해도 map(A[i])보다 작은 값은
+오큰수가 될 수 없으므로 pop으로 stack에서 제거한다.
+이후, stack이 비어있을 경우, NGF[i] = -1
+stack이 비어있지 않을 경우, 해당하는 stack.peek()값이 오큰수에 해당하므로 NGF[i] = stack.peek()값을 저장한다.
+3. NGF를 출력한다.
+
+문제의 첫 접근을 정답코드와 비슷하게 작성하였으나 시간초과가 발생하였다.
+그 이유를 개인적으로 생각해보면 불필요한 메모리의 할당(배열)으로 인한 시간초과가 발생한 것으로 생각된다.
+
+가지치기 + Stack -> Deque를 사용하여 시간초과를 해결해보려고 해도 해결되지 않아 정답코드를 참고하였다.
+https://velog.io/@mings/BOJGold4-17299.-%EC%98%A4%EB%93%B1%ED%81%B0%EC%88%98JAVA
+ */
 public class BOJ17299 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
     static int[] A,F,NGF;
     static Stack<Integer> stack;
+    static Map<Integer, Integer> map;
     static StringBuilder sb;
 
     static final int MAX_SIZE = 1_000_001;
 
     public static void main(String[] args) throws IOException {
         init_setting2();
-        
+
         solve();
     }
 
     private static void solve() {
         for(int i = A.length - 1; i >= 0; i--) {
-            int target = F[i];
+            while(!stack.isEmpty() && map.get(stack.peek()) <= map.get(A[i])) stack.pop();
 
-            while(!stack.isEmpty() && F[stack.peek()] <= target) stack.pop();
+            // 시간초과 - sb.insert > NGF[] + for(N)
+            //if(stack.isEmpty()) sb.insert(0,-1 + " ");
+            //else sb.insert(0, stack.peek() + " ");
 
-            if(stack.isEmpty()) sb.insert(0,-1 + " ");
-            else sb.insert(0, stack.peek() + " ");
+            if(stack.isEmpty()) NGF[i] = -1;
+            else NGF[i] = stack.peek();
 
-            stack.push(i);
+            stack.push(A[i]);
+        }
+
+        for(int n : NGF) {
+            sb.append(n).append(" ");
         }
 
         System.out.println(sb.toString());
@@ -195,11 +221,12 @@ public class BOJ17299 {
         String[] input = br.readLine().split(" ");
 
         A = new int[N];
-        F = new int[MAX_SIZE];
+        NGF = new int[N];
+        map = new HashMap<>();
 
         for(int i = 0; i < N; i++) {
             A[i] = Integer.parseInt(input[i]);
-            F[A[i]]++;
+            map.put(A[i],map.getOrDefault(A[i],0) + 1);
         }
 
         stack = new Stack<>();
