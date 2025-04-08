@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -49,8 +50,9 @@ AA+A+
 public class BOJ1935 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
-    static Stack<String> stack;
-    static Map<String, Integer> map;
+    static String[] postfix_notation;
+    static Stack<Double> stack;
+    static Map<String, Double> map;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -59,10 +61,57 @@ public class BOJ1935 {
     }
 
     private static void solve() {
+        Double i1,i2;
 
+        for(String s : postfix_notation) {
+            switch (s) {
+                case "+":
+                    i1 = stack.pop();
+                    i2 = stack.pop();
+
+                    stack.push(i2 + i1);
+                    break;
+                case "-":
+                    i1 = stack.pop();
+                    i2 = stack.pop();
+
+                    stack.push(i2 - i1);
+                    break;
+                case "*":
+                    i1 = stack.pop();
+                    i2 = stack.pop();
+
+                    stack.push(i2 * i1);
+                    break;
+                case "/":
+                    i1 = stack.pop();
+                    i2 = stack.pop();
+
+                    stack.push(i2 / i1);
+                    break;
+                default:
+                    stack.push(map.get(s));
+                    break;
+            }
+        }
+
+        System.out.printf("%.2f",stack.pop());
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        postfix_notation = br.readLine().split("");
+
+        char ch = 'A';
+
+        stack = new Stack<>();
+
+        map = new HashMap<>();
+
+        for(int i = 0; i < N; i++) {
+            map.put(String.valueOf(ch), Double.parseDouble(br.readLine()));
+            ch = (char) (ch + 1);
+        }
     }
 }
