@@ -47,6 +47,14 @@ AA+A+
 자료 구조
 스택
  */
+/*
+알고리즘 핵심
+자료구조 (Stack)
+1. A-Z까지 대응되는 값을 Map에 저장하고, 후위 연산을 위해 stack을 사용한다.
+2. 입력으로 주어진 후위 표시식을 순차적으로 조회하고, 해당하는 값이 A-Z인 경우, map에 대응되는 값을 double 타입으로 stack에 저장한다.
+해당하는 값이 "+-/*"인 경우, 두개의 피연산자를 pop하여 해당 연산을 수행한 값을 stack에 저장한다.
+3. 최종적으로 나온 결과값을 소수점 두자리만 출력한다. - printf("%.2f", result);
+ */
 public class BOJ1935 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
