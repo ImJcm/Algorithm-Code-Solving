@@ -1,5 +1,12 @@
 package BackJoon;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
 /*
 후위 표기식
 
@@ -52,8 +59,73 @@ ABC*+DE/-
 자료 구조
 스택
  */
+/*
+알고리즘 핵심
+자료구조 (Stack)
+1. 피연산자의 경우 ans에 바로 저장하고, 연산자의 경우 우선순위를 비교하여 연산자의 순서를 결정하기 위해 Stack을 사용한다.
+2. 우선순위의 경우, "+,-" = 1, "*,/" = 2, "(,)" = 3으로 설정한다.
+3. 연산자가 "+,-,*,/"인 경우, operator(stack)의 peek의 우선순위 값보다 크고, 비어있지 않으며, "("이 아닌 경우에 operator의 값을 조건에 만족할 때까지 pop한다.
+4. 연산자가 "(,)"인 경우, (는 operator에 저장하고, )의 경우 괄호를 닫아야 하기때문에 (가 pop될 때까지 pop한다.
+5. 이후, 남은 operator의 연산자를 모두 pop하고 ans를 출력한다.
+ */
 public class BOJ1918 {
-    public static void main(String[] args) {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static String[] secondary_notation;
+    static Stack<String> operator;
+    static StringBuilder ans;
+    static Map<String, Integer> priority;
 
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    private static void solve() {
+        for(String sn : secondary_notation) {
+            switch (sn) {
+                case "+","-","*","/":
+                    while(!operator.isEmpty() && priority.get(sn) <= priority.get(operator.peek()) && !operator.peek().equals("(")) {
+                        ans.append(operator.pop());
+                    }
+                    operator.push(sn);
+                    break;
+                case "(",")":
+                    if(sn.equals(")")) {
+                        while(!operator.isEmpty()) {
+                            String s = operator.pop();
+                            if(!s.equals("(")) ans.append(s);
+                            else break;
+                        }
+                    } else {
+                        operator.push(sn);
+                    }
+                    break;
+                default:
+                    ans.append(sn);
+                    break;
+            }
+        }
+
+        while(!operator.isEmpty()) ans.append(operator.pop());
+
+        System.out.println(ans.toString());
+    }
+
+    private static void init_setting() throws IOException {
+        secondary_notation = br.readLine().split("");
+
+        operator = new Stack<>();
+
+        priority = new HashMap<>();
+
+        priority.put("+",1);
+        priority.put("-",1);
+        priority.put("*",2);
+        priority.put("/",2);
+        priority.put("(",3);
+        priority.put(")",3);
+
+        ans = new StringBuilder();
     }
 }
