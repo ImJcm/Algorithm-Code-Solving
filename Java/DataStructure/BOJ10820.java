@@ -36,21 +36,45 @@ SPACE    1    SPACE
 구현
 문자열
  */
+/*
+알고리즘 핵심
+자료구조 (문자열)
+1. 입력으로 주어진 문자열을 split()으로 분리하여 소문자, 대문자, 숫자, 공백문자를 조건에 맞게 ans[0..3]에 각각 저장한다.
+2. 각 문자열의 소문자,대문자,숫자,공백 문자의 수를 출력한다.
+3. 입력으로 주어진 문자열의 종료 조건은 null일 경우로 정한다.
+ */
 public class BOJ10820 {
-    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));;
+    static String[] S;
+    static Integer[] ans;
+    static boolean flag = true;
 
     public static void main(String[] args) throws IOException {
-        init_setting();
+        while(true) {
+            init_setting();
 
-        solve();
+            if(flag) solve();
+            else return;
+        }
     }
 
     private static void solve() {
-
+        for(String s : S) {
+            char ch = s.charAt(0);
+            if('a' <= ch && ch <= 'z') ans[0]++;
+            else if('A' <= ch && ch <= 'Z') ans[1]++;
+            else if('0' <= ch && ch <= '9') ans[2]++;
+            else ans[3]++;
+        }
+        System.out.println(ans[0] + " " + ans[1] + " " + ans[2] + " " + ans[3]);
     }
 
     private static void init_setting() throws IOException {
+        String input = br.readLine();
 
+        if(input == null) flag = false;
+        else S = input.split("");
+
+        ans = new Integer[] {0,0,0,0};
     }
 }
