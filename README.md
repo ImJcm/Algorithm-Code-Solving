@@ -1,7 +1,7 @@
 <h2> 📘 Stacks </h2>
 <div align="left">
 <h3> ⚙ Tools </h3>
-<img src="https://img.shields.io/badge/intelliJ-071D49?style=flat&logo=IntelliJ IDEA&logoColor=black">
+<img src="https://img.shields.io/badge/intelliJ-071D49?style=flat&logo=intellijidea&logoColor=#000000">
 <img src="https://img.shields.io/badge/github-000000?style=flat&logo=github&logoColor=#181717">
 
 <h3> 💻 Languages </h3>
