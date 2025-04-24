@@ -36,21 +36,49 @@ N!에서 뒤에서부터 처음 0이 아닌 숫자가 나올 때까지 0의 개�
 알고리즘 핵심
 수학 (팩토리얼, 규칙성)
 팩토리얼 계산기 - https://ko.numberempire.com/factorialcalculator.php
+0! = 1
+1! = 1
+2! = 2
+3! = 6
+4! = 24
+5! = 120
+6! = 720
+7! = 5040
+8! = 40320
+9! = 362880
+10! = 3628800
+11! = 39916800
+    ...
+15! = 1307...68000
+    ...
+25! = 1551...84000000
+    ...
+50! = 3041...512000000000000
+    ...
+75! = 2480...24000000000000000000
+    ...
+100! = 9332...64000000000000000000000000
+125! = 1882...80000000000000000000000000000000
+    ...
+150! = 5713...520000000000000000000000000000000000000
 
+1. 5배수 차이로 1개씩 값이 늘어남을 볼 수 있다.
+2. 25배수 차이로 1개씩 값이 늘어남을 볼 수 있다.
+3. 125배수 차이로 1개씩 값이 늘어남을 볼 수 있다.
+
+즉, 5^n배수에서 1개씩 값이 늘어난다.
+해당 규칙으로 다음과 같은 정규식을 낼 수 있다.
+N! = (N / 5) + (N / 25) + (N / 125) + ...
+(0 <= N <= 450)이므로, 5^4 = 625보다 적으므로 고려하지 않는다.
  */
 public class BOJ1676 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,ans;
-    static long res;
 
     public static void main(String[] args) throws IOException {
-        while(true) {
-            print_length(br.readLine());
-        }
+        init_setting();
 
-        /*init_setting();
-
-        solve();*/
+        solve();
     }
 
     /*
@@ -68,40 +96,7 @@ public class BOJ1676 {
         return result;
     }
 
-    private static Long custom_factorial(int n) {
-        /*
-        0! = 1
-        1! = 1
-        2! = 2
-        3! = 6
-        4! = 24
-        5! = 120
-        6! = 720
-        7! = 5040
-        8! = 40320
-        9! = 362880
-        10! = 3628800
-        11! = 39916800
-            ...
-        15! = 1307...68000
-            ...
-        25! = 1551...84000000
-            ...
-        50! = 3041...512000000000000
-            ...
-        75! = 2480...24000000000000000000
-            ...
-        100! = 9332...64000000000000000000000000
-        125! =
-         */
-        return res;
-    }
-
-    private static void print_length(String s) {
-        System.out.println(s.length());
-    }
-
-    private static void solve() {
+    private static void wrong_solve() {
         String result = String.valueOf(Factorial(N));
 
         for(int i = result.length() - 1; i >= 0; i--) {
@@ -114,9 +109,11 @@ public class BOJ1676 {
             }
         }
 
-        System.out.println(result);
         System.out.println(ans);
+    }
 
+    private static void solve() {
+        ans = (N / (int) Math.pow(5,1)) + (N / (int) Math.pow(5,2)) + (N / (int) Math.pow(5,3));
     }
 
     private static void init_setting() throws IOException {
