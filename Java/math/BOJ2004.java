@@ -111,9 +111,6 @@ public class BOJ2004 {
         int total_2 = Math.max(0, N_2 - (M_2 + N_SUB_M_2));
         int total_5 = Math.max(0, N_5 - (M_5 + N_SUB_M_5));
 
-        //int numerator_10 = Math.min(N_2,N_5);
-        //int denominator_10 = Math.min(M_2 + N_SUB_M_2, M_5 + N_SUB_M_5);
-
         int ans = total_2 > 0 && total_5 > 0 ? Math.min(total_2, total_5) : 0;
 
         System.out.println(ans);
