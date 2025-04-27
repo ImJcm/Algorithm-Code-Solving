@@ -70,6 +70,17 @@ N!에서 뒤에서부터 처음 0이 아닌 숫자가 나올 때까지 0의 개�
 해당 규칙으로 다음과 같은 정규식을 낼 수 있다.
 N! = (N / 5) + (N / 25) + (N / 125) + ...
 (0 <= N <= 450)이므로, 5^4 = 625보다 적으므로 고려하지 않는다.
+
+2025/04/28 - 팩토리얼의 결과로 뒤에서 0이 아닌 개수는 2와 5가 곱해진 10이 몇개인지 확인하는 로직을 사용하는 것이 올바른 풀이라고 생각이
+들었다.
+
+find_multiplied_num(int target, int num) - target에서 num이 곱해진 갯수를 return한다.
+
+ex) 5! = 5 x 4 x 3 x 2 x 1
+- 5에서 2가 곱해진 개수 => 5 / 2 = 2 (4, 2), 5 / 4 = 1 (4)
+- 5에서 5가 곱해진 개수 => 5 / 3 = 1 (5)
+
+이를 이용하여 2와 5가 곱해진 갯수를 구하고 두 수의 최소값이 뒤에서 0의 개수라고 생각할 수 있다.
  */
 public class BOJ1676 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -79,6 +90,19 @@ public class BOJ1676 {
         init_setting();
 
         solve();
+    }
+
+    private static int find_multiplied_num(int target, int num) {
+        int ans = 0;
+
+        int i = num;
+
+        while(i <= 500) {
+            ans += (target / i);
+            i *= num;
+        }
+
+        return ans;
     }
 
     /*
@@ -114,6 +138,10 @@ public class BOJ1676 {
 
     private static void solve() {
         ans = (N / (int) Math.pow(5,1)) + (N / (int) Math.pow(5,2)) + (N / (int) Math.pow(5,3));
+
+        ans = Math.min(find_multiplied_num(N,2), find_multiplied_num(N,5));
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException {
