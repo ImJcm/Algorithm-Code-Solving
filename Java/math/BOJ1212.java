@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 public class BOJ1212 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static String octal_str, binary_str;
+    static StringBuilder sb;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -44,13 +45,15 @@ public class BOJ1212 {
 
     private static void solve() {
         if(octal_str.equals("0")) {
-            binary_str = "0";
+            //binary_str = "0";
+            sb.append(0);
         } else {
             char ch = octal_str.charAt(0);
             int binary_int = Integer.parseInt(String.valueOf(ch),8);
             String temp_str = Integer.toBinaryString(binary_int);
 
-            binary_str += temp_str;
+            //binary_str += temp_str;
+            sb.append(temp_str);
 
             for(int i = 1; i < octal_str.length(); i++) {
                 ch = octal_str.charAt(i);
@@ -58,16 +61,20 @@ public class BOJ1212 {
                 binary_int = Integer.parseInt(String.valueOf(ch),8);
                 temp_str = Integer.toBinaryString(binary_int);
 
-                binary_str += String.format("%03d",Integer.parseInt(temp_str));
+                //binary_str += String.format("%03d",Integer.parseInt(temp_str));
+                sb.append(String.format("%03d",Integer.parseInt(temp_str)));
             }
         }
 
-        System.out.println(binary_str);
+        //System.out.println(binary_str);
+        System.out.println(sb.toString());
     }
 
     private static void init_setting() throws IOException {
         octal_str = br.readLine();
 
         binary_str = "";
+
+        sb = new StringBuilder();
     }
 }
