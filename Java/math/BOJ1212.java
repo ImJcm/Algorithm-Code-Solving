@@ -32,6 +32,12 @@ import java.io.InputStreamReader;
 구현
 문자열
  */
+/*
+알고리즘 핵심
+수학 + 문자열 (진수변환)
+1. 8진수 숫자를 2진수 문자열로 변환하는 Integer.toBinaryString() 함수를 사용한다.
+2. 2진수 숫자로 변환 시, 처음으로 오는 값은 0이 아닌 1이여야 하므로 0에 해당하는 부분을 제거한다.
+ */
 public class BOJ1212 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static String octal_str, binary_str;
@@ -41,19 +47,76 @@ public class BOJ1212 {
         init_setting();
 
         solve();
+        solve2();
     }
 
     private static void solve() {
-        if(octal_str.equals("0")) {
-            //binary_str = "0";
+        if (octal_str.equals("0")) {
             sb.append(0);
+        } else {
+            char ch = octal_str.charAt(0);
+            int binary_int = Integer.parseInt(String.valueOf(ch), 8);
+            String temp_str = Integer.toBinaryString(binary_int);
+
+            sb.append(temp_str);
+
+            for (int i = 1; i < octal_str.length(); i++) {
+                ch = octal_str.charAt(i);
+
+                binary_int = Integer.parseInt(String.valueOf(ch), 8);
+                temp_str = Integer.toBinaryString(binary_int);
+
+                sb.append(String.format("%03d", Integer.parseInt(temp_str)));
+            }
+        }
+    }
+
+    private static void solve2() {
+        if(octal_str.equals("0")) {
+            sb.append(0);
+        } else {
+            char ch = octal_str.charAt(0);
+            int binary_int = Integer.parseInt(String.valueOf(ch),8);
+            String tmp = "";
+            while(true) {
+                tmp = (binary_int % 2) + tmp;
+
+                if(binary_int / 2 == 0) break;
+                binary_int /= 2;
+            }
+
+            sb.append(tmp);
+
+            for(int i = 1; i < octal_str.length(); i++) {
+                tmp = "";
+                ch = octal_str.charAt(i);
+                binary_int = Integer.parseInt(String.valueOf(ch),8);
+
+                while(true) {
+                    tmp = (binary_int % 2) + tmp;
+
+                    if(binary_int / 2 == 0) break;
+                    binary_int /= 2;
+                }
+                sb.append(String.format("%03d",Integer.parseInt(tmp)));
+            }
+        }
+
+        System.out.println(sb.toString());
+    }
+
+    /*
+        time over : String += String
+     */
+    private static void wrong_solve() {
+        if(octal_str.equals("0")) {
+            binary_str = "0";
         } else {
             char ch = octal_str.charAt(0);
             int binary_int = Integer.parseInt(String.valueOf(ch),8);
             String temp_str = Integer.toBinaryString(binary_int);
 
-            //binary_str += temp_str;
-            sb.append(temp_str);
+            binary_str += temp_str;
 
             for(int i = 1; i < octal_str.length(); i++) {
                 ch = octal_str.charAt(i);
@@ -61,13 +124,11 @@ public class BOJ1212 {
                 binary_int = Integer.parseInt(String.valueOf(ch),8);
                 temp_str = Integer.toBinaryString(binary_int);
 
-                //binary_str += String.format("%03d",Integer.parseInt(temp_str));
-                sb.append(String.format("%03d",Integer.parseInt(temp_str)));
+                binary_str += String.format("%03d",Integer.parseInt(temp_str));
             }
         }
 
         //System.out.println(binary_str);
-        System.out.println(sb.toString());
     }
 
     private static void init_setting() throws IOException {
