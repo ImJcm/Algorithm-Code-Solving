@@ -43,10 +43,18 @@ import java.util.Arrays;
 소수 판정
 에라토스테네스의 체
  */
+/*
+알고리즘 핵심
+수학 (소수론 - 에라토스테네스의 체)
+1. 1,000,000까지 소수를 모두 구하여 0인 값으로 소수임을 판별하는 sieve 배열을 만든다.
+2. 두 소수의 순서만 다른 파티션은 같은 파티션이므로 파티션 개수를 찾을 대상 n을 2부터 n/2까지 소수임을 만족하는 i와 n - i가
+소수이면 갯수를 업데이트하고 출력한다.
+ */
 public class BOJ17103 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int T,N;
-    static int[] sieve;
+    static int T,ans;
+    static int[] sieve,N;
+    static final int MAX_N = 1_000_000;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -68,13 +76,27 @@ public class BOJ17103 {
     }
 
     private static void solve() {
+        for(int n : N) {
+            ans = 0;
 
+            for(int i = 2; i <= n / 2; i++) {
+                if(sieve[i] == 0 && sieve[n - i] == 0) ans++;
+            }
+
+            System.out.println(ans);
+        }
     }
 
     private static void init_setting() throws IOException {
         T = Integer.parseInt(br.readLine());
 
+        N = new int[T];
 
+        for(int i = 0; i < T; i++) {
+            N[i] = Integer.parseInt(br.readLine());
+        }
+
+        Eratosthenes(MAX_N);
     }
 
 
