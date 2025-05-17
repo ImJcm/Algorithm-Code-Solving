@@ -1,5 +1,9 @@
 package BackJoon;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /*
 Base Conversion
 
@@ -36,5 +40,52 @@ University > 인하대학교 > 2015 인하대학교 프로그래밍 경시대회
 구현
 정수론
  */
+/*
+알고리즘 핵심
+수학 (진수 변환 + 문자열)
+1. A진법으로 주어지는 값을 10진법으로 변환했을 때의 값이 2^20 미만의 값임을 보장하므로 int 타입 범위내의 정수값이다.
+2. A진법으로 주어지는 값을 10진법으로 변환한 값을 B진법으로 바꾼 후 출력한다.
+(이때, B진법으로 변환하는 과정에서 B진법의 수가 2자리수 즉, 10,11,... 과 같은 수의 표현이 가능한 경우 B_num은 StringBuidler로
+reverse()를 사용하면 문자열로 적용된 수들이 반대로 적용되므로 주의한다. ex) 14 -> reverse() -> 41
+따라서, append() 대신 insert()를 사용하여 지수가 높아지는 형태로 앞부분 부터 채울 수 있도록 한다.)
+ */
 public class BOJ11576 {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int A,B,m,A_10_num;
+    static StringBuilder B_num;
+
+    public static void main(String[] args) throws IOException {
+        init_setting();
+
+        solve();
+    }
+
+    private static void solve() {
+        while(A_10_num != 0) {
+            B_num.insert(0,A_10_num % B + " ");
+            A_10_num /= B;
+        }
+
+        System.out.println(B_num.toString().trim());
+    }
+
+    private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
+
+        A = Integer.parseInt(input[0]);
+        B = Integer.parseInt(input[1]);
+
+        m = Integer.parseInt(br.readLine());
+
+        A_10_num = 0;
+
+        B_num = new StringBuilder();
+
+        input = br.readLine().split(" ");
+
+        for(int i = m - 1; i >= 0; i--) {
+            int w = (int) Math.pow(A,i);
+            A_10_num += (w * Integer.parseInt(input[m - 1 - i]));
+        }
+    }
 }
