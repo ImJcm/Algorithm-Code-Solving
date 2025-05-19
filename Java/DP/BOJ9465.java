@@ -49,10 +49,13 @@ ICPC > Regionals > Asia Pacific > Korea > Asia Regional - Daejeon 2013 K번
 /*
 알고리즘 핵심
 DP
+0. dp의 초기값의 경우 스티커가 가질 수 있는 값이 되어서는 안되므로 -1로 초기화한다. (0 <= sticker_point <= 100)
 1. 하나의 스티커를 고를 경우 상,하,좌,우의 스티커는 고를 수 없기 때문에 현재 스티커를 기준으로 최대 스코어를 가지는 경우는
 n - 2에서 최대 스코어를 가지는 누적값과 n - 1에서 고를 수 있는 스티커에서 누적된 점수의 최대값을 더한 경우이다.
 이를 정규식으로 나타내면 다음과 같다.
 dp(r,n) = score(r,n) + max(dp(!r,n-1), dp(r,n-2), dp(!r,n-2)) #(r = 0 or 1)
+이때, dp(r,n) = score(r,n) + max(dp(!r,n-1), dp(!r,n-2))의 점화식을 만족한다는 것을 알았다.
+두개의 dp만 검사해도 가능한 이유는 dp(r,n-2)의 경우는 dp(!r,n-1)에서 해당 값을 검사하기 때문에 중복된 데이터이기 때문이다.
 2. ans = dp(r,N-1), dp(!r,N-1) 중 최대값을 저장하고 출력한다.
 
 #위 정규식을 바탕으로 상향식, 하향식 dp를 모두 구현하였다.
@@ -69,7 +72,7 @@ public class BOJ9465 {
             init_setting();
 
             ans = Math.max(solve_A(0,N - 1), solve_A(1,N - 1));
-            //solve();
+            solve();
 
             System.out.println(ans);
         }
@@ -87,25 +90,50 @@ public class BOJ9465 {
             d3 = i - 1 < 0 ? 0 : dp[0][n2];
             d4 = i - 1 < 0 ? 0 : dp[1][n2];
 
-            dp[0][i] = sticker_point[0][i] + Math.max(d1,
+            dp[0][i] = sticker_point[0][i] + Math.max(d2,d4);
+
+            dp[1][i] = sticker_point[1][i] + Math.max(d1,d3);
+
+            /*dp[0][i] = sticker_point[0][i] + Math.max(d1,
                     Math.max(d2,d4));
 
             dp[1][i] = sticker_point[1][i] + Math.max(d2,
-                    Math.max(d1,d3));
+                    Math.max(d1,d3));*/
         }
 
         ans = Math.max(dp[0][N - 1], dp[1][N - 1]);
     }
 
     private static int solve_A(int r, int n) {
+        if(n < 0) return 0;
+
+        if(dp[r][n] != -1) return dp[r][n];
+
+        /*dp[r][n] = sticker_point[r][n] + Math.max(solve_A((r + 1) % 2, n - 1),
+                Math.max(solve_A(r, n - 2), solve_A((r + 1) % 2, n - 2)));*/
+
+        dp[r][n] = sticker_point[r][n] + Math.max(solve_A((r + 1) % 2, n - 1), solve_A((r + 1) % 2, n - 2));
+
+        return dp[r][n];
+    }
+
+    /*
+        시간초과 발생
+        처음 시간초과가 발생한 이유가 점화식이 잘못되었다고 생각하여 수정하였으나 점화식 문제가 아니였다.
+        (dp(r,n) = score(r,n) + max(dp(r,n-2), dp(!r,n-1), dp(!r,n-2)) -> max(dp(!r,n-1), dp(!r,n-2))
+        시간초과 발생한 이유로 N -> 0까지 과정을 모두 거치는 동안에 N개의 재귀 호출로 인한 것이라고 예상했지만
+        결론부터 말하면 진짜 원인은 dp에 초기화된 값이 0이다.
+        만약, N이 100,000일 때, 스티커의 점수가 모두 0인 경우 모든 경우의 재귀 호출을 수행하므로 dp를 사용할 수 없는 문제가 발생한다.
+        따라서, dp의 초기갑을 입력으로 주어지는 스티커의 점수의 범위에 속하지 않은 값으로 변경하여 dp의 접근 여부를 정확히 하는 것이 중요하다.
+     */
+    private static int solve_A_timeout(int r, int n) {
         if(n < 0) {
             return 0;
         }
 
-        if(dp[r][n] != 0) return dp[r][n];
+        if(dp[r][n] != 0) return dp[r][n];  // 이 부분이 문제이다.
 
-        dp[r][n] = sticker_point[r][n] + Math.max(solve_A((r + 1) % 2, n - 1),
-                Math.max(solve_A(r, n - 2), solve_A((r + 1) % 2, n - 2)));
+        dp[r][n] = sticker_point[r][n] + Math.max(solve_A_timeout((r + 1) % 2, n - 1), solve_A_timeout((r + 1) % 2, n - 2));
 
         return dp[r][n];
     }
@@ -123,5 +151,7 @@ public class BOJ9465 {
         sticker_point[1] = Arrays.stream(br.readLine().split(" "))
                 .mapToInt(Integer::parseInt)
                 .toArray();
+
+        for(int i = 0; i < 2; i++) Arrays.fill(dp[i],-1);
     }
 }
