@@ -59,6 +59,13 @@ dp(r,n) = score(r,n) + max(dp(!r,n-1), dp(r,n-2), dp(!r,n-2)) #(r = 0 or 1)
 2. ans = dp(r,N-1), dp(!r,N-1) 중 최대값을 저장하고 출력한다.
 
 #위 정규식을 바탕으로 상향식, 하향식 dp를 모두 구현하였다.
+
+시간초과 발생
+처음 시간초과가 발생한 이유가 점화식이 잘못되었다고 생각하여 수정하였으나 점화식 문제가 아니였다.
+(dp(r,n) = score(r,n) + max(dp(r,n-2), dp(!r,n-1), dp(!r,n-2)) -> max(dp(!r,n-1), dp(!r,n-2))
+시간초과 발생한 이유로 N -> 0까지 과정을 모두 거치는 동안에 N개의 재귀 호출로 인한 것이라고 예상했지만 결론부터 말하면 진짜 원인은 dp에 초기화된 값이 0이여서 이다.
+만약, N이 100,000일 때, 스티커의 점수가 모두 0인 경우 실제 누적된 스티커의 값이 0이지만 dp가 아직 설정되어 있지 않다고 판단하여 모든 경우의 재귀 호출을 수행하므로 dp를 사용할 수 없는 문제가 발생한다.
+따라서, dp의 초기갑을 입력으로 주어지는 스티커의 점수의 범위에 속하지 않은 값으로 변경하여 dp의 접근 여부를 정확히 하는 것이 중요하다.
  */
 public class BOJ9465 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -71,7 +78,7 @@ public class BOJ9465 {
         while(T-- > 0) {
             init_setting();
 
-            ans = Math.max(solve_A(0,N - 1), solve_A(1,N - 1));
+            //ans = Math.max(solve_A(0,N - 1), solve_A(1,N - 1));
             solve();
 
             System.out.println(ans);
@@ -118,13 +125,7 @@ public class BOJ9465 {
     }
 
     /*
-        시간초과 발생
-        처음 시간초과가 발생한 이유가 점화식이 잘못되었다고 생각하여 수정하였으나 점화식 문제가 아니였다.
-        (dp(r,n) = score(r,n) + max(dp(r,n-2), dp(!r,n-1), dp(!r,n-2)) -> max(dp(!r,n-1), dp(!r,n-2))
-        시간초과 발생한 이유로 N -> 0까지 과정을 모두 거치는 동안에 N개의 재귀 호출로 인한 것이라고 예상했지만
-        결론부터 말하면 진짜 원인은 dp에 초기화된 값이 0이다.
-        만약, N이 100,000일 때, 스티커의 점수가 모두 0인 경우 모든 경우의 재귀 호출을 수행하므로 dp를 사용할 수 없는 문제가 발생한다.
-        따라서, dp의 초기갑을 입력으로 주어지는 스티커의 점수의 범위에 속하지 않은 값으로 변경하여 dp의 접근 여부를 정확히 하는 것이 중요하다.
+        시간초과 발생코드
      */
     private static int solve_A_timeout(int r, int n) {
         if(n < 0) {
