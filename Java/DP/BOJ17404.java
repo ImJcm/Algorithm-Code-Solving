@@ -157,12 +157,12 @@ public class BOJ17404 {
     private static void solve() {
         print_paint_2();
 
-        /*int ans_0 = print_paint(0,0,0);
+        int ans_0 = print_paint(0,0,0);
         int ans_1 = print_paint(0,1,1);
         int ans_2 = print_paint(0,2,2);
 
         ans = Math.min(ans_0,
-                Math.min(ans_1,ans_2));*/
+                Math.min(ans_1,ans_2));
 
         System.out.println(ans);
     }
