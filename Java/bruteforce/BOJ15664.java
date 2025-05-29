@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /*
 N과 M (10)
@@ -49,9 +51,24 @@ N개의 자연수 중에서 M개를 고른 수열
 알고리즘 분류
 백트래킹
  */
+/*
+알고리즘 핵심
+bruteforce (back-tracking)
+1. dfs를 이용하여 M개의 수열을 만드는 과정을 수행한다.
+2. 고른 수열은 비내림차순을 만족하기 위해 주어지는 자연수를 오름차순 정렬을 수행한다.
+3. 수열의 비내림차순을 만족하기 위해 n자리의 수열의 값은 이전 자리(n-1)자리의 수열 값보다 커야하므로 n자리에 오는 수열의 값의 시작을
+이전 자리의 수열의 값 시작 인덱스에서 고를 수 있도록 한다.
+4. 수열의 중복을 제거하기 위해 i번째 자연수가 수열에 쓰였는지 여부를 결정하는 visited와 n번째 자리에 이미 배치가 되었는지 여부를 결정하는 visited2 배열을
+사용한다.
+ */
 public class BOJ15664 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,M;
+    static int[] nums;
+    static boolean[] visited;
+    static boolean[][] visited2;
+    static StringBuilder ans;
+    final static int MAX_NUM = 10_001;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -60,10 +77,48 @@ public class BOJ15664 {
     }
 
     private static void solve() {
+        dfs(0, 0, new ArrayList<>());
 
+        System.out.println(ans.toString());
+    }
+
+    private static void dfs(int n, int s, ArrayList<Integer> arr) {
+        if(n == M) {
+            String res = arr.toString().replaceAll(",","").replace("[","").replace("]","");
+            ans.append(res).append("\n");
+            return;
+        }
+
+        for(int i = s; i < N; i++) {
+            int num = nums[i];
+            if(visited[i]) continue;
+            if(visited2[n][num]) continue;
+
+            Arrays.fill(visited2[n + 1], false);
+
+            visited2[n][num] = true;
+            visited[i] = true;
+            arr.add(num);
+            dfs(n + 1, i, arr);
+            arr.remove(n);
+            visited[i] = false;
+        }
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+
+        nums = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .sorted()
+                .toArray();
+
+        visited = new boolean[N];
+        visited2 = new boolean[9][MAX_NUM];
+
+        ans = new StringBuilder();
     }
 }
