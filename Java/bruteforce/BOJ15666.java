@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /*
 N과 M (12)
@@ -57,8 +59,20 @@ N개의 자연수 중에서 M개를 고른 수열
 알고리즘 분류
 백트래킹
  */
+/*
+알고리즘 핵심
+bruteforce (back-tracking)
+1. N개의 자연수 중에서 M개를 고른 수열 - dfs (back-tracking)을 이용한 수열을 만드는 함수
+2. 같은 수를 여러 번 골라도 된다. - dfs()의 인자 s = 다음 수열에 넣을 수의 시작 인덱스를 이전 인덱스 위치로 지정
+3. 고른 수열은 비내림차순이어야 한다.(+사전순) - 입력으로 주어지는 N개의 자연수를 오름차순 정렬 + 시작 인덱스의 위치를 이전 수의 인덱스로 지정
+4. 중복되는 수열 방지 - n번째 사용된 수를 저정하는 visited 배열 + n번째 수가 변경되면 n+1 번째 visited배열 초기화
+ */
 public class BOJ15666 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,M;
+    static int[] nums;
+    static boolean[][] visited;
+    static StringBuilder ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -67,12 +81,42 @@ public class BOJ15666 {
     }
 
     private static void solve() {
+        dfs(0,0,new ArrayList<>());
 
+        System.out.println(ans.toString());
+    }
+
+    private static void dfs(int n, int s, ArrayList<Integer> arr) {
+        if(n == M) {
+            ans.append(arr.toString().replaceAll("[,\\[\\]]","")).append("\n");
+            return;
+        }
+
+        for(int i = s; i < N; i++) {
+            if(visited[n][nums[i]]) continue;
+
+            Arrays.fill(visited[n + 1], false);
+
+            visited[n][nums[i]] = true;
+            arr.add(nums[i]);
+            dfs(n + 1, i, arr);
+            arr.remove(n);
+        }
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+
+        nums = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .sorted()
+                .toArray();
+
+        ans = new StringBuilder();
+
+        visited = new boolean[9][10001];
     }
-
-
 }
