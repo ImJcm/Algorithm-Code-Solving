@@ -79,7 +79,7 @@ ICPC > Regionals > Asia Pacific > Japan > Japan Domestic Contest > 2009 Japan Do
  */
 /*
 알고리즘 핵심
-그래프 + dfs (+bfs, FloodFill)
+그래프 + bfs (+dfs, FloodFill)
 1. 모든 (h,w)를 기준으로 상,하,좌,우,대각 방향으로 인접한 섬을 탐색한다.
 2. dfs,bfs - 시작지점이 섬인 경우 ans를 1 증가시킨 상태로 인접한 섬을 방문상태를 업데이트한다. / 섬이 아닌 경우 다음 좌표로 넘어간다.
 floodFill - 시작지점이 섬인 경우 idx를 1 증가시킨 상태로 인접한 섬을 idx값으로 지정한다. / 섬이 아닌 경우 다음 좌표로 넘어간다.
