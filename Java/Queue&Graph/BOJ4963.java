@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /*
 섬의 개수 다국어
@@ -75,19 +78,125 @@ ICPC > Regionals > Asia Pacific > Japan > Japan Domestic Contest > 2009 Japan Do
 플러드 필
  */
 public class BOJ4963 {
+    static class BOJ4963_pos {
+        int h,w;
+
+        BOJ4963_pos(int h, int w) {
+            this.h = h;
+            this.w = w;
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int W,H,ans,idx;
+    static int[][] direction = {{-1,0},{1,0},{0,1},{0,-1},{-1,-1},{-1,1},{1,-1},{1,1}};
+    static boolean[][] visited;
+    static int[][] map, indexedMap;
 
     public static void main(String[] args) throws IOException {
-        init_setting();
+        while(true) {
+            String[] input = br.readLine().split(" ");
 
-        solve();
+            W = Integer.parseInt(input[0]);
+            H = Integer.parseInt(input[1]);
+
+            if(W == 0 && H == 0) return;
+
+            init_setting();
+
+            solve();
+        }
     }
 
     private static void solve() {
+        for(int h = 0; h < H; h++) {
+            for(int w = 0; w < W; w++) {
+                if(visited[h][w] || map[h][w] == 0) continue;
 
+                if(map[h][w] == 1) ans += 1;
+                visited[h][w] = true;
+                dfs(new BOJ4963_pos(h,w));
+                bfs(new BOJ4963_pos(h,w));
+                FloodFill(new BOJ4963_pos(h,w),++idx);
+            }
+        }
+
+        System.out.println(ans);
+        System.out.println(idx);
+    }
+
+    private static void dfs(BOJ4963_pos m) {
+        for(int[] d : direction) {
+            int nh = m.h + d[0];
+            int nw = m.w + d[1];
+
+            if(nw < 0 || nw >= W || nh < 0 || nh >= H) continue;
+            if(visited[nh][nw] || map[nh][nw] == 0) continue;
+
+            visited[nh][nw] = true;
+            dfs(new BOJ4963_pos(nh,nw));
+        }
+    }
+
+    private static void bfs(BOJ4963_pos m) {
+        Queue<BOJ4963_pos> q = new LinkedList<>();
+
+        q.add(m);
+        visited[m.h][m.w] = true;
+
+        while(!q.isEmpty()) {
+            BOJ4963_pos now = q.poll();
+
+            for(int[] d : direction) {
+                int nh = now.h + d[0];
+                int nw = now.w + d[1];
+
+                if(nw < 0 || nw >= W || nh < 0 || nh >= H) continue;
+                if(visited[nh][nw] || map[nh][nw] == 0) continue;
+
+                visited[nh][nw] = true;
+                q.add(new BOJ4963_pos(nh,nw));
+            }
+        }
+    }
+
+    private static void FloodFill(BOJ4963_pos m, int idx) {
+        Queue<BOJ4963_pos> q = new LinkedList<>();
+
+        q.add(m);
+        visited[m.h][m.w] = true;
+        indexedMap[m.h][m.w] = idx;
+
+        while(!q.isEmpty()) {
+            BOJ4963_pos now = q.poll();
+
+            for(int[] d : direction) {
+                int nh = now.h + d[0];
+                int nw = now.w + d[1];
+
+                if(nw < 0 || nw >= W || nh < 0 || nh >= H) continue;
+                if(visited[nh][nw] || map[nh][nw] == 0) continue;
+
+                visited[nh][nw] = true;
+                indexedMap[nh][nw] = idx;
+                q.add(new BOJ4963_pos(nh,nw));
+            }
+        }
     }
 
     private static void init_setting() throws IOException {
+        map = new int[H][W];
 
+        visited = new boolean[H][W];
+
+        for(int h = 0; h < H; h++) {
+            map[h] = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+        }
+
+        ans = 0;
+
+        indexedMap = new int[H][W];
+        idx = 0;
     }
 }
