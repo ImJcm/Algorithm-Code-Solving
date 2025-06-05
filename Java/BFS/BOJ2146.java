@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /*
 다리 만들기
@@ -54,8 +57,40 @@ import java.io.InputStreamReader;
 너비 우선 탐색
 격자 그래프
  */
+/*
+알고리즘 핵심
+BFS
+1. 입력으로 주어진 섬의 위치에서 각각의 섬을 구분하기 위한 BFS를 수행한다. (search_islands())
+2. 1번의 결과로 섬을 구분하여 인덱싱한 결과를 저장한 배열을 만든다. (indexed_map)
+3. (r,c)의 모든 좌표를 기준으로 해당 좌표가 섬이고, 외곽에 해당하여 바다로 다리를 건설할 수 있는 경우 바다를 통해 다리를 잇는
+BFS를 기준이 되는 좌표의 섬 번호가 아닌 다른 섬에 도달할 때까지 수행한다.
+이때, BFS의 경우 다른 섬의 번호에 최초로 도달할 경우가 최소 다리 개수를 의미하므로 ans에 최소 다리 개수를 업데이트한다.
+(다른 섬에 도달 시, 다리 개수가 하나 더 추가되므로 cnt - 1개가 실제 필요한 다리 개수이다.)
+4. ans를 출력한다.
+ */
 public class BOJ2146 {
+    static class BOJ2146_pos {
+        int r,c;
+
+        BOJ2146_pos(int r, int c) {
+            this.r = r;
+            this.c = c;
+        }
+    }
+
+    static class BOJ2146_bridge {
+        int r,c;
+        int cnt;
+
+        BOJ2146_bridge(int r, int c, int cnt) {
+            this.r = r;
+            this.c = c;
+            this.cnt = cnt;
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,ans;
+    static int[][] map, indexed_map, direction = {{-1,0},{1,0},{0,-1},{0,1}};
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -64,9 +99,102 @@ public class BOJ2146 {
     }
 
     private static void solve() {
+        search_islands();
 
+        connect_bridge_between_islands();
+
+        System.out.println(ans);
+    }
+
+    private static void search_islands() {
+        int idx = 1;
+        for(int r = 0; r < N; r++) {
+            for(int c = 0; c < N; c++) {
+                if(map[r][c] == 0 || indexed_map[r][c] > 0) continue;
+                bfs_search_islands(new BOJ2146_pos(r,c), idx++);
+            }
+        }
+    }
+
+    private static void bfs_search_islands(BOJ2146_pos p, int idx) {
+        Queue<BOJ2146_pos> q = new LinkedList<>();
+        boolean[][] visited = new boolean[N][N];
+
+        q.add(p);
+        visited[p.r][p.c] = true;
+        indexed_map[p.r][p.c] = idx;
+
+        while(!q.isEmpty()) {
+            BOJ2146_pos now = q.poll();
+
+            int nr,nc;
+
+            for(int[] d : direction) {
+                nr = now.r + d[0];
+                nc = now.c + d[1];
+
+                if(nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+                if(visited[nr][nc] || map[nr][nc] == 0) continue;
+
+                visited[nr][nc] = true;
+                indexed_map[nr][nc] = idx;
+                q.add(new BOJ2146_pos(nr,nc));
+            }
+        }
+    }
+
+    private static void connect_bridge_between_islands() {
+        for(int r = 0; r < N; r++) {
+            for(int c = 0; c < N; c++) {
+                if(indexed_map[r][c] == 0) continue;
+                bfs_connect_bridge_between_islands(new BOJ2146_bridge(r,c,0),indexed_map[r][c]);
+            }
+        }
+    }
+
+    private static void bfs_connect_bridge_between_islands(BOJ2146_bridge b, int idx) {
+        Queue<BOJ2146_bridge> q = new LinkedList<>();
+        boolean[][] visited = new boolean[N][N];
+
+        q.add(b);
+        visited[b.r][b.c] = true;
+
+        while(!q.isEmpty()) {
+            BOJ2146_bridge now = q.poll();
+
+            if(indexed_map[now.r][now.c] != idx && indexed_map[now.r][now.c] != 0) {
+                ans = Math.min(ans, now.cnt - 1);
+                return;
+            }
+
+            int nr,nc;
+
+            for(int[] d : direction) {
+                nr = now.r + d[0];
+                nc = now.c + d[1];
+
+                if(nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+                if(visited[nr][nc] || indexed_map[nr][nc] == idx) continue;
+
+                visited[nr][nc] = true;
+                q.add(new BOJ2146_bridge(nr,nc,now.cnt + 1));
+            }
+        }
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
+
+        map = new int[N][N];
+
+        for(int i = 0; i < N; i++) {
+            map[i] = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+        }
+
+        indexed_map = new int[N][N];
+
+        ans = Integer.MAX_VALUE;
     }
 }
