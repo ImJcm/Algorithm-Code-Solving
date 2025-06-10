@@ -70,7 +70,22 @@ Olympiad > 한국정보올림피아드 > KOI 2003 > 고등부 1번
 깊이 우선 탐색
  */
 public class BOJ2250 {
+    static class BOJ2250_node {
+        int root;
+        BOJ2250_node left_child, right_child;
+        int left_child_cnt, right_child_cnt;
+
+        BOJ2250_node(int root,BOJ2250_node lc, BOJ2250_node rc, int lcc, int rcc) {
+            this.root = root;
+            this.left_child = lc;
+            this.right_child = rc;
+            this.left_child_cnt = lcc;
+            this.right_child_cnt = rcc;
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static BOJ2250_node[] nodes;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -79,10 +94,44 @@ public class BOJ2250 {
     }
 
     private static void solve() {
+        dfs_left_right_child_node_cnt(nodes[1]);
 
+        //make_arr
+
+        System.out.println("breaking");
+    }
+
+    private static void dfs_left_right_child_node_cnt(BOJ2250_node node) {
+        if(node == null) return;
+
+        dfs_left_right_child_node_cnt(node.left_child);
+        dfs_left_right_child_node_cnt(node.right_child);
+
+        int lc = node.left_child == null ? 0 : node.left_child.left_child_cnt + node.left_child.right_child_cnt + 1;
+        int rc = node.right_child == null ? 0 : node.right_child.left_child_cnt + node.right_child.right_child_cnt + 1;;
+
+        node.left_child_cnt = lc;
+        node.right_child_cnt = rc;
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        nodes = new BOJ2250_node[N + 1];
+
+        for(int i = 1; i <= N; i++) {
+            nodes[i] = new BOJ2250_node(i,null,null,0,0);
+        }
+
+        for(int i = 1; i <= N; i++) {
+            String[] connect_info = br.readLine().split(" ");
+
+            int root_node = Integer.parseInt(connect_info[0]);
+            int left_node = Integer.parseInt(connect_info[1]);
+            int right_node = Integer.parseInt(connect_info[2]);
+
+            if(left_node != -1) nodes[root_node].left_child = nodes[left_node];
+            if(right_node != -1) nodes[root_node].right_child = nodes[right_node];
+        }
     }
 }
