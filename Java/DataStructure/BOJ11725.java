@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /*
 트리의 부모 찾기
@@ -68,8 +71,30 @@ import java.io.InputStreamReader;
 너비 우선 탐색
 깊이 우선 탐색
  */
+/*
+알고리즘 핵심
+자료구조(트리) + bfs (or dfs)
+1. 1~N 까지의 node를 생성하고, 해당 노드는 자기 자신의 번호와 인접한 노드를 배열로 갖는다.
+2. 루트 노드를 1로 설정하였으므로, 1번 노드부터 인접한 노드를 queue에 넣고 가장 인접한 노드부터 bfs 탐색한다.
+3. 노드를 탐색하면서 이미 탐색한 노드를 visited 배열에 체크하여 부모 노드와 자식 노드를 구분한다.
+4. queue에 node를 넣을 때, 현재 노드의 인접한 노드를 탐색하는 것이므로 queue에 넣어지는 node의 부모 노드는 현재 노드로 설정한다.
+ */
 public class BOJ11725 {
+    static class BOJ11725_node {
+        int idx,parent;
+        ArrayList<BOJ11725_node> adj;
+
+        BOJ11725_node(int idx) {
+            this.idx = idx;
+            this.parent = 0;
+            this.adj = new ArrayList<>();
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static BOJ11725_node[] nodes;
+    static boolean[] visited;
+    static StringBuilder ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -78,10 +103,59 @@ public class BOJ11725 {
     }
 
     private static void solve() {
+        search_node(nodes[1]);
 
+        print_parent_node();
+    }
+
+    private static void print_parent_node() {
+        for(int i = 1; i <= N; i++) {
+            ans.append(nodes[i].parent).append("\n");
+        }
+
+        System.out.println(ans.substring(2));
+    }
+
+    private static void search_node(BOJ11725_node node) {
+        Queue<BOJ11725_node> q = new LinkedList<>();
+
+        q.add(node);
+        visited[node.idx] = true;
+
+        while(!q.isEmpty()) {
+            BOJ11725_node now = q.poll();
+
+            for(BOJ11725_node n : now.adj) {
+                if(visited[n.idx]) continue;
+
+                visited[n.idx] = true;
+                n.parent = now.idx;
+                q.add(nodes[n.idx]);
+            }
+        }
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        visited = new boolean[N + 1];
+
+        nodes = new BOJ11725_node[N + 1];
+
+        for(int i = 1; i <= N; i++) {
+            nodes[i] = new BOJ11725_node(i);
+        }
+
+        for(int i = 1; i < N; i++) {
+            String[] input = br.readLine().split(" ");
+
+            int n1 = Integer.parseInt(input[0]);
+            int n2 = Integer.parseInt(input[1]);
+
+            nodes[n1].adj.add(nodes[n2]);
+            nodes[n2].adj.add(nodes[n1]);
+        }
+
+        ans = new StringBuilder();
     }
 }
