@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
 트리의 지름
@@ -54,10 +57,30 @@ import java.io.InputStreamReader;
 트리의 지름
  */
 /*
+알고리즘 핵심
+자료구조 + 트리의 지름 + dfs (or bfs)
+1. 트리의 지름 알고리즘을 활용하여 임의의 지점(루트 노드, 1)에서 거리가 먼 지점을 찾는다.
+2. 해당 지점에서 거리가 먼 지점을 찾고 해당 지점과 사이의 거리를 계산하고 해당 값을 트리의 지름으로 정한다.
 
+BOJ1167 - 트리의 지름과 다른 점은 입력으로 주어지는 노드의 개수가 차이가 있다.
+즉, BOJ1967의 경우 각 지점마다 bruteforce 형태로 모든 지점 간의 거리를 계산할 수 있다고 생각하지만,
+BOJ1167의 경우 dfs 두번으로 가장 거리가 먼 지점을 찾아 트리의 지름을 찾는다.
  */
 public class BOJ1967 {
+    static class BOJ1967_node {
+        int idx;
+        ArrayList<BOJ1967_node> adj;
+        Map<Integer,Integer> weight;
+
+        BOJ1967_node(int idx) {
+            this.idx = idx;
+            this.adj = new ArrayList<>();
+            this.weight = new HashMap<>();
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N, max_dist, max_dist_node;
+    static BOJ1967_node[] nodes;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -66,10 +89,53 @@ public class BOJ1967 {
     }
 
     private static void solve() {
+        find_farthest_node(nodes[1], 0, new boolean[N + 1]);
 
+        max_dist = 0;
+
+        find_farthest_node(nodes[max_dist_node],0, new boolean[N + 1]);
+
+        System.out.println(max_dist);
+    }
+
+    private static void find_farthest_node(BOJ1967_node node, int dist, boolean[] visited) {
+        visited[node.idx] = true;
+
+        if(dist >= max_dist) {
+            max_dist = dist;
+            max_dist_node = node.idx;
+        }
+
+        for(BOJ1967_node n : node.adj) {
+            if(visited[n.idx]) continue;
+
+            find_farthest_node(n,dist + node.weight.get(n.idx),visited);
+        }
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        nodes = new BOJ1967_node[N + 1];
+
+        for(int i = 1; i <= N; i++) {
+            nodes[i] = new BOJ1967_node(i);
+        }
+
+        for(int i = 1; i < N; i++) {
+            String[] edge_info = br.readLine().split(" ");
+
+            int pn = Integer.parseInt(edge_info[0]);
+            int cn = Integer.parseInt(edge_info[1]);
+            int weight = Integer.parseInt(edge_info[2]);
+
+            nodes[pn].adj.add(nodes[cn]);
+            nodes[pn].weight.put(cn,weight);
+
+            nodes[cn].adj.add(nodes[pn]);
+            nodes[cn].weight.put(pn,weight);
+        }
+
+        max_dist = 0;
     }
 }
