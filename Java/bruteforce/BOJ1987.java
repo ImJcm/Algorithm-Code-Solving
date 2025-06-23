@@ -64,6 +64,13 @@ Olympiad > Croatian Highschool Competitions in Informatics > 2002 > Regional Com
 백트래킹
 격자 그래프
  */
+/*
+알고리즘 핵심
+bruteforce (dfs + backTracking)
+1. 시작 시점에서 상하좌우로 말의 이동을 수행한다.
+2. 깊이 우선 탐색(dfs)를 수행하여 말의 이동 횟수를 누적한다.
+3. 말이 이동 시, 해당 위치가 이전에 도달한 알파벳과 동일한 경우 종료하고, 현재 이동한 횟수를 ans에 최대값을 업데이트한다.
+ */
 public class BOJ1987 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
