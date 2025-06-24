@@ -67,12 +67,16 @@ Olympiad > Croatian Highschool Competitions in Informatics > 2002 > Regional Com
 /*
 알고리즘 핵심
 bruteforce (dfs + backTracking)
-1. 시작 시점에서 상하좌우로 말의 이동을 수행한다.
+1. 시작 시점에서 상하좌우로 말의 이동을 수행하고, 말의 초기 이동 횟수를 1로 초기화한다.
 2. 깊이 우선 탐색(dfs)를 수행하여 말의 이동 횟수를 누적한다.
-3. 말이 이동 시, 해당 위치가 이전에 도달한 알파벳과 동일한 경우 종료하고, 현재 이동한 횟수를 ans에 최대값을 업데이트한다.
+3. 말이 이동 시, 해당 위치가 이전에 도달한 알파벳과 동일한 경우, 현재 이동한 횟수를 ans에 최대값을 업데이트한다.
+4. 말이 이동할 수 있는 모든 경우의 수를 탐색한다.
  */
 public class BOJ1987 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int R,C,ans;
+    static char[][] board;
+    static int[][] direction = {{-1,0},{1,0},{0,-1},{0,1}};
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -81,10 +85,48 @@ public class BOJ1987 {
     }
 
     private static void solve() {
+        boolean[] visited = new boolean[26];
+        visited[board[1][1] - 'A'] = true;
+        how_much_can_move(1, 1, 1, visited);
 
+        System.out.println(ans);
+    }
+
+    private static void how_much_can_move(int r, int c, int m, boolean[] visited) {
+        for(int[] d : direction) {
+            int nr = r + d[0];
+            int nc = c + d[1];
+
+            if(nr < 1 || nr > R || nc < 1 || nc > C) continue;
+            int idx = board[nr][nc] - 'A';
+
+            if(visited[idx]) {
+                ans = Math.max(ans, m);
+                continue;
+            }
+
+            visited[idx] = true;
+            how_much_can_move(nr, nc, m + 1, visited);
+            visited[idx] = false;
+        }
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        R = Integer.parseInt(input[0]);
+        C = Integer.parseInt(input[1]);
+
+        board = new char[R + 1][C + 1];
+
+        for(int i = 1; i <= R; i++) {
+            input = br.readLine().split("");
+
+            for(int j = 1; j <= C; j++) {
+                board[i][j] = input[j - 1].charAt(0);
+            }
+        }
+
+        ans = 1;
     }
 }
