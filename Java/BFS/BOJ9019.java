@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /*
 DSLR 스페셜 저지다국어
@@ -53,19 +55,104 @@ ICPC > Regionals > Asia Pacific > Korea > Nationwide Internet Competition > Daej
 역추적
  */
 public class BOJ9019 {
+    static class BOJ9019_operation {
+        String number;
+        String command;
+
+        BOJ9019_operation(String number, String command) {
+            this.number = number;
+            this.command = command;
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int T,A,B;
+    static boolean[] visited;
+    static StringBuilder ans;
 
     public static void main(String[] args) throws IOException {
-        init_setting();
+        T = Integer.parseInt(br.readLine());
+        ans = new StringBuilder();
 
-        solve();
+        while(T-- > 0) {
+            init_setting();
+            solve();
+        }
+
+        System.out.println(ans.toString());
     }
 
     private static void solve() {
+        calculate_DSLR(new BOJ9019_operation(Integer.toString(A), new String("")));
+    }
 
+    private static void calculate_DSLR(BOJ9019_operation boj9019Operation) {
+        // 여기부터
+    }
+
+
+    /*
+        시간 초과 : String <-> Integer 간의 형변환 과정으로 인한 시간 초과가 발생한다고 생각한다.
+     */
+    private static void calculate_DSLR_timeOut(BOJ9019_operation op) {
+        Queue<BOJ9019_operation> q = new LinkedList<>();
+
+        q.add(op);
+        visited[Integer.parseInt(op.number)] = true;
+
+        while(!q.isEmpty()) {
+            BOJ9019_operation now = q.poll();
+
+            String str_num = now.number;
+            int str_to_int_num = Integer.parseInt(str_num);
+            String now_command = now.command;
+
+            if(str_to_int_num == B) {
+                ans.append(now_command).append("\n");
+                return;
+            }
+
+            for(int i = 0; i < 4; i++) {
+                str_num = now.number.length() != 4 ?
+                        "0".repeat(4 - now.number.length()) + now.number : now.number;
+                str_to_int_num = Integer.parseInt(str_num);
+                now_command = now.command;
+
+                switch (i) {
+                    case 0: // D
+                        str_to_int_num = str_to_int_num * 2 >= 10000 ?
+                                (str_to_int_num * 2) % 10000 : str_to_int_num * 2;
+                        now_command += "D";
+                        break;
+                    case 1: // S
+                        str_to_int_num = str_to_int_num - 1 < 0 ?
+                                9999 : str_to_int_num - 1;
+                        now_command += "S";
+                        break;
+                    case 2: // L
+                        str_num = str_num.substring(1) + str_num.charAt(0);
+                        str_to_int_num = Integer.parseInt(str_num);
+                        now_command += "L";
+                        break;
+                    case 3: // R
+                        str_num = str_num.charAt(3) + str_num.substring(0,3);
+                        str_to_int_num = Integer.parseInt(str_num);
+                        now_command += "R";
+                        break;
+                }
+
+                if(visited[str_to_int_num]) continue;
+                str_num = Integer.toString(str_to_int_num);
+                q.add(new BOJ9019_operation(str_num,now_command));
+            }
+        }
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        A = Integer.parseInt(input[0]);
+        B = Integer.parseInt(input[1]);
+
+        visited = new boolean[10000];
     }
 }
