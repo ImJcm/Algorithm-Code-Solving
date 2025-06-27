@@ -54,7 +54,27 @@ ICPC > Regionals > Asia Pacific > Korea > Nationwide Internet Competition > Daej
 너비 우선 탐색
 역추적
  */
+/*
+알고리즘 핵심
+BFS
+1. BFS에 사용하기 위한 구조체로 변환되는 숫자와 현재까지의 명령어를 갖는다.
+2. DSLR 과정을 각 숫자마다 수행하여 BFS 탐색을 수행한다. - DSLR_change_format()
+
+처음 프로토타입 코드는 숫자가 1, 99와 같이 4자리 수를 만족하지 않는 경우 LR 과정에서 변환이 용이하기 위해 String 타입으로 사용하였으나,
+값을 변환하는 과정 + 이미 만들어진 수를 비교하는 과정에서 String <-> Integer 간의 형변환이 많아지는 코드가 작성이 되었고 이는 시간 초과 결과를 발생시켰다.
+Integer 타입으로 단순히 사칙연산을 이용하여 LR 로테이션을 수행할 수 있었기 때문에 해당 방법으로 시간 초과를 해결하였다.
+ */
 public class BOJ9019 {
+    static class BOJ9019_operation_2 {
+        int number;
+        String command;
+
+        BOJ9019_operation_2(int number, String command) {
+            this.number = number;
+            this.command = command;
+        }
+    }
+
     static class BOJ9019_operation {
         String number;
         String command;
@@ -68,6 +88,7 @@ public class BOJ9019 {
     static int T,A,B;
     static boolean[] visited;
     static StringBuilder ans;
+    static char[] DSLR = {'D','S','L','R'};
 
     public static void main(String[] args) throws IOException {
         T = Integer.parseInt(br.readLine());
@@ -82,13 +103,61 @@ public class BOJ9019 {
     }
 
     private static void solve() {
-        calculate_DSLR(new BOJ9019_operation(Integer.toString(A), new String("")));
+        calculate_DSLR(new BOJ9019_operation_2(A, new String("")));
+        //calculate_DSLR_timeOut(new BOJ9019_operation(Integer.toString(A), new String("")));
     }
 
-    private static void calculate_DSLR(BOJ9019_operation boj9019Operation) {
-        // 여기부터
+    /*
+        Success Solve : DSLR 변환 값을 String -> Integer만을 사용하여 성공
+     */
+    private static void calculate_DSLR(BOJ9019_operation_2 op) {
+        Queue<BOJ9019_operation_2> q = new LinkedList<>();
+
+        q.add(op);
+        visited[op.number] = true;
+
+        while(!q.isEmpty()) {
+            BOJ9019_operation_2 now = q.poll();
+
+            if(now.number == B) {
+                ans.append(now.command).append("\n");
+                return;
+            }
+
+            for(int i = 0; i < 4; i++) {
+                int n_number = DSLR_change_format(now.number,i);
+
+                if(visited[n_number]) continue;
+
+                visited[n_number] = true;
+                q.add(new BOJ9019_operation_2(n_number,now.command + DSLR[i]));
+            }
+        }
     }
 
+    private static int DSLR_change_format(int original, int type) {
+        int result = original;
+
+        switch (type) {
+            case 0: // D
+                result = (result * 2) % 10000;
+                break;
+            case 1: // S
+                result = result == 0 ? 9999 : result - 1;
+                break;
+            case 2: // L
+                int d1 = result / 1000;
+                int d234 = result % 1000;
+                result = d234 * 10 + d1;
+                break;
+            case 3: // R
+                int d4 = result % 10;
+                int d123 = result / 10;
+                result = d4 * 1000 + d123;
+                break;
+        }
+        return result;
+    }
 
     /*
         시간 초과 : String <-> Integer 간의 형변환 과정으로인한 시간 초과가 발생한다고 생각한다.
