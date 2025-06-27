@@ -91,7 +91,7 @@ public class BOJ9019 {
 
 
     /*
-        시간 초과 : String <-> Integer 간의 형변환 과정으로 인한 시간 초과가 발생한다고 생각한다.
+        시간 초과 : String <-> Integer 간의 형변환 과정으로인한 시간 초과가 발생한다고 생각한다.
      */
     private static void calculate_DSLR_timeOut(BOJ9019_operation op) {
         Queue<BOJ9019_operation> q = new LinkedList<>();
