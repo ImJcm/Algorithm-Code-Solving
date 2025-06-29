@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 동전 0
@@ -56,8 +57,15 @@ import java.io.InputStreamReader;
 알고리즘 분류
 그리디 알고리즘
  */
+/*
+알고리즘 핵심
+그리디 알고리즘
+1. 오름차순 정렬된 코인을 가장 큰 코인부터 작은 순으로 총합 K에 coin을 차감하면서 코인의 사용 개수를 업데이트한다.
+ */
 public class BOJ11047 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,K,ans;
+    static int[] coins;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -66,10 +74,30 @@ public class BOJ11047 {
     }
 
     private static void solve() {
+        for(int i = N - 1; i >= 0; i--) {
+            int coin_cnt = 0;
 
+            while(K >= coins[i]) {
+                K -= coins[i];
+                coin_cnt++;
+            }
+
+            ans += coin_cnt;
+        }
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException{
+        String[] input = br.readLine().split(" ");
 
+        N = Integer.parseInt(input[0]);
+        K = Integer.parseInt(input[1]);
+
+        coins = new int[N];
+
+        for(int i = 0; i < N; i++) {
+            coins[i] = Integer.parseInt(br.readLine());
+        }
     }
 }
