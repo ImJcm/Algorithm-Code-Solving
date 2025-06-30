@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /*
 탈출 다국어
@@ -69,8 +72,36 @@ Contest > Croatian Open Competition in Informatics > COCI 2006/2007 > Contest #1
 너비 우선 탐색
 격자 그래프
  */
+/*
+알고리즘 핵심
+BFS
+1. 고슴도치의 방문여부와 물의 이동의 방문여부를 따로 체크하고, 이동 순서를 물 -> 고슴도치 순으로 결정하여 물이 찰 예정인 칸으로
+고슴도치의 이동을 막으면서 이동을 수행한다.
+2. 현재 이동 대상을 구분하여 다음 이동 공간의 조건을 달리 체크한다.
+공통적으로 다음 이동하는 곳이 돌인 경우, 이동이 불가능하다.
+현재 이동 대상이 고슴도치인 경우, 다음 이동하는 공간이 고슴도치가 방문한 곳이거나 물이 찬 곳이라면 이동이 불가능하다.
+현재 이동 대상이 물인 경우, 다음 이동하는 공간이 물이 찬 곳이거나 비버의 소굴이라면 이동이 불가능하다.
+3. 고슴도치가 비버의 소굴에 도달하면 이동에 걸린 시간을 ans에 업데이트하고, 불가능한 경우, KAKTUS를 업데이트하고 출력한다.
+ */
 public class BOJ3055 {
+    static class BOJ3055_space {
+        int r,c,time;
+        char status;
+
+        BOJ3055_space(int r, int c, char s, int t) {
+            this.r = r;
+            this.c = c;
+            this.status = s;
+            this.time = t;
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int R,C,ans;
+    static int[][] direction = {{0,1},{0,-1},{1,0},{-1,0}};
+    static BOJ3055_space D,S;
+    static ArrayList<BOJ3055_space> water;
+    static BOJ3055_space[][] tea_tree_forest;
+    static final String KAKTUS = "KAKTUS";
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -79,10 +110,83 @@ public class BOJ3055 {
     }
 
     private static void solve() {
+        Hedgehog_migration(S,water);
 
+        System.out.println(ans == Integer.MAX_VALUE ? KAKTUS : ans);
+    }
+
+    private static void Hedgehog_migration(BOJ3055_space s, ArrayList<BOJ3055_space> water) {
+        Queue<BOJ3055_space> q = new LinkedList<>();
+        boolean[][] visited_hedgehog = new boolean[R][C];
+        boolean[][] visited_water = new boolean[R][C];
+
+        q.addAll(water);
+        for(BOJ3055_space w : water) {
+            visited_water[w.r][w.c] = true;
+        }
+
+        q.add(s);
+        visited_hedgehog[s.r][s.c] = true;
+
+
+        while(!q.isEmpty()) {
+            BOJ3055_space now = q.poll();
+
+            if(tea_tree_forest[now.r][now.c].status == D.status) {
+                ans = now.time;
+                return;
+            }
+
+            for(int[] d : direction) {
+                int nr = now.r + d[0];
+                int nc = now.c + d[1];
+
+                if(nr < 0 || nr >= R || nc < 0 || nc >= C) continue;
+                if(tea_tree_forest[nr][nc].status == 'X') continue;
+                if(now.status == 'S' && (visited_hedgehog[nr][nc] || visited_water[nr][nc])) continue;
+                if(now.status == '*' && (visited_water[nr][nc] || tea_tree_forest[nr][nc].status == 'D')) continue;
+
+                if(now.status == 'S') {
+                    visited_hedgehog[nr][nc] = true;
+                    q.add(new BOJ3055_space(nr,nc,now.status,now.time + 1));
+                }
+
+                if(now.status == '*') {
+                    visited_water[nr][nc] = true;
+                    q.add(new BOJ3055_space(nr,nc,now.status, now.time + 1));
+                }
+            }
+        }
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        R = Integer.parseInt(input[0]);
+        C = Integer.parseInt(input[1]);
+
+        water = new ArrayList<>();
+        tea_tree_forest = new BOJ3055_space[R][C];
+
+        for(int r = 0; r < R; r++) {
+            input = br.readLine().split("");
+            for(int c = 0; c < C; c++) {
+                tea_tree_forest[r][c] = new BOJ3055_space(r,c,input[c].charAt(0),0);
+
+                if(tea_tree_forest[r][c].status == 'D') {
+                    D = tea_tree_forest[r][c];
+                }
+
+                if(tea_tree_forest[r][c].status == 'S') {
+                    S = tea_tree_forest[r][c];
+                }
+
+                if(tea_tree_forest[r][c].status == '*') {
+                    water.add(tea_tree_forest[r][c]);
+                }
+            }
+        }
+
+        ans = Integer.MAX_VALUE;
     }
 }
