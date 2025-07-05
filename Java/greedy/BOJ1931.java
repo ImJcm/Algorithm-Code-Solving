@@ -43,8 +43,15 @@ import java.io.InputStreamReader;
 그리디 알고리즘
 정렬
  */
+/*
+알고라즘 핵심
+그리디 알고리즘 + 정렬
+1. 회의가 끝나는 시간을 기준으로 오름차순 정렬을 수행한다. 이때, 같은 시간이라면 회의의 시작시간이 빠른 순으로 오름차순 정렬한다.
+2. 정렬이 완료된 배열에서 0번 인덱스를 시작으로 회의를 배정하여 최대 회의 갯수를 도출한다.
+*/
 public class BOJ1931 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
 
     public static void main(String[] args) throws IOException {
         init_setting();
