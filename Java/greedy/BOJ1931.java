@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 회의실 배정
@@ -50,8 +51,22 @@ import java.io.InputStreamReader;
 2. 정렬이 완료된 배열에서 0번 인덱스를 시작으로 회의를 배정하여 최대 회의 갯수를 도출한다.
 */
 public class BOJ1931 {
+    static class BOJ1931_meeting implements Comparable<BOJ1931_meeting> {
+        int start,end;
+
+        BOJ1931_meeting(int s, int e) {
+            this.start = s;
+            this.end = e;
+        }
+
+        @Override
+        public int compareTo(BOJ1931_meeting o) {
+            return this.end == o.end ? this.start - o.start : this.end - o.end;
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int N;
+    static int N,cur_time,ans;
+    static BOJ1931_meeting[] meetings;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -60,10 +75,33 @@ public class BOJ1931 {
     }
 
     private static void solve() {
+        Arrays.sort(meetings);
 
+        cur_time = meetings[0].start;
+
+        for(int i = 0; i < N; i++) {
+            if(cur_time <= meetings[i].start && cur_time <= meetings[i].end) {
+                ans++;
+                cur_time = meetings[i].end;
+            }
+        }
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        meetings = new BOJ1931_meeting[N];
+
+        String[] input;
+        for(int i = 0; i < N; i++) {
+            input = br.readLine().split(" ");
+
+            meetings[i] = new BOJ1931_meeting(Integer.parseInt(input[0]), Integer.parseInt(input[1]));
+        }
+
+        cur_time = 0;
+        ans = 0;
     }
 }
