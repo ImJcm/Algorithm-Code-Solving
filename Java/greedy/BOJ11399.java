@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /*
 ATM
@@ -36,8 +38,17 @@ ATM
 그리디 알고리즘
 정렬
  */
+/*
+알고리즘 핵심
+그리디 알고리즘 + 정렬
+1. 각 사람마다 인출하는데 걸리는 시간을 오름차순으로 정렬한다.
+2. 오름차순으로 정렬된 P배열을 0~N-1번까지 각 인덱스에 해당하는 사람의 걸린 인출 시간은 T_i = (P_0 + ... P_i-1) + P_i = T_i-1 + P_i
+3. T 배열을 모두 총합하여 ans에 업데이트한다.
+ */
 public class BOJ11399 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,ans;
+    static int[] P,T;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -46,10 +57,24 @@ public class BOJ11399 {
     }
 
     private static void solve() {
+        T[0] = P[0];
+        for(int i = 1; i < N; i++) {
+            T[i] = T[i - 1] + P[i];
+        }
 
+        ans = Arrays.stream(T).sum();
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        P = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .sorted()
+                .toArray();
+
+        T = new int[N];
     }
 }
