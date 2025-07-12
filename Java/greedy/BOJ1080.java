@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 행렬
@@ -91,8 +92,18 @@ import java.io.InputStreamReader;
 알고리즘 분류
 그리디 알고리즘
  */
+/*
+알고리즘 핵심
+그리디 알고리즘
+1. N,M 행렬에서 순차적으로 3x3 뒤집기가 가능한지 검사한다.
+2. 뒤집기가 가능한 경우, A 행렬을 뒤집고, 이를 N,M까지 뒤집기가 가능한 인덱스 위치까지 수행한다.
+3. 뒤집기가 끝난 후, A와 B 행렬이 같은지 검사한 후, 뒤집기 횟수를 출력하거나, 불가능한 경우 -1을 출력한다.
+ */
 public class BOJ1080 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static boolean flag;
+    static int N,M,ans;
+    static int[][] A,B;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -102,9 +113,73 @@ public class BOJ1080 {
 
     private static void solve() {
 
+        if(N < 3 && M < 3) {
+            flag = check_is_same_matrix();
+        } else {
+            for(int n = 0; n < N - 2; n++) {
+                for(int m = 0; m < M - 2; m++) {
+                    if(A[n][m] == B[n][m]) continue;
+
+                    flip_matrix(n,m);
+                    ans++;
+                }
+            }
+
+            flag = check_is_same_matrix();
+        }
+
+        System.out.println(flag ? ans : -1);
+    }
+
+    private static void flip_matrix(int n, int m) {
+        for(int i = n; i < n + 3; i++) {
+            for(int j = m; j < m + 3; j++) {
+                A[i][j] = (A[i][j] + 1) % 2;
+            }
+        }
+    }
+
+    private static boolean check_is_same_matrix() {
+        for(int n = 0; n < N; n++) {
+            for(int m = 0; m < M; m++) {
+                if(A[n][m] != B[n][m]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+
+        A = new int[N][M];
+        B = new int[N][M];
+
+        int count = 2;
+
+        while(count-- > 0) {
+            switch (count) {
+                case 0:
+                    for(int i = 0; i < N; i++) {
+                        B[i] = Arrays.stream(br.readLine().split(""))
+                                .mapToInt(Integer::parseInt)
+                                .toArray();
+                    }
+                    break;
+                case 1:
+                    for(int i = 0; i < N; i++) {
+                        A[i] = Arrays.stream(br.readLine().split(""))
+                                .mapToInt(Integer::parseInt)
+                                .toArray();
+                    }
+                    break;
+            }
+        }
+
+        ans = 0;
     }
 }
