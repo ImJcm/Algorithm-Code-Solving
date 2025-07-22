@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
 30 다국어
@@ -49,11 +52,10 @@ Contest > Croatian Open Competition in Informatics > COCI 2014/2015 > Contest #4
  */
 public class BOJ10610 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static String N;
+    static String N,ans;
     static int size;
-    static long ans;
     static int[] nums;
-    static boolean[][] available;
+    static Map<Integer, ArrayList<Integer>> standard;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -62,18 +64,48 @@ public class BOJ10610 {
     }
 
     private static void solve() {
-        multiple_30();
+        int sum = sum_num();
+
+        if(size < 2) {
+            ans = "-1";
+        } else {
+            if(nums[0] == 0) {
+                ans = "-1";
+            } else {
+                nums[0]--;
+                for(int i = 0; i < 10; i++) {
+                    if(nums[i] > 0) {
+                        if(standard.get((sum - i) % 9).contains(i)) {
+                            make_num(i);
+                            break;
+                        }
+                    }
+                }
+                ans = ans.isEmpty() ? "-1" : ans;
+            }
+        }
+
+        System.out.println(ans);
     }
 
-    private static void multiple_30() {
-        long num = 1;
-
-
-
-        while(true) {
-            num *= 30;
-
+    private static void make_num(int n) {
+        for(int i = 9; i >= 0; i--) {
+            if(nums[i] > 0) {
+                ans += Integer.toString(i).repeat(nums[i]);
+            }
         }
+
+        ans += "0";
+    }
+
+    private static int sum_num() {
+        int result = 0;
+
+        for(int i = 0; i < nums.length; i++) {
+            result += (nums[i] * i);
+        }
+
+        return result;
     }
 
     private static void init_setting() throws IOException {
@@ -82,6 +114,7 @@ public class BOJ10610 {
         size = N.length();
 
         nums = new int[10];
+        standard = new HashMap<>();
 
         for(int i = 0; i < N.length(); i++) {
             //int num = (int) N.charAt(i) - '0';
@@ -89,10 +122,15 @@ public class BOJ10610 {
             nums[num]++;
         }
 
-        available = new boolean[(int) size][10];
+        for(int i = 0; i < 10; i++) {
+            standard.put(i,new ArrayList<>());
 
-        ans = 0;
+            for(int j = 0; j < 10; j += 3) {
+                if(j - (i % 3) < 0) continue;
+                standard.get(i).add(j - (i % 3));
+            }
+        }
+
+        ans = "";
     }
-
-
 }
