@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 동전 뒤집기
@@ -44,7 +45,8 @@ THT
  */
 public class BOJ1285 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int N;
+    static int N,ans;
+    static char[][] origin_coins,coins;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -56,7 +58,127 @@ public class BOJ1285 {
 
     }
 
-    private static void init_setting() throws IOException {
+    /*
+        실패 코드 : dfs를 통해 모든 경우의 수를 체크하고 T의 최소 개수를 만들려고 하는 로직
+        중복되는 경우와 많은 경우의 수로 시간초과 발생 예상
+     */
+    private static void wrong_solve2() {
+        copy_coins(origin_coins);
 
+        dfs(0);
+
+        System.out.println(ans);
+    }
+
+    private static void dfs(int n) {
+        if(n >= N * N) {
+            ans = Math.min(ans,check_coins());
+            return;
+        }
+
+        //dfs(n + 1);
+
+        flip(n / N, true);
+        dfs(n + 1);
+
+        flip(n % N, false);
+        dfs(n + 1);
+    }
+
+    /*
+        틀린 코드 : 행 -> 열 또는 열 -> 행 순으로 T의 개수가 많은 라인을 뒤집어서 최종적인 T의 개수를 검사하는 로직
+        최소 갯수의 T를 만족하지 못했다.
+     */
+    private static void wrong_solve() {
+        copy_coins(origin_coins);
+        flip_coin(true);
+        flip_coin(false);
+        ans = Math.min(ans,check_coins());
+
+        copy_coins(origin_coins);
+        flip_coin(false);
+        flip_coin(true);
+        ans = Math.min(ans,check_coins());
+
+        System.out.println(ans);
+    }
+
+    private static int check_coins() {
+        int cnt = 0;
+
+        for(int r = 0; r < N; r++) {
+            for(int c = 0; c < N; c++) {
+                if(coins[r][c] == 'T') cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    private static void flip_coin(boolean row_or_col) {
+        for(int l = 0; l < N; l++) {
+            if(can_flip_cur_line(l,row_or_col)) {
+                flip(l,row_or_col);
+            }
+        }
+    }
+
+    private static void flip(int l, boolean row_or_col) {
+        if(row_or_col) {
+            for(int i = 0; i < N; i++) {
+                if(coins[l][i] == 'T') {
+                    coins[l][i] = 'H';
+                } else {
+                    coins[l][i] = 'T';
+                }
+            }
+        } else {
+            for(int i = 0; i < N; i++) {
+                if(coins[i][l] == 'T') {
+                    coins[i][l] = 'H';
+                } else {
+                    coins[i][l] = 'T';
+                }
+            }
+        }
+    }
+
+    private static boolean can_flip_cur_line(int l,boolean row_or_col) {
+        int cnt = 0;
+
+        if(row_or_col) {
+            for(int i = 0; i < N; i++) {
+                if(coins[l][i] == 'T') {
+                    cnt++;
+                }
+            }
+        } else {
+            for(int i = 0; i < N; i++) {
+                if(coins[i][l] == 'T') {
+                    cnt++;
+                }
+            }
+        }
+
+        if(cnt > N / 2) return true;
+        else return false;
+    }
+
+    private static void copy_coins(char[][] o) {
+        for(int r = 0; r < N; r++) {
+            coins[r] = Arrays.copyOf(o[r],N);
+        }
+    }
+
+    private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
+
+        coins = new char[N][N];
+        origin_coins = new char[N][N];
+
+        for(int i = 0; i < N; i++) {
+            origin_coins[i] = br.readLine().toCharArray();
+        }
+
+        ans = Integer.MAX_VALUE;
     }
 }
