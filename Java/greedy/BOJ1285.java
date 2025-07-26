@@ -55,7 +55,58 @@ public class BOJ1285 {
     }
 
     private static void solve() {
+        for(int i = 0; i < Math.pow(2,N); i++) {
+            copy_coins(origin_coins);
+            bitmask_row_flip(i);
+            greedy_flip_check2();
+        }
 
+        System.out.println(ans);
+    }
+
+    /*
+        실패 코드 : 메모리 초과, 동전 뒤집기 이후, T의 갯수를 검사하는 과정에서 N^2
+     */
+    private static void wrong_solve3() {
+        for(int i = 0; i < Math.pow(2,N); i++) {
+            copy_coins(origin_coins);
+            bitmask_row_flip(i);
+            greedy_flip_check();
+            ans = Math.min(ans,check_coins());
+        }
+
+        System.out.println(ans);
+    }
+
+    private static void greedy_flip_check2() {
+        int cnt = 0;
+        for(int i = 0; i < N; i++) {
+            int cnt_T = can_flip_cur_line2(i,false);
+            if(cnt_T > (N / 2)) {
+                flip(i,false);
+                cnt += (N - cnt_T);
+            } else {
+                cnt += cnt_T;
+            }
+        }
+        ans = Math.min(ans, cnt);
+    }
+
+    private static void greedy_flip_check() {
+        for(int i = 0; i < N; i++) {
+            if(can_flip_cur_line(i,false)) {
+                flip(i,false);
+            }
+        }
+    }
+
+    private static void bitmask_row_flip(int i) {
+        int row = 0;
+        while(i > 0) {
+            if(i % 2 == 1) flip(row, true);
+            i /= 2;
+            row++;
+        }
     }
 
     /*
@@ -161,6 +212,26 @@ public class BOJ1285 {
 
         if(cnt > N / 2) return true;
         else return false;
+    }
+
+    private static int can_flip_cur_line2(int l,boolean row_or_col) {
+        int cnt = 0;
+
+        if(row_or_col) {
+            for(int i = 0; i < N; i++) {
+                if(coins[l][i] == 'T') {
+                    cnt++;
+                }
+            }
+        } else {
+            for(int i = 0; i < N; i++) {
+                if(coins[i][l] == 'T') {
+                    cnt++;
+                }
+            }
+        }
+
+        return cnt;
     }
 
     private static void copy_coins(char[][] o) {
