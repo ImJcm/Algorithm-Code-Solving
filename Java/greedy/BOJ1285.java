@@ -43,6 +43,27 @@ THT
 브루트포스 알고리즘
 비트마스킹
  */
+/*
+알고리즘 핵심
+그리디 알고리즘
+1. 입력으로 주어지는 배열을 저장한 후, 바트마스킹을 통해 row를 flip한 상태를 N^2개의 개수만큼 상태를 만들어야 한다.
+2. 이때, 이전에 만든 row flip배열에서 다음으로 만들어야 할 배열을 만들기 위해 연산을 최소화할 수 있는 XOR 연산으로 필요한 row만 flip한다.
+3. 만들어진 배열에서 col마다 T의 개수가 N / 2보다 큰 경우만 flip하게 되면 T의 최소 개수를 만족하는 greedy한 조건을 만족하므로 T의 개수를 측정한다.
+4. 각 배열에서 측정한 T의 개수중 최소값을 저장한다.
+
+초기 접근으로 greedy 조건을 만족하기 위해 row에서 T의 개수가 많은 순으로 뒤집고, 다음으로 col또한 같은 동작을 수행하여, 이 과정을 row <-> col또한 반대로 적용하여
+수행하여 최소 T의 개수를 만족할 수 있다고 생각했지만 틀린 접근이였다.
+
+두번째 접근으로 간단하게 bruteforce로 dfs를 적용하여 모든 경우의 수를 검사하여 최소 T의 갯수를 찾으려 했지만 중복되는 경우의 수와 많은 경우의 수로 실패하였다.
+
+세번째 접근으로 질문 게시판을 참고하여 한 행 또는 열을 먼저 flip한 모든 경우의 수를 만들고 greedy하게 남은 행 또는 열을 뒤집는 형태가 되어야한다는 것을 알게되었고,
+이를 적용하여 비트마스킹을 적용하여 row를 뒤집는 모든 경우의 수에서 col을 greedy하게 뒤집어서 T의 최소 갯수를 찾으려 했지만 메모리 초과가 발생하였다.
+
+네번째 접근으로 세번째 접근에서 메모리 접근의 원인으로 불필요한 배열의 접근과 변형이 원인이 될 수 있다고 생각하여
+해당 col을 flip하여 배열을 변형하는 과정의 불필요함과 2^20에 해당하는 모든 경우에서 coins 배열을 접근하고 초기화하는 과정을 제거하였다.
+
+위의 불필요한 과정을 없애고 flip을 하였다고 가정하였을 때 T의 개수만을 측정하였고, XOR 연산을 이용하여 이전 row flip한 배열에서 다음 row flip할 row를 찾는 과정으로 최적화하였다.
+ */
 public class BOJ1285 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,ans;
@@ -54,8 +75,28 @@ public class BOJ1285 {
         solve();
     }
 
-    private static void solve() {
+    /*
+        성공 코드 : 0 ~ N^2 - 1까지의 수를 비트마스킹하여 row의 동전을 뒤집은 경우의 수를 만들고, col마다 greedy하게 뒤집은 경우에서
+        최소의 T를 가지는 경우를 고려하여 최소 형태를 구한다.
 
+        기존에는 row를 뒤집은 coins[][] 배열을 col에도 동전 뒤집기를 적용하였지만 뒤집는 과정이 필요가 없었다.
+        그 이유는 뒤집지 않아도 해당 배열에서 col마다 T의 개수가 N / 2보다 큰 경우 뒤집으면 최소 T의 개수를 만족하기 때문에
+        이러한 이유로 greedy한 형태를 갖을 수 있고, 배열을 변형하지 않으면 다음 row를 변경할 때 추가적인 coins 배열을 복사하여 생성하지 않아도된다.
+        위의 이유는 비트마스킹 0(0000)에 해당하는 배열에서 비트마스킹 1(0001)로의 변경은 0과 1을 XOR 연산하여 서로 다른 부분만 row flip을 적용하면 된다.
+        위 과정으로 초기 상태(origin_coins)에서 연산에 사용되는 배열(coins)에 초기화 작업이 필요가 없어져서 메모리초과와 같은 영향을 줄일 수 있다.
+     */
+    private static void solve() {
+        int now_n = 0;
+        copy_coins(origin_coins);
+
+        for(int i = 0; i < Math.pow(2,N); i++) {
+            now_n ^= i;
+            bitmask_row_flip(now_n);
+            greedy_flip_check3();
+            now_n = i;
+        }
+
+        System.out.println(ans);
     }
 
     /*
@@ -92,6 +133,19 @@ public class BOJ1285 {
             int cnt_T = can_flip_cur_line2(i,false);
             if(cnt_T > (N / 2)) {
                 flip(i,false);
+                cnt += (N - cnt_T);
+            } else {
+                cnt += cnt_T;
+            }
+        }
+        ans = Math.min(ans, cnt);
+    }
+
+    private static void greedy_flip_check3() {
+        int cnt = 0;
+        for(int i = 0; i < N; i++) {
+            int cnt_T = can_flip_cur_line2(i,false);
+            if(cnt_T > (N / 2)) {
                 cnt += (N - cnt_T);
             } else {
                 cnt += cnt_T;
@@ -181,6 +235,7 @@ public class BOJ1285 {
         }
     }
 
+
     private static void flip(int l, boolean row_or_col) {
         if(row_or_col) {
             for(int i = 0; i < N; i++) {
@@ -200,7 +255,6 @@ public class BOJ1285 {
             }
         }
     }
-
     private static boolean can_flip_cur_line(int l,boolean row_or_col) {
         int cnt = 0;
 
@@ -238,7 +292,6 @@ public class BOJ1285 {
                 }
             }
         }
-
         return cnt;
     }
 
