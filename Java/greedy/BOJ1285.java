@@ -55,6 +55,14 @@ public class BOJ1285 {
     }
 
     private static void solve() {
+
+    }
+
+    /*
+        실패 코드 : 메모리 초과, row행을 뒤집은 경우의 수를 만드는 과정에서 2^20이라는 경우의 수가 만들어지기 때문에 발생하는 것
+        이라고 생각한다.
+     */
+    private static void wrong_solve4() {
         for(int i = 0; i < Math.pow(2,N); i++) {
             copy_coins(origin_coins);
             bitmask_row_flip(i);
