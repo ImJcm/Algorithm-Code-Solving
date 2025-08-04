@@ -56,6 +56,8 @@ import java.io.InputStreamReader;
  */
 public class BOJ1783 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int n,m,N,M,ans;
+    static int[][] move = {{-2,1},{2,1},{-1,2},{1,2}};
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -64,10 +66,93 @@ public class BOJ1783 {
     }
 
     private static void solve() {
+        boolean all_use = false;
 
+        if(N > 2 && M > 6) {
+            ans += 4;
+            m += 6;
+            all_use = true;
+        }
+
+        if(all_use) {
+            ans += (M - 1 - m);
+        } else {
+            int impossible = 0;
+            int i = 0;
+            while(true) {
+                if(ailing_knight_move(i)) {
+                    impossible = 0;
+                    i = 0;
+                } else {
+                    impossible++;
+                    i++;
+                }
+
+                if(impossible >= 4) break;
+            }
+        }
+
+        System.out.println(ans);
+    }
+
+    /*
+        4% 실패 코드 : 시간 초과
+        while(true) {...}의 과정을 수행하는 횟수가 많아서 생기는 것이 원인이라고 예상한다.
+     */
+    private static void wrong_solve() {
+        int impossible = 0;
+        int i = 0;
+        boolean all_use = false;
+
+        if(N > 2 && M > 6) {
+            ans += 4;
+            m += 6;
+            all_use = true;
+        }
+
+        while(true) {
+            if(ailing_knight_move(i)) {
+                impossible = 0;
+                i = 0;
+            } else {
+                impossible++;
+                i++;
+            }
+
+            if(impossible >= 4 || (!all_use && ans == 4)) break;
+        }
+
+        System.out.println(ans);
+    }
+
+    private static boolean ailing_knight_move(int t) {
+        int nn = n + move[t][0];
+        int nm = m + move[t][1];
+
+        boolean pos = range_check(nn, nm);
+
+        if(pos) {
+            n = nn;
+            m = nm;
+            ans++;
+        }
+        return pos;
+    }
+
+    private static boolean range_check(int pn, int pm) {
+        if(pn < 0 || pn >= N || pm < 0 || pm >= M) return false;
+        else return true;
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        N = Integer.parseInt(input[0]);
+        M = Integer.parseInt(input[1]);
+
+        ans = 1;
+
+        n = N - 1;
+        m = 0;
     }
 }
