@@ -54,6 +54,24 @@ import java.io.InputStreamReader;
 그리디 알고리즘
 많은 조건 분기
  */
+/*
+알고리즘 핵심
+그리디 알고리즘 + 분기 조건문
+1. 조건을 주어진 병든 나이트의 움직일 수 있는 경우의 수 4가지를 보고 N,M의 값에 따라 방문할 수 있는 칸의 개수가 정해진다는 것을 알 수있다.
+2. 4가지의 움직이는 경우의 수를 모두 사용하여 움직이는 경우는 N > 2 && M > 6인 경우 모두 사용할 수 있으므로 이후의 움직임에 제약이 없으므로
+M값에 따라 1,4번 움직임을 반복하면 한번의 움직임으로 오른쪽 한번의 움직임을 수행하므로 M - 1 - 6의 값으로 방문 칸을 예상할 수 있다.
+(M - 1 - 6인 이유는 -> -1 : M의 좌표 상의 위치, -6 : 4가지의 모든 움직임을 수행한 후 위치)
+3. N <= 2 || M <= 6의 각 경우에 해당하는 방문할 수 있는 칸의 갯수를 유추할 수 있으므로 많은 조건 분기를 사용하여 방문 칸을 유추한다.
+
+처음 접근으로 4가지의 이동을 할 수 있는지 없는지 여부를 검사하고 남은 좌표상의 방문할 수 있는 칸을 각 이동 경우에 따라 이동을 수행하여
+최대 방문 칸을 계산하려고 하였지만 N,M의 값이 크기 때문에 시간초과가 발생하였다.
+
+이후, 굳이 이동하는 과정을 수행할 필요가 없다는 것을 이동하는 방법에서 1,4 / 2,3을 하나로 묶어 보고 최대 방문 칸을 만드려면 결국
+1,4번의 과정을 많이 이용하는 방법과 1,4가 불가능할 때 2,3을 사용하는 방법으로 방문할 수 있는 칸을 계산할 수 있다고 생각이 들었다.
+
+그래서, 각 이동을 한번씩 이용할 수 있는 경우와 아닌 경우를 나누고 N,M의 값에 따라 수행할 수 있는 이동 방법을 고려하여 조건 분기를 생성하여
+답을 구할 수 있었다.
+ */
 public class BOJ1783 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int n,m,N,M,ans;
@@ -66,29 +84,21 @@ public class BOJ1783 {
     }
 
     private static void solve() {
-        boolean all_use = false;
-
         if(N > 2 && M > 6) {
-            ans += 4;
-            m += 6;
-            all_use = true;
-        }
-
-        if(all_use) {
-            ans += (M - 1 - m);
+            ans += (M - 3);     // 1 + 4 + (M - 1 - 7);
         } else {
-            int impossible = 0;
-            int i = 0;
-            while(true) {
-                if(ailing_knight_move(i)) {
-                    impossible = 0;
-                    i = 0;
-                } else {
-                    impossible++;
-                    i++;
+            if(N > 2) { // M <= 6
+                if(M >= 4) ans += 3;
+                else if(M > 2) ans += 2;
+                else if(M > 1) ans += 1;
+            } else if(M > 6) {
+                if(N == 2) ans += 3;
+            } else {
+                // N <= 2 & M <= 6
+                if(N == 2) {
+                    if(M >= 5) ans += 2;
+                    else if(M > 2) ans += 1;
                 }
-
-                if(impossible >= 4) break;
             }
         }
 
