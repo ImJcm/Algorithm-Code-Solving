@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 /*
 순회강연 다국어
@@ -41,7 +43,24 @@ ICPC > Regionals > Europe > Southeastern European Regional Contest > SEERC 2003 
 우선순위 큐
  */
 public class BOJ2109 {
+    static class BOJ2109_lecture implements Comparable<BOJ2109_lecture> {
+        int p,d;
+
+        public BOJ2109_lecture(int p, int d) {
+            this.p = p;
+            this.d = d;
+        }
+
+        @Override
+        public int compareTo(BOJ2109_lecture l) {
+            if(this.d < l.d) return -1;
+            else if(this.d > l.d) return 1;
+            else return l.p - this.p;
+        }
+    }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,ans,dday;
+    static ArrayList<BOJ2109_lecture> lectures;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -50,10 +69,39 @@ public class BOJ2109 {
     }
 
     private static void solve() {
+        PriorityQueue<BOJ2109_lecture> pq = new PriorityQueue<>();
+        ans = 0;
 
+        pq.addAll(lectures);
+
+        for(int day = 1; day <= dday; day++) {
+            int max_pay = 0;
+
+            while(!pq.isEmpty()) {
+                BOJ2109_lecture now = pq.peek();
+
+                if(now.d == day) {
+                    max_pay = Math.max(max_pay, now.p);
+                }
+            }
+        }
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        dday = 0;
+        lectures = new ArrayList<>();
+
+        for(int i = 0; i < N; i++) {
+            String[] info = br.readLine().split(" ");
+
+            int p = Integer.parseInt(info[0]);
+            int d = Integer.parseInt(info[1]);
+
+            dday = Math.max(d,dday);
+
+            lectures.add(new BOJ2109_lecture(p,d));
+        }
     }
 }
