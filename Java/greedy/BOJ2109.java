@@ -59,7 +59,7 @@ public class BOJ2109 {
         }
     }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int N,ans,dday;
+    static int N,ans;
     static ArrayList<BOJ2109_lecture> lectures;
 
     public static void main(String[] args) throws IOException {
@@ -69,28 +69,37 @@ public class BOJ2109 {
     }
 
     private static void solve() {
+        
+    }
+
+    /*
+        틀린 코드 : 올바른 로직이 아님
+        반례
+        4
+        2 1, 3 1, 4 2, 5 2
+        result : 8, answer : 9
+     */
+    private static void wrong_solve() {
         PriorityQueue<BOJ2109_lecture> pq = new PriorityQueue<>();
-        ans = 0;
+        int day = 1;
 
         pq.addAll(lectures);
 
-        for(int day = 1; day <= dday; day++) {
-            int max_pay = 0;
+        while(!pq.isEmpty()) {
+            BOJ2109_lecture now = pq.poll();
 
-            while(!pq.isEmpty()) {
-                BOJ2109_lecture now = pq.peek();
-
-                if(now.d == day) {
-                    max_pay = Math.max(max_pay, now.p);
-                }
+            if(now.d >= day) {
+                ans += now.p;
+                day = now.d + 1;
             }
         }
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException {
         N = Integer.parseInt(br.readLine());
 
-        dday = 0;
         lectures = new ArrayList<>();
 
         for(int i = 0; i < N; i++) {
@@ -99,9 +108,9 @@ public class BOJ2109 {
             int p = Integer.parseInt(info[0]);
             int d = Integer.parseInt(info[1]);
 
-            dday = Math.max(d,dday);
-
             lectures.add(new BOJ2109_lecture(p,d));
         }
+
+        ans = 0;
     }
 }
