@@ -42,6 +42,13 @@ ICPC > Regionals > Europe > Southeastern European Regional Contest > SEERC 2003 
 정렬
 우선순위 큐
  */
+/*
+알고리즘 핵심
+그리디 알고리즘 + 우선순위 큐
+1. 입력으로 주어지는 강의의 비용과 기간을 저장하여 우선순위 큐를 사용하여 강의 비용을 기준으로 내림차순 정렬 상태를 정의한다.
+2. 강의 비용이 높은 순으로 강의를 배치하여 해당 강의의 기간에 맞추어 해당 강의의 최종 기간부터 1일차 까지 가능한 시간대에 배치한다.
+3. 강의 비용을 높은 순으로 내림차순 정렬하였기 때문에 앞선 강의를 먼저 가능한 시간대를 찾아 배치함으로써 최대 비용을 갖는다.
+ */
 public class BOJ2109 {
     static class BOJ2109_lecture implements Comparable<BOJ2109_lecture> {
         int p,d;
@@ -51,16 +58,29 @@ public class BOJ2109 {
             this.d = d;
         }
 
+        /*
+            강의 비용으로 내림차순 정렬
+         */
         @Override
+        public int compareTo(BOJ2109_lecture l) {
+            return l.p - this.p;
+        }
+
+        /*
+            기한을 오름차순으로 정렬하고, 같은 경우 강의 비용이 높은 순으로 내림차순 정렬
+         */
+        /*@Override
         public int compareTo(BOJ2109_lecture l) {
             if(this.d < l.d) return -1;
             else if(this.d > l.d) return 1;
             else return l.p - this.p;
-        }
+        }*/
+
     }
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,ans;
     static ArrayList<BOJ2109_lecture> lectures;
+    final static int MAX_DAY = 10_001;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -69,11 +89,27 @@ public class BOJ2109 {
     }
 
     private static void solve() {
-        
+        PriorityQueue<BOJ2109_lecture> pq = new PriorityQueue<>();
+        boolean[] visited = new boolean[MAX_DAY];
+
+        pq.addAll(lectures);
+
+        while(!pq.isEmpty()) {
+            BOJ2109_lecture now = pq.poll();
+
+            for(int d = now.d; d > 0; d--) {
+                if(visited[d]) continue;
+                visited[d] = true;
+                ans += now.p;
+                break;
+            }
+        }
+
+        System.out.println(ans);
     }
 
     /*
-        틀린 코드 : 올바른 로직이 아님
+        틀린 코드 : 올바른 로직이 아님 (기한 - 오름차순 정렬 + 비용 - 내림차순 정렬)
         반례
         4
         2 1, 3 1, 4 2, 5 2
