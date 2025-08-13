@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.EmptyStackException;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 /*
 잃어버린 괄호
@@ -43,8 +46,18 @@ import java.io.InputStreamReader;
 문자열
 파싱
  */
+/*
+알고리즘 핵심
+그리디 알고리즘 + Stack
+1. 주어지는 수식의 결과가 최소값임을 만족하려면 num1 + num2의 수식에서 괄호가 이루어지고, 최종적으로 - 식을 적용하면 최소값을 만족한다.
+2. 1번 로직을 완성하기 위해 + 연산을 적용한 값과 그 이외의 값을 stack에 넣는다.
+3. stack에 - 연산과 값들을 최종적으로 결과들을 합한 값을 ans에 저장한다.
+ */
 public class BOJ1541 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static String expr;
+    static int ans;
+    static Stack<String> stack;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -53,12 +66,49 @@ public class BOJ1541 {
     }
 
     private static void solve() {
+        StringTokenizer st = new StringTokenizer(expr,"[+-]",true);
+        boolean flag = false;
 
+        while(st.hasMoreTokens()) {
+            String s = st.nextToken();
+
+            if(s.equals("+")) {
+                flag = true;
+            } else if(s.equals("-")) {
+                stack.push(s);
+            } else {
+                if(flag) {
+                    String n = stack.pop();
+                    int i = Integer.parseInt(n) + Integer.parseInt(s);
+                    stack.push(Integer.toString(i));
+                    flag = !flag;
+                } else {
+                    stack.push(s);
+                }
+            }
+        }
+
+        int num = 0;
+        while(!stack.isEmpty()) {
+            String s = stack.pop();
+
+            if(s.equals("-")) {
+                ans -= num;
+            } else {
+                num = Integer.parseInt(s);
+            }
+        }
+
+        ans += num;
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException {
+        expr = br.readLine();
 
+        stack = new Stack<>();
+
+        ans = 0;
     }
-
-
 }
