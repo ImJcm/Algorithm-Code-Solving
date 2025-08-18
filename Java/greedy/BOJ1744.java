@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /*
 수 묶기
@@ -69,8 +72,21 @@ import java.io.InputStreamReader;
 정렬
 많은 조건 분기
  */
+/*
+알고리즘 핵심
+그리디 알고리즘 + 정렬
+1. 주어진 수열에서 어떠한 위치의 두 수를 묶어서 최대의 합을 만들기 위해 "위치는 상관없는"이라는 조건에 의해 정렬이 필요하다.
+2. 양수로 주어지는 수열의 값과 음수 + 0을 포함한 값을 가지는 배열을 나눈 후, 두 배열에서 각각 내림차순과 오름차순으로 정렬한다.
+3. 양수 배열에서 큰 값을 시작으로하여 우선적으로 다음에 오는 수와 곱한 값과 더한 값을 비교하여 큰 경우 두 수를 묶는 상태로 만들고 최종 결과에
+더하고 인덱스를 추가로 + 1한다.
+작거나 같은 경우 현재 인덱스의 수열의 값을 최종 결과에 더한다.
+이 과정을 음수 + 0을 포함한 배열에서도 수행한다.
+4. 최종 결과를 ans에 누적하여 갱싱한다.
+ */
 public class BOJ1744 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,ans;
+    static ArrayList<Integer> plus_seq,minus_zero_seq;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -79,10 +95,45 @@ public class BOJ1744 {
     }
 
     private static void solve() {
+        ans += operation(plus_seq);
+        ans += operation(minus_zero_seq);
 
+        System.out.println(ans);
+    }
+
+    private static int operation(ArrayList<Integer> arr) {
+        int r = 0;
+        for(int i = 0; i < arr.size(); i++) {
+            int n1 = arr.get(i);
+            int n2 = (i + 1 >= arr.size() ? Integer.MAX_VALUE : arr.get(i + 1));
+
+            int r1 = n1 * (n2 == Integer.MAX_VALUE ? 1 : n2);
+            int r2 = n1 + (n2 == Integer.MAX_VALUE ? 0 : n2);
+
+            if(r1 > r2) {
+                r += r1;
+                i++;
+            } else {
+                r += n1;
+            }
+        }
+
+        return r;
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        plus_seq = new ArrayList<>();
+        minus_zero_seq = new ArrayList<>();
+
+        for(int i = 0; i < N; i++) {
+            int n = Integer.parseInt(br.readLine());
+            if(n > 0) plus_seq.add(n);
+            else minus_zero_seq.add(n);
+        }
+
+        Collections.sort(plus_seq, Collections.reverseOrder());
+        Collections.sort(minus_zero_seq);
     }
 }
