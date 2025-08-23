@@ -47,6 +47,8 @@ BAABBABAAB
 
 public class BOJ12970 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,K,Limit;
+    static StringBuilder sb;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -55,10 +57,20 @@ public class BOJ12970 {
     }
 
     private static void solve() {
+        Limit = (N / 2) * (N - N / 2);
 
+        if(K > Limit) sb.append(-1);
+        else {
+
+        }
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        N = Integer.parseInt(input[0]);
+        K = Integer.parseInt(input[1]);
+
+        sb = new StringBuilder();
     }
 }
