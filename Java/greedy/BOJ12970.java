@@ -48,7 +48,9 @@ BAABBABAAB
 public class BOJ12970 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,K,Limit;
+    static boolean flag;
     static StringBuilder sb;
+    static String ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -56,13 +58,37 @@ public class BOJ12970 {
         solve();
     }
 
+    /*
+        틀린 코드 3% : 시간초과
+     */
     private static void solve() {
         Limit = (N / 2) * (N - N / 2);
 
-        if(K > Limit) sb.append(-1);
-        else {
+        if(K > Limit) ans = "-1";
+        else dfs(0, 0, K);
 
+        System.out.println(ans);
+    }
+
+    public static void dfs(int n, int b_use_cnt, int k_remain_cnt) {
+        if(flag) return;
+        if(n == N) {
+            if(k_remain_cnt == 0) {
+                flag = true;
+                ans = sb.toString();
+            }
+            return;
         }
+
+        if(b_use_cnt <= k_remain_cnt) {
+            sb.insert(0,"A");
+            dfs(n + 1, b_use_cnt, k_remain_cnt - b_use_cnt);
+            sb.delete(0,1);
+        }
+
+        sb.insert(0,"B");
+        dfs(n + 1, b_use_cnt + 1, k_remain_cnt);
+        sb.delete(0,1);
     }
 
     private static void init_setting() throws IOException {
@@ -72,5 +98,7 @@ public class BOJ12970 {
         K = Integer.parseInt(input[1]);
 
         sb = new StringBuilder();
+
+        flag = false;
     }
 }
