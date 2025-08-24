@@ -44,7 +44,16 @@ BAABBABAAB
 그리디 알고리즘
 해 구성하기
  */
-
+/*
+알고리즘 핵심
+그리드 알고리즘 + back-tracking
+1. 조건을 만족하는 문자열 중 한가지를 출력하면 되므로 back-tracking을 사용하여 A,B를 추가하여 문자열을 구성하고 조건을 만족하는 문자열을 찾는다.
+2. N 길이의 문자열을 구성할 때, A,B로 만들 수 있는 (A,B) 쌍의 갯수는 (N / 2) * (N - N / 2) 보다 K가 크다면 -1을 출력한다.
+K보다 크지 않다면 B를 우선으로 추가하여 B 문자의 사용 개수인 b_used_cnt 인자를 증가시키고, A를 추가했을 때 현재까지 추가된 B 개수만큼
+빼서 남은 (A,B)쌍의 갯수를 만족시키는지 확인한다.
+3. 현재 B의 갯수가 남은 (A,B) 쌍의 갯수를 넘기지 않는 경우에 A를 추가하고 그 외에는 B를 추가하여 조건을 만족시키는 문자열 S를 만든다.
+4. 최종적으로 조건을 만족하는 문자열을 만들면 flag를 통해 이후의 재귀호출을 모두 종료시킨다.
+ */
 public class BOJ12970 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,K,Limit;
