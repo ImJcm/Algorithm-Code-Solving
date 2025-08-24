@@ -59,7 +59,7 @@ public class BOJ12970 {
     }
 
     /*
-        틀린 코드 3% : 시간초과
+        B 문자를 우선적으로 추가하는 로직을 재귀호출하여 불필요한 과정을 방지하여 시간초과를 해결
      */
     private static void solve() {
         Limit = (N / 2) * (N - N / 2);
@@ -70,7 +70,7 @@ public class BOJ12970 {
         System.out.println(ans);
     }
 
-    public static void dfs(int n, int b_use_cnt, int k_remain_cnt) {
+    private static void dfs(int n, int b_use_cnt, int k_remain_cnt) {
         if(flag) return;
         if(n == N) {
             if(k_remain_cnt == 0) {
@@ -80,15 +80,48 @@ public class BOJ12970 {
             return;
         }
 
+        sb.insert(0,"B");
+        dfs(n + 1, b_use_cnt + 1, k_remain_cnt);
+        sb.delete(0,1);
+
         if(b_use_cnt <= k_remain_cnt) {
             sb.insert(0,"A");
             dfs(n + 1, b_use_cnt, k_remain_cnt - b_use_cnt);
             sb.delete(0,1);
         }
+    }
+
+    /*
+        틀린 코드 3% : 시간초과
+     */
+    private static void wrong_solve() {
+        Limit = (N / 2) * (N - N / 2);
+
+        if(K > Limit) ans = "-1";
+        else wrong_dfs(0, 0, K);
+
+        System.out.println(ans);
+    }
+
+    public static void wrong_dfs(int n, int b_use_cnt, int k_remain_cnt) {
+        if(flag) return;
+        if(n == N) {
+            if(k_remain_cnt == 0) {
+                flag = true;
+                ans = sb.toString();
+            }
+            return;
+        }
 
         sb.insert(0,"B");
-        dfs(n + 1, b_use_cnt + 1, k_remain_cnt);
+        wrong_dfs(n + 1, b_use_cnt + 1, k_remain_cnt);
         sb.delete(0,1);
+
+        if(b_use_cnt <= k_remain_cnt) {
+            sb.insert(0,"A");
+            wrong_dfs(n + 1, b_use_cnt, k_remain_cnt - b_use_cnt);
+            sb.delete(0,1);
+        }
     }
 
     private static void init_setting() throws IOException {
