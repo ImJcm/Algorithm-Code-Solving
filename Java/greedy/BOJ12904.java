@@ -42,8 +42,21 @@ ABB
 그리디 알고리즘
 문자열
  */
+/*
+알고리즘 핵심
+그리디 알고리즘 + 문자열
+1. 입력으로 주어지는 S에서 T로 전환이 가능한지 여부를 확인하는 것이므로 T에서 S로 변환하는 과정을 검사하여 답을 도출할 수 있다.
+2. T에서 끝 문자부터 줄이기 시작하여 끝 문자가 A or B에 따라 로직이 달라진다.
+3. A인 경우 다음으로 제거할 문자는 가장 뒷 문자를 줄이는 과정을 진행하고, B인 경우 문자열을 뒤집는 과정은
+T 문자열의 앞부분 인덱스를 줄이면 같은 효과를 가지므로 앞 부분의 문자를 줄이는 과정을 수행한다.
+(T 문자열을 뒤집는 과정 대신 앞 또는 뒤의 문자를 선택하여 제거하는 형태로 시간 복잡도를 줄일 수 있다.
+문자열을 뒤집는 과정 : O(T 문자열의 길이 = N), 뒤집는 과정을 생략 : O(1))
+4. A와 B의 문자열의 길이가 같아질 때, 앞 또는 뒤의 문자를 제거하는지 여부에 따라 B의 문자열을 뒤집고 A 문자열과 같은지 비교를 수행한다.
+ */
 public class BOJ12904 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static String A,B;
+    static int ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -52,12 +65,43 @@ public class BOJ12904 {
     }
 
     private static void solve() {
+        /*char ch = B.charAt(B.length() - 1);
+        B = B.substring(0,B.length() - 1);
+        boolean s_or_e = ch != 'A';*/  // start_idx = true, end_idx = false;
+        boolean s_or_e = false;
 
+        while(true) {
+            if(B.length() == A.length()) {
+                StringBuilder sb = new StringBuilder(B);
+
+                if(s_or_e) B = sb.reverse().toString();
+
+                if(A.equals(B)) ans = 1;
+                else ans = 0;
+                break;
+            }
+
+            char ch = s_or_e ? B.charAt(0) : B.charAt(B.length() - 1);
+            B = s_or_e ? B.substring(1) : B.substring(0,B.length() - 1);
+
+            s_or_e = (ch == 'B') != s_or_e;
+            /*
+                ch = B -> s_or_e != s_or_e; (ch가 B면, s_or_e를 반대로 변환하고, ch가 B가 아니면, s_or_e를 그대로둔다.)
+                XOR(배타적 논리합) 연산과 같은 효과
+                true != true → false
+                true != false → true
+                false != true → true
+                false != false → false
+             */
+        }
+
+        System.out.println(ans);
     }
 
     private static void init_setting() throws IOException {
+        A = br.readLine();
+        B = br.readLine();
 
+        ans = 0;
     }
-
-
 }
