@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 롤러코스터 스페셜 저지다국어
@@ -50,6 +51,9 @@ Contest > Croatian Open Competition in Informatics > COCI 2010/2011 > Contest #2
  */
 public class BOJ2873 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int R,C;
+    static int[][] gladness;
+    static StringBuilder ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -57,11 +61,76 @@ public class BOJ2873 {
         solve();
     }
 
-    private static void solve() {
+    private static void move_roller_coaster(int type) {
+        boolean direction_change = false;
+        boolean row_is_even = (R % 2 == 0);
 
+        switch (type) {
+            case 0: {
+                for(int r = 0; r < R; r++) {
+                    for(int c = 0; c < C - 1; c++) {
+                        if(direction_change) ans.append("L");
+                        else ans.append("R");
+                    }
+                    direction_change = !direction_change;
+                    if(r < R - 1) ans.append("D");
+                }
+                break;
+            }
+            case 1: {
+                if(row_is_even) {
+                    for(int c = 0; c < C; c++) {
+                        for(int r = 0; r < R - 1; r++) {
+                            if(direction_change) ans.append("U");
+                            else ans.append("D");
+                        }
+                        direction_change = !direction_change;
+                        if(c < C - 1) ans.append("R");
+                    }
+                } else {
+                    for(int r = 0; r < R; r++) {
+                        for(int c = 0; c < C - 1; c++) {
+                            if(direction_change) ans.append("L");
+                            else ans.append("R");
+                        }
+                        direction_change = !direction_change;
+                        if(r < R - 1) ans.append("D");
+                    }
+                }
+                break;
+            }
+            case 2: {
+                // R,C 모두 짝수인 경우
+            }
+        }
+    }
+
+    private static void solve() {
+        if(R % 2 == 1 && C % 2 == 1) {
+            move_roller_coaster(0);
+        } else if(R % 2 == 1 || C % 2 == 1) {
+            move_roller_coaster(1);
+        } else {
+
+        }
+
+        System.out.println(ans.toString());
     }
 
     private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
 
+        R = Integer.parseInt(input[0]);
+        C = Integer.parseInt(input[1]);
+
+        gladness = new int[R][C];
+
+        for(int r = 0; r < R; r++) {
+            gladness[r] = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+        }
+
+        ans = new StringBuilder();
     }
 }
