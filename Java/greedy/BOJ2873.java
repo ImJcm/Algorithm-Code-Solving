@@ -51,7 +51,7 @@ Contest > Croatian Open Competition in Informatics > COCI 2010/2011 > Contest #2
  */
 public class BOJ2873 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int R,C;
+    static int R,C,mr,mc;
     static int[][] gladness;
     static StringBuilder ans;
 
@@ -102,11 +102,34 @@ public class BOJ2873 {
             case 2: {
                 // R,C 모두 짝수인 경우
                 // 짝수의 R,C를 갖는 경우, TC를 두고 시뮬레이션을 통해 규칙성을 발견해야 된다고 생각한다.
+                // (R,C)의 특정 지점을 제외한 최대 기쁨의 경로를 시뮬레이션한 경우, 1개를 제외한 모든 경로가 가능하거나
+                // 3개의 경로를 제외한 모든 경로를 가는 경우가 존재했다.
+                // 이때, 각 지점마다 이동할 수 있는 횟수를 저장하고 이동 시, 주변의 지점에 이동 횟수를 감소시켜 동기화하는 방법도
+                // 생각해봤지만 해당 방법은 결국 DFS를 사용하는 방법이므로 시간초과가 발생할 것이라고 생각한다.
+                // 시뮬레이션한 TC를 살펴보면 특정 지점을 제외한 경우 1개를 제외한 모든 경로를 이동할 수 있었고, 특정 지점은 제외한 지점을
+                // 포함해서 3개의 지점을 제외한 모든 경로를 이동할 수 있었다.
+                // 이때, (R,C) => R + C의 합이 홀수인 지점은 1개만을 제외할 수 있었고, R + C가 짝수인 지점은 3개의 지점을 제외해야 했다.
+                if()
+            }
+        }
+    }
+
+    private static void min_gladness_pos() {
+        int min_gladness = 1001;
+
+        for(int r = 0; r < R; r++) {
+            for(int c = 0; c < C; c++) {
+                if(gladness[r][c] <= min_gladness) {
+                    mr = r;
+                    mc = c;
+                    min_gladness = gladness[r][c];
+                }
             }
         }
     }
 
     private static void solve() {
+        min_gladness_pos();
         if(R % 2 == 1 && C % 2 == 1) {
             move_roller_coaster(0);
         } else if(R % 2 == 1 || C % 2 == 1) {
