@@ -46,8 +46,17 @@ ABBA
 브루트포스 알고리즘
 재귀
  */
+/*
+알고리즘 핵심
+그리디 알고리즘 + bruteforce + String
+1. S,T의 길이가 49,50으로 작기 때문에 bruteforce로 충분히 S -> T로의 문자열을 만들어가는 과정이 가능하다.
+2. S에서 A 또는 B를 추가하는 조건을 만족하면서 문자열을 만들면서 T가 되는 경우 ans를 1로 설정하고 그 외에는 return하여 모든 경우의 수를 살핀다.
+ */
 public class BOJ12919 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static String S,T;
+    static StringBuilder sb;
+    static int ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -56,10 +65,34 @@ public class BOJ12919 {
     }
 
     private static void solve() {
+        dfs(S.length());
 
+        System.out.println(ans);
+    }
+
+    private static void dfs(int n) {
+        if(n == T.length()) {
+            if(sb.toString().equals(T)) ans = 1;
+            return;
+        }
+
+        sb.append("A");
+        dfs(n + 1);
+        sb.deleteCharAt(n);
+
+        sb.append("B");
+        sb.reverse();
+        dfs(n + 1);
+        sb.reverse();
+        sb.deleteCharAt(n);
     }
 
     private static void init_setting() throws IOException {
+        S = br.readLine();
+        T = br.readLine();
 
+        ans = 0;
+
+        sb = new StringBuilder(S);
     }
 }
