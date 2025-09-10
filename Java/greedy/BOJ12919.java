@@ -49,8 +49,16 @@ ABBA
 /*
 알고리즘 핵심
 그리디 알고리즘 + bruteforce + String
-1. S,T의 길이가 49,50으로 작기 때문에 bruteforce로 충분히 S -> T로의 문자열을 만들어가는 과정이 가능하다.
-2. S에서 A 또는 B를 추가하는 조건을 만족하면서 문자열을 만들면서 T가 되는 경우 ans를 1로 설정하고 그 외에는 return하여 모든 경우의 수를 살핀다.
+1. S -> T 로의 문자열을 만드는 과정은 불필요한 과정을 거치게 되어 시간초과가 발생할 수 있으므로, T -> S로 만들 수 있는 가능한 조건의 모든
+경우의 수를 체크한다.
+2. 각 조건에 해당하는 경우만을 수행한다고 했을 때, 2^(T's length - S's length)의 길이에서 A,B의 갯수가 각각 절반으로 BB...AA 형태일 때 최대 시간복잡도를 갖으며,
+이는 충분히 가능한 실행 시간을 갖을 것으로 예상한다.
+3. T의 문자열을 시작으로 각 조건을 만족하는지 확인하고, 역산하여 이전 문자열을 추측한다.
+1번 조건 : 뒷 문자로 A를 추가하는 과정을 반대로 하면, T에서 뒷 문자가 A인 경우 제거하면 된다.
+2번 조건 : B문자를 추가하고 문자열을 뒤집기 때문에 이를 반대로하면, 앞 문자가 B인 경우, 해당 B문자를 제거하고 문자열을 뒤집는다.
+3. 2번 과정을 각 조건에 맞는 경우에 bruteforce 를 수행하여 T -> S가 되는 경우 ans를 1로 설정하고, 가지치기를 설정하여 불필요한 과정은 생략하도록 한다.
+
+S,T의 길이가 49,50으로 작기 때문에 bruteforce로 충분히 S -> T로의 문자열을 만들어가는 과정이 가능하다고 생각했지만, 시간초과 발생하였다.
  */
 public class BOJ12919 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -65,24 +73,49 @@ public class BOJ12919 {
     }
 
     private static void solve() {
-        dfs(S.length());
+        bruteforce(T.length() - 1);
 
         System.out.println(ans);
     }
 
-    private static void dfs(int n) {
+    private static void bruteforce(int n) {
+        if(ans == 1) return;
+        if(n == S.length() - 1) {
+            if(sb.toString().equals(S)) ans = 1;
+            return;
+        }
+
+        if(sb.charAt(0) == 'B') {
+            sb.deleteCharAt(0);
+            sb.reverse();
+            bruteforce(n - 1);
+            sb.reverse();
+            sb.insert(0,'B');
+        }
+
+        if(sb.charAt(n) == 'A') {
+            sb.deleteCharAt(n);
+            bruteforce(n - 1);
+            sb.append('A');
+        }
+    }
+
+    /*
+        틀린 코드 : 시간초과 발생
+     */
+    private static void bruteforce_timeout(int n) {
         if(n == T.length()) {
             if(sb.toString().equals(T)) ans = 1;
             return;
         }
 
         sb.append("A");
-        dfs(n + 1);
+        bruteforce_timeout(n + 1);
         sb.deleteCharAt(n);
 
         sb.append("B");
         sb.reverse();
-        dfs(n + 1);
+        bruteforce_timeout(n + 1);
         sb.reverse();
         sb.deleteCharAt(n);
     }
@@ -93,6 +126,7 @@ public class BOJ12919 {
 
         ans = 0;
 
-        sb = new StringBuilder(S);
+        //sb = new StringBuilder(S);
+        sb = new StringBuilder(T);
     }
 }
