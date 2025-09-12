@@ -38,9 +38,13 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class BOJ10815 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,M;
+    static int[] N_card, M_card;
+    static StringBuilder ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -48,11 +52,38 @@ public class BOJ10815 {
         solve();
     }
 
-    private static void solve() {
+    private static boolean binary_search(int n, int s, int e) {
+        int pivot = (s + e) / 2;
 
+        if(s > e) return false;
+        if(n == N_card[pivot]) return true;
+
+        if(n > N_card[pivot]) return binary_search(n,pivot + 1, e);
+        else return binary_search(n, s, pivot - 1);
+    }
+
+    private static void solve() {
+        for(int i = 0; i < M_card.length; i++) {
+            if(binary_search(M_card[i],0,N_card.length - 1)) ans.append("1").append(" ");
+            else ans.append("0").append(" ");
+        }
+        System.out.println(ans.toString());
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        N_card = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .sorted()
+                .toArray();
+
+        M = Integer.parseInt(br.readLine());
+
+        M_card = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+
+        ans = new StringBuilder();
     }
 }
