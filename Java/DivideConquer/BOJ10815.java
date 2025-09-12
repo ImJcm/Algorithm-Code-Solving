@@ -1,5 +1,11 @@
 package BackJoon;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.HashSet;
+
 /*
 숫자 카드
 
@@ -34,22 +40,35 @@ package BackJoon;
 집합과 맵
 해시를 사용한 집합과 맵
  */
+/*
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-
+ */
 public class BOJ10815 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    static int N,M;
-    static int[] N_card, M_card;
     static StringBuilder ans;
+    static int N,M;
+
+    static int[] N_card, M_card;
+    static HashSet<Integer> hashSet;
 
     public static void main(String[] args) throws IOException {
         init_setting();
 
-        solve();
+        binary_search_solve();
+        hashSet_solve();
+    }
+
+    private static void hashSet_solve() {
+        for(int i = 0; i < N_card.length; i++) {
+            hashSet.add(N_card[i]);
+        }
+
+        for(int i = 0; i < M_card.length; i++) {
+            if(hashSet.contains(M_card[i])) ans.append("1").append(" ");
+            else ans.append("0").append(" ");
+        }
+
+        System.out.println(ans.toString());
     }
 
     private static boolean binary_search(int n, int s, int e) {
@@ -62,7 +81,7 @@ public class BOJ10815 {
         else return binary_search(n, s, pivot - 1);
     }
 
-    private static void solve() {
+    private static void binary_search_solve() {
         for(int i = 0; i < M_card.length; i++) {
             if(binary_search(M_card[i],0,N_card.length - 1)) ans.append("1").append(" ");
             else ans.append("0").append(" ");
@@ -85,5 +104,7 @@ public class BOJ10815 {
                 .toArray();
 
         ans = new StringBuilder();
+
+        hashSet = new HashSet<>();
     }
 }
