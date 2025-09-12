@@ -41,7 +41,11 @@ import java.util.HashSet;
 해시를 사용한 집합과 맵
  */
 /*
-
+알고리즘 핵심
+정렬 + 이진 탐색 or HashSet
+1. N개의 숫자를 입력받은 배열을 정렬하고, M개의 판별 숫자를 존재하는지 이분 탐색으로 존재 여부를 검사한다.
+or
+1. HashSet 자료구조를 통해 N개의 숫자를 입력하고, M개의 숫자의 존재여부를 확인한다.
  */
 public class BOJ10815 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
