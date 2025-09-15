@@ -3,6 +3,8 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /*
 숫자 카드 2
@@ -37,8 +39,21 @@ import java.io.InputStreamReader;
 이분 탐색
 해시를 사용한 집합과 맵
  */
+/*
+알고리즘 핵심
+자료구조 (HashMap)
+1. N개의 입력으로 주어진 숫자를 HashMap에 저장하고, 이미 입력된 숫자의 횟수를 1 증가시킨다.
+2. M개의 입력으로 주어진 숫자를 HashMap에 존재하는지 확인하고 해당 개수를 ans에 저장하고, 없다면 0을 저장한다.
+
+이분 탐색의 방법으로 풀이를 작성한다면, 숫자를 저장할 배열과 숫자의 중복횟수를 저장할 HashMap 자료구조가 필요하다.
+숫자를 저장한 배열을 오름차순으로 정렬하고 M개의 숫자를 하나씩 이분 탐색으로 찾는다.
+해당 숫자를 찾는 경우, Map에서 중복된 갯수를 ans에 저장하고 없는 경우, 0을 저장한다.
+ */
 public class BOJ10816 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,M;
+    static HashMap<Integer, Integer> map;
+    static StringBuilder ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -46,11 +61,34 @@ public class BOJ10816 {
         solve();
     }
 
-    private static void solve() {
+    private static void solve() throws IOException {
+        M = Integer.parseInt(br.readLine());
 
+        int[] input = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+
+        for(int i = 0; i < M; i++) {
+            if(map.containsKey(input[i])) ans.append(map.get(input[i]));
+            else ans.append(0);
+            ans.append(" ");
+        }
+
+        System.out.println(ans.toString());
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
 
+        String[] input = br.readLine().split(" ");
+
+        map = new HashMap<>();
+
+        for(int i = 0; i < N; i++) {
+            int num = Integer.parseInt(input[i]);
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+
+        ans = new StringBuilder();
     }
 }
