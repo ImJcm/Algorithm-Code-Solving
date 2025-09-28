@@ -68,6 +68,8 @@ r행 c열을 몇 번째로 방문했는지 출력한다.
  */
 public class BOJ1074 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N,R,C,ans,cnt,size;
+    static boolean branch;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -76,10 +78,48 @@ public class BOJ1074 {
     }
 
     private static void solve() {
+        divide_arr(N,size,size);
+
+        System.out.println(ans);
+    }
+
+    private static void divide_arr(int n, int r, int c) {
 
     }
 
-    private static void init_setting() throws IOException {
+    /*
+        틀린 코드 : 시간초과 발생
+        가지치기를 설정하여도 시간초과가 발생하였다.
+     */
+    private static void timeOut_divide_arr(int n, int r, int c) {
+        if(branch) return;
+        if(n == 0) {
+            if(r - 1 == R && c - 1 == C) {
+                ans = cnt;
+                branch = true;
+            }
+            cnt++;
+            return;
+        }
 
+        int w = (int) Math.pow(2,n - 1);
+
+        divide_arr(n - 1, r - w, c - w);
+        divide_arr(n - 1, r - w, c);
+        divide_arr(n - 1, r, c - w);
+        divide_arr(n - 1, r, c);
+    }
+
+    private static void init_setting() throws IOException {
+        String[] input = br.readLine().split(" ");
+
+        N = Integer.parseInt(input[0]);
+        R = Integer.parseInt(input[1]);
+        C = Integer.parseInt(input[2]);
+
+        branch = false;
+
+        ans = 0;
+        cnt = 0;
     }
 }
