@@ -66,6 +66,18 @@ r행 c열을 몇 번째로 방문했는지 출력한다.
 분할 정복
 재귀
  */
+/*
+알고리즘 핵심
+분할정복 + 재귀
+1. n 차수와 2^n x 2^n 사각형의 끝 지점 (r,c)를 분할 정복의 매개변수로 사용하여 사각형을 나눈다.
+2. (n,r,c)에서 n이 1보다 큰 경우, 2^(n-1) x 2^(n-1) 크기의 사각형으로 4등분한다.
+이때, 각 사각형의 (r,c)는 끝 지점을 나타내야 하므로, (n,r,c) -> (n-1,r-w,c-w),(n-1,r-w,c),(n-1,r,c-w),(n-1,r,c) (w = 2^(n-1))
+3. n이 클수록 많은 수의 로직이 수행되므로, 가지치기를 설정하여 불필요한 수행을 제거한다.
+(가지치기 :
+    1. (r,c)가 (R,C)를 만족하는 경우, boolean branch = true 설정하여 이후 재귀 호출을 제거한다.
+    2. (R,C)가 (r,c)보다 큰 경우, 해당 사각형은 수행하지 않고 해당 사각형에 포함된 1x1 크기의 칸의 개수를 누적한다.)
+4. (r,c)가 (R,C)에 도달하는 경우 ans에 저장하고 branch = true 설정하고, 불필요한 재귀 호출을 제거한다.
+ */
 public class BOJ1074 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N,R,C,ans,cnt,size;
@@ -83,8 +95,28 @@ public class BOJ1074 {
         System.out.println(ans);
     }
 
+    // n,r,c를 매개변수를 이용하여 2^(n-1) x 2^(n-1) 사각형의 범위를 특정할 수 있고, R,C의 존재 여부를 가지치기하면 될 것같다.
     private static void divide_arr(int n, int r, int c) {
+        if(branch) return;
+        if(r < R || c < C) {
+            cnt += (int) Math.pow(4,n);
+            return;
+        }
+        if(n == 0) {
+            if(r - 1 == R && c - 1 == C) {
+                ans = cnt;
+                branch = true;
+            }
+            cnt++;
+            return;
+        }
 
+        int w = (int) Math.pow(2,n - 1);
+
+        divide_arr(n - 1, r - w, c - w);
+        divide_arr(n - 1, r - w, c);
+        divide_arr(n - 1, r, c - w);
+        divide_arr(n - 1, r, c);
     }
 
     /*
@@ -116,6 +148,8 @@ public class BOJ1074 {
         N = Integer.parseInt(input[0]);
         R = Integer.parseInt(input[1]);
         C = Integer.parseInt(input[2]);
+
+        size = (int) Math.pow(2,N);
 
         branch = false;
 
