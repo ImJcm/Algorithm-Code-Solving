@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 버블 소트
@@ -35,6 +36,9 @@ N개의 수로 이루어진 수열 A[1], A[2], …, A[N]이 있다. 이 수열�
  */
 public class BOJ1517 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static int[] A;
+    static long ans;
 
     public static void main(String[] args) throws IOException {
         init_setting();
@@ -43,10 +47,45 @@ public class BOJ1517 {
     }
 
     private static void solve() {
+        for(int i = 0; i < N; i++) {
+            bubble_sort_dc(i);
+        }
 
+        System.out.println(ans);
+    }
+
+    /*
+        3% 틀린코드 : 시간 초과
+     */
+    private static void bubble_sort_dc(int i) {
+        if(i + 1 < N && A[i] > A[i + 1]) {
+            ans += 1;
+            swap(i,i + 1);
+            if(i + 1 == N - 1) bubble_sort_dc(i);
+            bubble_sort_dc(i + 1);
+        }
+
+        if(i - 1 >= 0 && A[i - 1] > A[i]) {
+            ans += 1;
+            swap(i - 1,i);
+            if(i - 1 == 0) bubble_sort_dc(i);
+            bubble_sort_dc(i - 1);
+        }
+    }
+
+    private static void swap(int i, int i1) {
+        int temp = A[i];
+
+        A[i] = A[i1];
+        A[i1] = temp;
     }
 
     private static void init_setting() throws IOException {
+        N = Integer.parseInt(br.readLine());
+        A = Arrays.stream(br.readLine().split(" "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
 
+        ans = 0;
     }
 }
