@@ -3,8 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 /*
 버블 소트
@@ -74,8 +73,9 @@ public class BOJ1517 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static int N;
     static int[] A;
-    static int[] sorted;  // merge sort
-    static HashMap<Integer,Integer> pos;
+    static int[] sorted;    // merge sort
+    static List<int[]> pos; // segment tree
+    static int[] tree;
     static long ans;
 
     public static void main(String[] args) throws IOException {
@@ -85,16 +85,77 @@ public class BOJ1517 {
             task.solve();
          */
 
-        /*
         // 합병 정렬(merge sort) 방식
-            merge_sort_solve task = new merge_sort_solve();
-            task.solve();
-         */
+        merge_sort_solve task = new merge_sort_solve();
+        task.solve();
 
         // segment tree 방식
+        segment_tree_solve task2 = new segment_tree_solve();
+        task2.solve();
+    }
 
+    public static class segment_tree_solve {
+        private void solve() throws IOException {
+            init_setting();
 
+            for(int i = 0; i < N; i++) {
+                int idx = pos.get(i)[1];
+                ans += interval_sum(tree, 0, N - 1,1, idx + 1, N - 1);
+                update(tree, 0, N - 1, 1, idx, 1);
+            }
 
+            System.out.println(ans);
+        }
+
+        private void update(int[] tree, int start, int end, int node, int idx, int val) {
+            if(start == end) {
+                tree[node] = val;
+                return;
+            }
+
+            int mid = (start + end) / 2;
+            if(idx <= mid) update(tree, start, mid, node * 2, idx, val);
+            else update(tree, mid + 1, end, node * 2 + 1, idx, val);
+
+            tree[node] = tree[node * 2] + tree[node * 2 + 1];
+        }
+
+        private long interval_sum(int[] tree, int start, int end, int node, int left, int right) {
+            if(end < left || start > right) return 0;
+            if(left <= start && end <= right) return tree[node];
+
+            int mid = (start + end) / 2;
+            return interval_sum(tree, start, mid,node * 2, left, right)
+                    + interval_sum(tree, mid + 1, end, node * 2 + 1, left, right);
+
+        }
+
+        /*
+            세그먼트 트리의 크기는 배열의 개수가 N일 때, [2^(Log2(N) + 1)] - 1
+         */
+        private int getTreeSize() {
+            int size = (int) Math.ceil(Math.log(N)/Math.log(2)) + 1;
+            return (int) Math.pow(2,size) - 1;
+        }
+
+        private void init_setting() throws IOException {
+            N = Integer.parseInt(br.readLine());
+
+            A = new int[N];
+            tree = new int[getTreeSize()];
+            pos = new ArrayList<int[]>();
+
+            String[] r = br.readLine().split(" ");
+
+            for(int i = 0; i < N; i++) {
+                A[i] = Integer.parseInt(r[i]);
+                pos.add(new int[]{A[i],i});
+            }
+
+            pos.sort(Comparator.comparingInt(o -> o[0]));
+
+            ans = 0;
+        }
     }
 
     public static class merge_sort_solve {
