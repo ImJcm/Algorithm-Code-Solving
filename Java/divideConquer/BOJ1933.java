@@ -72,6 +72,7 @@ ii) 트리맵(TreeMap) + 우선순위 큐
 
 스카이라인 알고리즘 참고 - https://m.blog.naver.com/pshkhh/221371825241
 풀이 참조 - https://velog.io/@shinjy9802/%EB%B0%B1%EC%A4%80-1933%EB%B2%88-%EC%8A%A4%EC%B9%B4%EC%9D%B4%EB%9D%BC%EC%9D%B8-Java
+풀이 참조(트리맵) - https://coder-in-war.tistory.com/entry/BOJ-JAVA1933-%EC%8A%A4%EC%B9%B4%EC%9D%B4%EB%9D%BC%EC%9D%B8
  */
 public class BOJ1933 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
