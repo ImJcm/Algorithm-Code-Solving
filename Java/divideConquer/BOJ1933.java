@@ -90,8 +90,8 @@ public class BOJ1933 {
         task2.solve();  
         */
 
-        //PriorityQueue_solve task = new PriorityQueue_solve();
-        //task.solve();
+        PriorityQueue_solve task1 = new PriorityQueue_solve();
+        task1.solve();
 
         TreeMap_PriorityQueue task = new TreeMap_PriorityQueue();
         task.solve();
