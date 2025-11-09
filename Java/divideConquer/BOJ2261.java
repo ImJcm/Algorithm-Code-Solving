@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /*
 가장 가까운 두 점
@@ -36,12 +37,20 @@ import java.util.ArrayList;
 분할 정복
  */
 public class BOJ2261 {
-    static class pos {
+    static class pos implements Comparable<pos> {
         int x,y;
 
         pos(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        @Override
+        public int compareTo(pos o) {
+            int x = this.x - o.x;
+            if(x < 0) return -1;
+            else if(x == 0) return this.y - o.y;
+            else return 1;
         }
     }
 
@@ -49,16 +58,71 @@ public class BOJ2261 {
     static int N;
     static ArrayList<pos> ps;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Solve task = new Solve();
+        task.solve();
 
     }
 
-    public class init_solve {
+    public static class Solve {
+        int min_dist;
+        pos s,e;
 
         private void solve() throws IOException {
             init_setting();
 
+            //bruteforce();
+            sweeping();
 
+            System.out.println(min_dist);
+        }
+
+        /*
+            오답
+         */
+        private void sweeping() {
+            Collections.sort(ps);
+
+            choice_min_dist_point(ps.get(0),ps.get(1));
+
+            for(int i = 2; i < N; i++) {
+                pos c = ps.get(i);
+
+                choice_min_dist_point(s,c);
+                choice_min_dist_point(e,c);
+            }
+        }
+
+        private void choice_min_dist_point(pos p1, pos p2) {
+            int d = pow_distance_twopoint(p1,p2);
+
+            if(d < min_dist) {
+                min_dist = d;
+                s = p1;
+                e = p2;
+            }
+        }
+
+        /*
+            오답 예상 : 10^(5 * 2) = O(N^2)
+         */
+        private void bruteforce() {
+            for(int i = 0; i < N - 1; i++) {
+                for(int j = i + 1; j < N; j++) {
+                    int dist = pow_distance_twopoint(ps.get(i), ps.get(j));
+
+                    if(dist < min_dist) min_dist = dist;
+                }
+            }
+        }
+
+        private int pow_distance_twopoint(pos p1, pos p2) {
+            int dx = Math.abs(p1.x - p2.x);
+            int dy = Math.abs(p1.y - p2.y);
+
+            int r = (int) Math.pow(dx,2) + (int) Math.pow(dy,2);
+
+            return r;
         }
 
         private void init_setting() throws IOException {
@@ -74,6 +138,8 @@ public class BOJ2261 {
 
                 ps.add(new pos(x,y));
             }
+
+            min_dist = Integer.MAX_VALUE;
         }
     }
 
