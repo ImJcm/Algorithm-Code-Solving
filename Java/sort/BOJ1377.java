@@ -155,7 +155,7 @@ public class BOJ1377 {
             int high = right;
 
             while(true) {
-                while(A[low] < pivot && low < right) low++;
+                while(low <= right && A[low] < pivot) low++;
                 while(A[high] > pivot) high--;
 
                 if(low >= high) break;
