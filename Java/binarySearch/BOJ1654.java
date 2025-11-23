@@ -42,6 +42,15 @@ import java.io.InputStreamReader;
 이분 탐색
 매개 변수 탐색
  */
+/*
+알고리즘 핵심
+이분 탐색
+1. 최소 길이와 최대 길이의 랜선을 기준으로 이분 탐색을 진행하여 중간 길이를 구한다.
+2. 중간 길이를 기준으로 K개의 랜선을 나누었을 때 N개를 만족하는지 확인한다.
+3. N개의 랜선을 만들지 못하는 경우, 최대 길이를 낮춘다.
+N개의 랜선을 만드는 경우, 최소 길이를 늘린다.
+4. 2,3번 과정을 반복하여 최소 길이와 최대 길이가 교차할 때까지 반복하여 N개 이상의 랜선을 만드는 최대 길이를 구한다.
+ */
 public class BOJ1654 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -51,10 +60,41 @@ public class BOJ1654 {
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int K,N,ans;
+        long max_len,l_len,r_len;
         int[] lines;
 
         private void solve() throws IOException {
             init_setting();
+
+            binary_search();
+
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l_len > r_len) return;
+
+            long m_len = (l_len + r_len) / 2;
+
+            if(check_divide_line(m_len)) l_len = m_len + 1;
+            else r_len = m_len - 1;
+
+            binary_search();
+        }
+
+        private boolean check_divide_line(long m_len) {
+            int l = 0;
+            boolean flag = false;
+
+            for(int i = 0; i < K; i++) {
+                l += (int) (lines[i] / m_len);
+            }
+
+            if(l >= N) {
+                ans = (int) Math.max(ans, m_len);
+                flag = true;
+            }
+            return flag;
         }
 
         private void init_setting() throws IOException {
@@ -64,9 +104,13 @@ public class BOJ1654 {
             N = Integer.parseInt(input[1]);
 
             lines = new int[K];
+            max_len = 0;
+            l_len = 1;
+            r_len = 0;
 
             for(int i = 0; i < K; i++) {
                 lines[i] = Integer.parseInt(br.readLine());
+                r_len = Math.max(r_len,lines[i]);
             }
 
             ans = 0;
