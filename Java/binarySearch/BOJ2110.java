@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 공유기 설치 다국어
@@ -43,6 +44,15 @@ Olympiad > USA Computing Olympiad > 2004-2005 Season > USACO February 2005 Conte
 이분 탐색
 매개 변수 탐색
  */
+/*
+알고리즘 핵심
+이분 탐색
+1. 입력으로 주어지는 집의 좌표를 오름차순 정렬한다.
+2. h_0, h_n에 해당하는 집의 좌표의 차이를 최대 공유기 인접 거리라고 초기화한 후, 이분 탐색을 진행하여 최대 인집 거리를 찾는다.
+3. h_0, h_n의 중간 길이를 최대 길이라고 가정하고 C개의 공유기가 해당 길이만큼 거리를 두며 설치가 가능한지 여부를 확인한다.
+4. C개 이상이 가능하면, 최대 길이를 업데이트하고 왼쪽 길이를 중간값보다 크게 설정하여 최대 길이를 찾는다.
+C개 이상이 불가능하면, 오른쪽 길이를 중간값보다 작게 설정하여 최대 길이를 찾는다.
+ */
 public class BOJ2110 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -51,13 +61,67 @@ public class BOJ2110 {
 
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,C,ans,l_c,r_c;
+        int[] houses;
 
         private void solve() throws IOException {
+            init_setting();
 
+            binary_search();
+
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l_c > r_c) return;
+
+            int m_c = (l_c + r_c) / 2;
+
+            if(place_router(m_c)) l_c = m_c + 1;
+            else r_c = m_c - 1;
+
+            binary_search();
+        }
+
+        private boolean place_router(int m_c) {
+            int p_h = houses[0];
+            int c = C - 1;
+
+            for(int i = 1; i < N; i++) {
+                int c_h = houses[i];
+                if(c_h - p_h < m_c) continue;
+                else {
+                    c--;
+                    p_h = c_h;
+                    if(c == 0) {
+                        ans = Math.max(ans, m_c);
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            N = Integer.parseInt(input[0]);
+            C = Integer.parseInt(input[1]);
+
+            houses = new int[N];
+
+            for(int i = 0; i < N; i++) {
+                houses[i] = Integer.parseInt(br.readLine());
+            }
+
+            houses = Arrays.stream(houses)
+                    .sorted()
+                    .toArray();
+
+            ans = 0;
+
+            l_c = 0;
+            r_c = Arrays.stream(houses).max().getAsInt();
         }
     }
 }
