@@ -3,6 +3,9 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /*
 중량제한
@@ -51,14 +54,96 @@ public class BOJ1939 {
     }
 
     public static class Solve {
+        public class Bridge {
+            int weight;
+            Island island;
+
+            public Bridge(Island i, int w) {
+                this.island = i;
+                this.weight = w;
+            }
+
+            int getWeight() {
+                return this.weight;
+            }
+        }
+        public class Island {
+            ArrayList<Bridge> bridges;
+
+            public Island() {
+                 this.bridges = new ArrayList<>();
+            }
+
+            ArrayList<Bridge> getConnected() {
+                return this.bridges;
+            }
+
+            void addConnected(Bridge b, Bridge d) {
+                this.bridges.add(b);
+                if(b.island.getConnected().contains(d)) return;
+                b.island.addConnected(new Bridge(this,b.getWeight()),b);
+            }
+        }
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,M,l,r,ans;
+        Island S,E;
+        ArrayList<Island> islands;
 
         private void solve() throws IOException {
             init_setting();
+
+            binary_search();    // search max_weight
+
+            System.out.println(ans);
+        }
+
+        // S -> E로 이동하는 동안의 최대 무게 지정 : 이분 탐색
+        private void binary_search() {
+            if(l > r) return;
+
+
+        }
+
+        // 이분 탐색을 통해 나온 최대 무게로 BFS 수행하여 도달하는지 여부 확인
+        private void BFS() {
+
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            N = Integer.parseInt(input[0]);
+            M = Integer.parseInt(input[1]);
+
+            islands = new ArrayList<>();
+
+            for(int i = 0; i <= N; i++) {
+                islands.add(new Island());
+            }
+
+            for(int i = 0; i < M; i++) {
+                input = br.readLine().split(" ");
+
+                int A = Integer.parseInt(input[0]);
+                int B = Integer.parseInt(input[1]);
+                int C = Integer.parseInt(input[2]);
+
+                islands.get(A).addConnected(new Bridge(islands.get(B),C),null);
+            }
+
+            input = br.readLine().split(" ");
+
+            S = islands.get(Integer.parseInt(input[0]));
+            E = islands.get(Integer.parseInt(input[1]));
+
+            l = 1;
+            r = S.getConnected().stream()
+                    .map(Bridge::getWeight)
+                    .max(Integer::compareTo)
+                    .get();
+
+            ans = 0;
         }
 
     }
