@@ -4,10 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 /*
 중량제한
@@ -55,6 +53,9 @@ public class BOJ1939 {
         task.solve();
     }
 
+    /*
+        53% time out
+     */
     public static class Solve {
         public class Bridge {
             int weight;
@@ -120,8 +121,25 @@ public class BOJ1939 {
             boolean[] visited = new boolean[N + 1];
 
             visited[S.n] = true;
+            q.add(S);
 
+            while(!q.isEmpty()) {
+                Island cur = q.poll();
 
+                if(cur.n == E.n) {
+                    ans = Math.max(ans, w);
+                    return true;
+                }
+
+                for(Bridge b : cur.bridges) {
+                    if(b.weight < w || visited[b.island.n]) continue;
+
+                    q.add(islands.get(b.island.n));
+                    visited[b.island.n] = true;
+                }
+            }
+
+            return false;
         }
 
         private void init_setting() throws IOException {
@@ -163,7 +181,5 @@ public class BOJ1939 {
 
             ans = 0;
         }
-
     }
-
 }
