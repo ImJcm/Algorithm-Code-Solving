@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 /*
@@ -68,10 +70,12 @@ public class BOJ1939 {
             }
         }
         public class Island {
+            int n;
             ArrayList<Bridge> bridges;
 
-            public Island() {
-                 this.bridges = new ArrayList<>();
+            public Island(int n) {
+                this.n = n;
+                this.bridges = new ArrayList<>();
             }
 
             ArrayList<Bridge> getConnected() {
@@ -102,11 +106,21 @@ public class BOJ1939 {
         private void binary_search() {
             if(l > r) return;
 
+            int m = (l + r) / 2;
 
+            if(BFS(m)) l = m + 1;
+            else r = m - 1;
+
+            binary_search();
         }
 
         // 이분 탐색을 통해 나온 최대 무게로 BFS 수행하여 도달하는지 여부 확인
-        private void BFS() {
+        private boolean BFS(int w) {
+            Queue<Island> q = new LinkedList<>();
+            boolean[] visited = new boolean[N + 1];
+
+            visited[S.n] = true;
+
 
         }
 
@@ -119,7 +133,7 @@ public class BOJ1939 {
             islands = new ArrayList<>();
 
             for(int i = 0; i <= N; i++) {
-                islands.add(new Island());
+                islands.add(new Island(i));
             }
 
             for(int i = 0; i < M; i++) {
@@ -138,10 +152,14 @@ public class BOJ1939 {
             E = islands.get(Integer.parseInt(input[1]));
 
             l = 1;
-            r = S.getConnected().stream()
+            r = Math.min(S.getConnected().stream()
                     .map(Bridge::getWeight)
                     .max(Integer::compareTo)
-                    .get();
+                    .get()
+                ,E.getConnected().stream()
+                        .map(Bridge::getWeight)
+                        .max(Integer::compareTo)
+                        .get());
 
             ans = 0;
         }
