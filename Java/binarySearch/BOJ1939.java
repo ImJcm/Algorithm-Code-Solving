@@ -47,16 +47,138 @@ N(2 ≤ N ≤ 10,000)개의 섬으로 이루어진 나라가 있다. 이들 중 
 데이크스트라
 분리 집합
  */
+/*
+알고리즘 핵심
+BFS + 이분 탐색
+1. 섬과 다리 정보를 저장히기 위해 Bridge 구조체와 배열을 사용하여 형태를 구성한다.
+2. 출발하는 섬과 도착하는 섬의 다리 중 최대 무게 중 최소값을 r로 설정하고 l을 1로 설정하여 이분 탐색을 진행하여 무게를 지정한다.
+3. 해당 무게로 S,E를 이동하는 경로가 있는지 BFS를 수행한다.
+4. 섬의 이동이 가능하면, 무게를 늘려 이동이 가능한지 중간값을 재설정하고, 불가능하면 중간값을 낮추어 재설정하여 최대 무게를 구한다.
+
+처음 구현한 방식의 경우 섬과 다리의 구조체를 만들어 한번의 코드로 영속성 전이와 같은 개념을 이용하여 간편하게 양방향 다리 설정을 하려고했으나
+해당 방법으로 시간 초과를 받았다고 판단하여 정보를 구성하는 과정을 수정하였다.
+
+구현은 단순하게 하는 것이 좋다는 결론이다.
+ */
 public class BOJ1939 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
         task.solve();
     }
 
+    public static class Solve {
+        public class Bridge {
+            int dest,weight;
+
+            public Bridge(int d, int w) {
+                this.dest = d;
+                this.weight = w;
+            }
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,M,S,E,l,r,ans;
+        ArrayList<ArrayList<Bridge>> bridges;
+
+        private void solve() throws IOException {
+            init_setting();
+
+            binary_search();
+
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l > r) return;
+
+            int m = (l + r) / 2;
+
+            if(BFS(m)) l = m + 1;
+            else r = m - 1;
+
+            binary_search();
+        }
+
+        private boolean BFS(int w) {
+            Queue<Integer> q = new LinkedList<>();
+            boolean[] visited = new boolean[N + 1];
+
+            q.add(S);
+            visited[S] = true;
+
+            while(!q.isEmpty()) {
+                Integer i = q.poll();
+
+                if(i == E) {
+                    ans = w;
+                    return true;
+                }
+
+                for(Bridge b : bridges.get(i)) {
+                    if(visited[b.dest] || b.weight < w) continue;
+
+                    visited[b.dest] = true;
+                    q.add(b.dest);
+                }
+            }
+
+            return false;
+        }
+
+        private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
+
+            N = Integer.parseInt(input[0]);
+            M = Integer.parseInt(input[1]);
+
+            bridges = new ArrayList<>();
+
+            for(int i = 0; i <= N; i++) {
+                bridges.add(new ArrayList<>());
+            }
+
+            for(int i = 0; i < M; i++) {
+                input = br.readLine().split(" ");
+
+                int A = Integer.parseInt(input[0]);
+                int B = Integer.parseInt(input[1]);
+                int C = Integer.parseInt(input[2]);
+
+                bridges.get(A).add(new Bridge(B,C));
+                bridges.get(B).add(new Bridge(A,C));
+            }
+
+            input = br.readLine().split(" ");
+
+            S = Integer.parseInt(input[0]);
+            E = Integer.parseInt(input[1]);
+
+            l = 1;
+            r = Math.min(bridges.get(S).stream()
+                    .map(o -> o.weight)
+                    .max(Integer::compareTo)
+                    .get()
+                ,bridges.get(E).stream()
+                            .map(o -> o.weight)
+                            .max(Integer::compareTo)
+                            .get());
+
+            ans = 0;
+        }
+    }
+
     /*
         53% time out
+        reason : 2개의 구조체가 서로 참조하는 형태로 섬과 다리로 분리되어 정보를 저장하기 때문에 시간 초과가 발생한 것 같다.
+        섬과 다리에 대한 정보를 다음과 같이 분리한다.
+        1. 섬에 대한 정보는 배열을 생성하여 인덱스를 통해 섬을 구분하고, 각 배열의 요소에는 다리의 정보들을 저장하기 위해 배열을 만든다.
+        2. 1번에서 생성한 배열에 저장할 정보로 (목적지, 중량) 정보를 저장하는 다리 구조체를 만든다.
+        3. 1,2번을 통해 arr[A] = new ArrayList<>() => 해당 배열에 Bridge 구조체를 저장한다.
+            (arr[A].add(new Bridge(B,C)); => A 섬에서 B 섬으로 C의 무게를 견디는 다리가 있다.
+            arr[B].add(new Bridge(A,C)) => 양방향을 만족하기 위해 추가한다.
+
      */
-    public static class Solve {
+    public static class TimeOut_Wrong_Solve {
         public class Bridge {
             int weight;
             Island island;
@@ -170,14 +292,15 @@ public class BOJ1939 {
             E = islands.get(Integer.parseInt(input[1]));
 
             l = 1;
-            r = Math.min(S.getConnected().stream()
+            r = 1000000000;
+            /*r = Math.min(S.getConnected().stream()
                     .map(Bridge::getWeight)
                     .max(Integer::compareTo)
                     .get()
                 ,E.getConnected().stream()
                         .map(Bridge::getWeight)
                         .max(Integer::compareTo)
-                        .get());
+                        .get());*/
 
             ans = 0;
         }
