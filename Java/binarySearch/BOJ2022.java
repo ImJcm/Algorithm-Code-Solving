@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 예제 출력 1
 26.033
 예제 입력 2
-12.619429 8.163332 3
+12.619429 8.163332 3r
 예제 출력 2
 7.000
 예제 입력 3
@@ -47,6 +47,23 @@ ICPC > Regionals > North America > Rocky Mountain Regional > Alberta Collegiate 
 이분 탐색
 피타고라스 정리
  */
+/*
+알고리즘 핵심
+이분 탐색 + 피타고라스 정리 + 수학(기하학)
+1. X,Y,C가 주어질 때, 두 빌딩 사이의 거리를 구하는 공식을 만든다.
+두 빌딩 사이의 너비 : d
+각 사다리가 빌딩에 기대어 진 높이는 각각 sqrt(X^2 - d^2), sqrt(Y^2 - d^2)
+각 사다리를 2차원에서 직선이라고 보고, c의 위치를 y축 절편이라고 보면 다음과 같은 두개의 직선 방정식을 만들 수 있다.
+y1 = -(sqrt(X^2 - d^2) / d)x + c
+y2 = (sqrt(Y^2 - d^2) / d)x + c
+이 두 방정식에서 x축의 좌표를 구한 후, 두 값의 절댓값을 더하면 d값이 되므로, 다음과 같은 식을 만들 수 있다.
+d = cd / (sqrt(X^2 - d^2)) - (-cd / sqrt(Y^2 - d^2))
+=> c / sqrt(X^2 - d^2) + c / sqrt(Y^2 - d^2) = 1
+2. X,Y보다 작은 값을 r, l = 1로 설정하여 이분 탐색을 진행하고, l,r을 조정하는 과정에서 0.001로 설정한다.
+(0.001로 설정한 이유 : 10^3만큼의 오차를 허용하기 때문이다.)
+3. 10^3만큼의 오차를 허용하므로, 0.001 보다 크고, 1.999보다 작거나 같은 값이 나오는 경우 d 값에 가능하다.
+1보다 작은 값은 -1을 반환하여, m값을 높이고, 1보다 큰 값은 1을 반환하여 m값을 낮춘다.
+ */
 public class BOJ2022 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -55,13 +72,49 @@ public class BOJ2022 {
 
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        double X,Y,C,ans,l,r;
 
         private void solve() throws IOException {
             init_setting();
+
+            binary_search();
+
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l > r) return;
+
+            double m = (l + r) / 2;
+
+            int ret = cal_width(m);
+
+            if(ret == -1) l = m + 0.001;
+            else r = m - 0.001;
+
+            binary_search();
+        }
+
+        private int cal_width(double w) {
+            double r = (C / (Math.sqrt(X * X - w * w))) + (C / (Math.sqrt(Y * Y - w * w)));
+
+            if(0.001 <= r && r <= 1.999) ans = Math.round(w * 1000) / 1000.0;
+
+            if(r <= 1) return -1;
+            else return 1;
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            X = Double.parseDouble(input[0]);
+            Y = Double.parseDouble(input[1]);
+            C = Double.parseDouble(input[2]);
+
+            ans = 0;
+
+            l = 1;
+            r = Math.min(X,Y);
         }
     }
 }
