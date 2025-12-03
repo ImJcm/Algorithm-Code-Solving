@@ -64,37 +64,77 @@ public class BOJ11664 {
 
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int[] A,B,C;
-        double ans;
+        double[] A,B,C;
+        double ans,l,r;
 
         private void solve() throws IOException {
             init_setting();
 
+            binary_search();
+        }
 
+        private void binary_search() {
+            if(l > r) return;
+
+            double t = (l + r) / 2.000000;
+
+            if(cal_dist(t)) {
+                l = t + 0.000001;
+                ans = t;
+            }
+            else r = t - 0.000001;
+
+            binary_search();
+        }
+
+        private boolean cal_dist(double t) {
+            double[] AB = new double[] {
+                    A[0] - t * (A[0] - B[0]),
+                    A[1] - t * (A[1] - B[1]),
+                    A[2] - t * (A[2] - B[2])
+            };
+
+            double d = distance_between_two_point(AB,C);
+
+            if(d )
+
+        }
+
+        private double distance_between_two_point(double[] p1, double[] p2) {
+            double d = 0;
+
+            for(int i = 0; i < 3; i++) {
+                d += Math.pow(p1[i] - p2[i],2);
+            }
+
+            return Math.sqrt(d);
         }
 
         private void init_setting() throws IOException {
             String[] input = br.readLine().split(" ");
 
-            A = new int[3];
-            B = new int[3];
-            C = new int[3];
+            A = new double[3];
+            B = new double[3];
+            C = new double[3];
 
             for(int i = 0; i < 3; i++) {
                 for(int j = 0; j < 3; j++) {
                     switch (i) {
                         case 0:
-                            A[j] = Integer.parseInt(input[j]);
+                            A[j] = Double.parseDouble(input[j]);
                             break;
                         case 1:
-                            B[j] = Integer.parseInt(input[i * 3 + j]);
+                            B[j] = Double.parseDouble(input[i * 3 + j]);
                             break;
                         case 2:
-                            C[j] = Integer.parseInt(input[i * 3 + j]);
+                            C[j] = Double.parseDouble(input[i * 3 + j]);
                             break;
                     }
                 }
             }
+
+            l = 0.000000;
+            r = 1.000000;
 
             ans = 0;
         }
