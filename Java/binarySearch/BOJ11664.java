@@ -56,6 +56,13 @@ import java.io.InputStreamReader;
 삼분 탐색
 3차원 기하학
  */
+/*
+알고리즘 핵심
+삼분 탐색
+1. 3차원의 두 점을 양끝으로하는 선분의 방정식을 구한다. => (1-t)A + tB (A = (ax,ay,az), B = (bx,by,bz), 0<=t<=1)
+2. t값을 조정하여 최소 길이를 갖는 범위를 탐색한다. = 삼분 탐색
+3. 최소 길이를 갖는 t가 속하는 범위[l,r]에서 C와의 길이 중에서 최소 길이를 구한다.
+ */
 public class BOJ11664 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -70,34 +77,41 @@ public class BOJ11664 {
         private void solve() throws IOException {
             init_setting();
 
-            binary_search();
+            thrnary_search();
+
+            System.out.printf("%.10f",ans);
         }
 
-        private void binary_search() {
-            if(l > r) return;
+        private void thrnary_search() {
+            // 10^-6까지 오차를 허용하므로 1e-7만큼 차이나는 범위를 구해야 한다.
+            while(r - l >= 1e-7) {
+                double m1 = (2 * l + r) / 3;
+                double m2 = (l + 2 * r) / 3;
 
-            double t = (l + r) / 2.000000;
+                double d1 = distance_between_two_point(cal_point(m1),C);
+                double d2 = distance_between_two_point(cal_point(m2),C);
 
-            if(cal_dist(t)) {
-                l = t + 0.000001;
-                ans = t;
+                if(d1 > d2) {
+                    l = m1;
+                } else {
+                    r = m2;
+                }
             }
-            else r = t - 0.000001;
 
-            binary_search();
+            // 10^-6까지 오차를 허용하므로, 1e-6수만큼 차이를 두어 두 점거리가 최소인 점을 찾는다.
+            for(double d = l; d <= r; d += 1e-6) {
+                ans = Math.min(ans,distance_between_two_point(cal_point(d),C));
+            }
         }
 
-        private boolean cal_dist(double t) {
+        private double[] cal_point(double t) {
             double[] AB = new double[] {
                     A[0] - t * (A[0] - B[0]),
                     A[1] - t * (A[1] - B[1]),
                     A[2] - t * (A[2] - B[2])
             };
 
-            double d = distance_between_two_point(AB,C);
-
-            if(d )
-
+            return AB;
         }
 
         private double distance_between_two_point(double[] p1, double[] p2) {
@@ -133,10 +147,10 @@ public class BOJ11664 {
                 }
             }
 
-            l = 0.000000;
-            r = 1.000000;
+            l = 0;
+            r = 1;
 
-            ans = 0;
+            ans = Integer.MAX_VALUE;
         }
     }
 }
