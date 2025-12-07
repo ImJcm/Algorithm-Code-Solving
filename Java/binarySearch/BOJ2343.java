@@ -3,6 +3,7 @@ package BackJoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 기타 레슨
@@ -32,14 +33,25 @@ import java.io.InputStreamReader;
 
 1번 블루레이에 1, 2, 3, 4, 5, 2번 블루레이에 6, 7, 3번 블루레이에 8, 9 를 넣으면 각 블루레이의 크기는 15, 13, 17이 된다. 블루레이의 크기는 모두 같아야 하기 때문에, 블루레이의 크기는 17이 된다. 17보다 더 작은 크기를 가지는 블루레이를 만들 수 없다.
 
-
-
 출처
 잘못된 데이터를 찾은 사람: tncks0121
 데이터를 추가한 사람: muzigae, sksdong1
 알고리즘 분류
 이분 탐색
 매개 변수 탐색
+ */
+/*
+알고리즘 핵심
+이분 탐색
+1. 블루레이의 용량을 이분 탐색을 통해 정한다.
+(초기 블루레이 최소 용량을 1, 최대 용량을 N개의 블루레이 수 * 한 블루레이의 최대 용량 = 1,000,000,000 (10,000 * 100,000)
+2. 정해진 블루레이의 용량으로 N개의 음원을 블루레이에 담는 과정에서 l,r의 범위를 정한다.
+2-1. 한 음원의 용량이 블루레이 용량보다 큰 경우, 블루레이 용량의 범위를 중간값보다 크게 정한다.
+2-2. 0부터 N-1까지 음원의 용량을 누적하여 블루레이 용량보다 커지면, 이전까지의 음원을 블루레이에 담는 것으로 블루레이 카운트를 증가시킨다.
+2-3. 0~N까지 모두 진행 후, 남은 음원의 용량이 블루레이 용량보다 큰 경우, 블루레이 용량의 범위를 중간값보다 크게 정한다.
+2-4. 2-3에서 남은 음원의 용량이 블루레이 용량보다 작은 경우 블루레이 카운트를 증가시킨다.
+3. 블루레이 용량이 M보다 큰 경우, 블루레이 용량의 범위를 중간값보다 크게 정한다.
+블루레이 용량이 M보다 작거나 같은 경우, 용량의 최소값을 ans에 업데이트하고, 블루레이 용량의 범위를 중간값보다 작게 정한다.
  */
 public class BOJ2343 {
     public static void main(String[] args) throws IOException {
@@ -49,15 +61,67 @@ public class BOJ2343 {
 
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,M,ans,l,r;
+        int[] lecture;
 
         private void solve() throws IOException {
             init_setting();
 
+            binary_search();
 
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l > r) return;
+
+            int m = (l + r) / 2;
+
+            if(blu_ray(m)) r = m - 1;
+            else l = m + 1;
+
+            binary_search();
+        }
+
+        private boolean blu_ray(int m) {
+            int size = 0;
+            int cnt = 0;
+
+            for(int i = 0; i < N; i++) {
+                if(m < lecture[i]) return false;
+
+                size += lecture[i];
+
+                if(i != N - 1 && size + lecture[i + 1] > m) {
+                    cnt++;
+                    size = 0;
+                }
+            }
+
+            if(size > m) return false;
+            else if(size != 0) cnt++;
+
+            if(cnt > M) return false;
+            else {
+                ans = Math.min(ans,m);
+                return true;
+            }
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            N = Integer.parseInt(input[0]);
+            M = Integer.parseInt(input[1]);
+
+            lecture = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+
+            l = 1;
+            r = 1_000_000_000;
+
+            ans = Integer.MAX_VALUE;
         }
     }
 }
