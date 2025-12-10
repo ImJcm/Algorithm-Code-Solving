@@ -1,6 +1,9 @@
 package BackJoon;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 구간 나누기 2
@@ -75,15 +78,87 @@ public class BOJ13397 {
     }
 
     public static class Solve {
-        private void solve() throws IOException {
-            init_setting();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,M,ans;
+        int[] arr,m_arr;
 
+        private void solve() throws IOException{
+            init_setting();
 
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            N = Integer.parseInt(input[0]);
+            M = Integer.parseInt(input[1]);
+
+            arr = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+
+            m_arr = new int[M];
+
+            ans = 10001;
         }
     }
 
+    /*
+        시간 초과 : bruteforce 형태의 구간의 최대값 중 최소값을 확인하는 로직이다.
+     */
+    public static class TimeOut_Solve {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,M,ans;
+        int[] arr,m_arr;
+
+        private void solve() throws IOException {
+            init_setting();
+
+            for(int i = 1; i <= M; i++) {
+                m_arr = new int[M];
+                divide_section(0,i,0);
+            }
+
+            System.out.println(ans);
+        }
+
+        private void divide_section(int sec, int limit, int s) {
+            if(sec == limit) {
+                if(s == N) ans = Math.min(ans, Arrays.stream(m_arr).max().getAsInt());
+                return;
+            }
+
+            for(int i = s; i < N; i++) {
+                m_arr[sec] = diff_max_min_value(s, i);
+                divide_section(sec + 1, limit, i + 1);
+            }
+        }
+
+        private int diff_max_min_value(int s, int e) {
+            int max = 0;
+            int min = 10001;
+
+            for(int i = s; i <= e; i++) {
+                max = Math.max(max, arr[i]);
+                min = Math.min(min, arr[i]);
+            }
+
+            return max - min;
+        }
+
+        private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
+
+            N = Integer.parseInt(input[0]);
+            M = Integer.parseInt(input[1]);
+
+            arr = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+
+            m_arr = new int[M];
+
+            ans = 10001;
+        }
+    }
 }
