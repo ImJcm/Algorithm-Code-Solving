@@ -71,6 +71,22 @@ N개의 수로 이루어진 1차원 배열이 있다. 이 배열을 M개 이하�
 이분 탐색
 매개 변수 탐색
  */
+/*
+알고리즘 핵심
+이분 탐색
+1. 입력으로 주어진 N개의 배열에서 최대값과 최소값을 구한 후, 뺀 값을 r로 설정하고 0을 l 값으로 설정한다.
+2. l,r 값으로 구간의 최대값과 최소값을 뺀 값을 의미하며 해당 값을 이분 탐색의 대상으로 한다.
+3. N개의 배열에서 만들 수 있는 구간의 최대값임과 동시에 최소값을 지정하여 0~N-1까지의 구간에서 해당하는 값보다 작은지 큰지 여부에 따라 이분 탐색 과정을 수행한다.
+4. 구간마다 연속된 수의 집합이므로 0부터 i(i = 1 ~ ...)만큼의 끝 구간을 지정하여 해당 구간에서 최대값과 최소값의 차이가 3번에 해당하는 값보다 작다면
+i 값을 증가시켜 구간을 확장하고 계속 진행한다.
+3번에 해당하는 값보다 크다면, 해당 구간으로는 만들 수 없으므로 구간을 새로 시작한다. (이때, 구간의 수를 증가시킨다.)
+5. 모든 과정을 마친 후, 만들어진 구간의 갯수 + 1이 M보다 작거나 같다면, 더 작은 최소값을 만들 수 있는 가능성이 있으므로 r 값을 낮춘다.
+그렇지 않다면, 해당 최소값은 만들 수 없으므로 l 값을 증가시킨다.
+
+처음 접근으로 bruteforce를 만들었지만, 시간초과 발생하였다.
+이후, 풀이 방법을 도저히 모르겠어서 풀이 힌트를 참고하였다.
+중요한 점은 다음과 같이 N개의 배열에서 최대값과 최소값의 차이는 해당 배열에서 만들 수 있는 최대값이므로 최소값과 해당 값을 이분 탐색의 기준인 것이다.
+ */
 public class BOJ13397 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -79,12 +95,60 @@ public class BOJ13397 {
 
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N,M,ans;
-        int[] arr,m_arr;
+        int N,M,ans,l,r;
+        int[] arr;
 
         private void solve() throws IOException{
             init_setting();
 
+            binary_search();
+
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l > r) return;
+
+            int m = (l + r) / 2;
+
+            if(check_max_section(m)) {
+                r = m - 1;
+                ans = m;
+            } else l = m + 1;
+
+            binary_search();
+        }
+
+        private boolean check_max_section(int m) {
+            int section_cnt = 0;
+            int i = 1;
+            int s = 0;
+
+            while(s + i < N) {
+                if(diff_max_min(s, s + i) <= m) {
+                    i++;
+                    continue;
+                } else {
+                    s = s + i;
+                    section_cnt++;
+                    i = 1;
+                }
+            }
+
+            if(section_cnt + 1 <= M) return true;
+            else return false;
+        }
+
+        private int diff_max_min(int s, int e) {
+            int max_v = 0;
+            int min_v = 10001;
+
+            for(int i = s; i <= e; i++) {
+                max_v = Math.max(max_v, arr[i]);
+                min_v = Math.min(min_v, arr[i]);
+            }
+
+            return max_v - min_v;
         }
 
         private void init_setting() throws IOException {
@@ -97,9 +161,10 @@ public class BOJ13397 {
                     .mapToInt(Integer::parseInt)
                     .toArray();
 
-            m_arr = new int[M];
-
             ans = 10001;
+
+            l = 0;
+            r = Arrays.stream(arr).max().getAsInt() - Arrays.stream(arr).min().getAsInt();
         }
     }
 
