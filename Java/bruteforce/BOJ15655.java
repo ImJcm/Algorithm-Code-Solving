@@ -1,5 +1,4 @@
-package BOJ;
-import jdk.internal.util.xml.impl.Input;
+package bruteforce;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

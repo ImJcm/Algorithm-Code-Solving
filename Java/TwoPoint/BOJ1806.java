@@ -1,4 +1,4 @@
-package BackJoon;
+package TwoPoint;
 
 /*
 부분합 다국어

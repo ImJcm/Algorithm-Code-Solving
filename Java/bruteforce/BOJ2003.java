@@ -1,5 +1,3 @@
-package BackJoon;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,7 +45,7 @@ N개의 수로 된 수열 A[1], A[2], …, A[N] 이 있다. 이 수열의 i번�
 투 포인트(Two Point) 알고리즘 개념
 - 리스트에 순차적으로 접근해야 할 때 "두 개의 점의 위치를 기록하면서 처리"하는 알고리즘
 - 정렬되어 있는 두 리스트의 합집합에도 사용될 수 있다.
-- 병합정렬(merge sort)의 counquer(정복) 영역의 기초가 되기도 한다.
+- 병합정렬(merge sort)의 couquer(정복) 영역의 기초가 되기도 한다.
 
  */
 public class BOJ2003 {

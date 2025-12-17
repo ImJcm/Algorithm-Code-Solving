@@ -1,4 +1,4 @@
-package BackJoon;
+package bruteforce;
 
 /*
 구슬 탈출 2

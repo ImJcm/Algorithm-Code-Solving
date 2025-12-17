@@ -1,4 +1,4 @@
-package BackJoon;
+package BFS;
 
 /*
 뱀과 사다리 게임

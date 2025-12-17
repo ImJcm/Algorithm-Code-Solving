@@ -1,4 +1,4 @@
-package BackJoon;
+package bruteforce;
 
 import java.util.ArrayList;
 import java.util.Arrays;

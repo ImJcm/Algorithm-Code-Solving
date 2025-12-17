@@ -1,4 +1,4 @@
-package BOJ;
+package bruteforce;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

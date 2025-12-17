@@ -1,4 +1,4 @@
-/*
+package bruteforce;/*
 문제
 자연수 N과 M이 주어졌을 때, 아래 조건을 만족하는 길이가 M인 수열을 모두 구하는 프로그램을 작성하시오.
 
@@ -61,8 +61,10 @@
 4 3 2 1
 */
 import java.util.*;
+
 public class BOJ15649 {
-    static int n,m;
+
+    static int n, m;
     static int[] lt;
     static boolean[] used;
     static StringBuilder sb = new StringBuilder();
@@ -79,18 +81,18 @@ public class BOJ15649 {
 
     public static void backtrack_permut(int index) {
         if (index == m) {
-            for(int l : lt) {
+            for (int l : lt) {
                 sb.append(l + " ");
             }
             sb.append("\n");
             return;
         }
 
-        for (int i=0;i<n;i++) {
-            if(!used[i]) {
+        for (int i = 0; i < n; i++) {
+            if (!used[i]) {
                 used[i] = true;
-                lt[index] = i+1;
-                backtrack_permut(index+1);
+                lt[index] = i + 1;
+                backtrack_permut(index + 1);
                 used[i] = false;
             }
         }

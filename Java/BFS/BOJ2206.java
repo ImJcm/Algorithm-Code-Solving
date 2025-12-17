@@ -1,4 +1,4 @@
-package BackJoon;
+package BFS;
 
 /*
 벽 부수고 이동하기

@@ -1,5 +1,4 @@
-package BackJoon;
-/*
+package BFS;/*
 파티 다국어
 
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율
@@ -34,10 +33,6 @@ N개의 숫자로 구분된 각각의 마을에 한 명의 학생이 살고 있�
 예제 출력 1
 10
  */
-
-// JDK8 에서 지원하는 Pair
-import javafx.util.Pair;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,6 +40,23 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class BOJ1238 {
+    public static class Pair<K,V> {
+        private final K key;
+        private final V value;
+
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+    }
     static PriorityQueue<Pair<Integer,Integer>> pQ = new PriorityQueue<>(new Comparator<Pair<Integer, Integer>>() {
         @Override
         public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
@@ -99,10 +111,10 @@ public class BOJ1238 {
             int cost = -pQ.peek().getValue();
             int here = pQ.peek().getKey();
             pQ.poll();
-            *//*
+            /*
                 here노드에 도달하는데 드는 최소비용 값이 이전노드에서 here노드로 오는 경로의 비용과 비교하여,
                 이미 최소비용이 cost보다 적다면, 해당 경로의 정보는 무시한다. (= 중복된 원소를 제거하는 과정)
-             *//*
+             */
             if(dist.get(here) < cost) continue;
 
             for(int i = 0; i < adj.get(here).size(); i++) {

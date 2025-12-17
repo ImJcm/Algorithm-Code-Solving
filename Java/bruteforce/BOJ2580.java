@@ -1,4 +1,4 @@
-package BackJoon;
+package bruteforce;
 
 import java.util.*;
 import java.util.stream.Collectors;

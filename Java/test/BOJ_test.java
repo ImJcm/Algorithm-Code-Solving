@@ -1,4 +1,4 @@
-package BOJ.test;
+package test;
 
 public class BOJ_test {
     public static void main(String[] args) {

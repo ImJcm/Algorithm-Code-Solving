@@ -1,4 +1,4 @@
-package BackJoon;/*
+package Implementation;/*
 정육면체 전개도
 
 시간 제한	메모리 제한	제출	정답	맞힌 사람	정답 비율

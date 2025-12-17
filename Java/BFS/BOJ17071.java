@@ -1,4 +1,4 @@
-package BackJoon;
+package BFS;
 
 /*
 숨바꼭질 5
