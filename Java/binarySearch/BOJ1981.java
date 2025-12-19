@@ -96,10 +96,20 @@ public class BOJ1981 {
             PriorityQueue<Pos> pq = new PriorityQueue<>(new Comparator<Pos>() {
                 @Override
                 public int compare(Pos o1, Pos o2) {
-                    //return o2.min_n - o1.min_n;
+                    //return o2.min_n - o1.min_n; // wrong solve
+
+                    /* // wrong solve2
                     int o1_diff = o1.max_n - o1.min_n;
                     int o2_diff = o2.max_n - o2.min_n;
-                    return o1_diff - o2_diff;
+                    return o1_diff - o2_diff;*/
+
+                    /* // wrong solve3
+                    int min_diff = o2.min_n - o1.min_n;
+                    int max_diff = o1.max_n - o2.max_n;
+
+                    if(min_diff > 0) return 1;
+                    else if(min_diff < 0) return -1;
+                    else return max_diff;*/
                 }
             });
             boolean[][] visited = new boolean[N][N];
