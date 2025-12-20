@@ -3,8 +3,7 @@ package binarySearch;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /*
 배열에서 이동 다국어
@@ -93,6 +92,109 @@ public class BOJ1981 {
         }
 
         private boolean bfs(Pos s, int m) {
+            Queue<Pos> q = new LinkedList<>();
+            int[][] visited = new int[N][N];
+
+            for(int i = 0; i < N; i++) {
+                Arrays.fill(visited[i],201);
+            }
+
+            q.add(s);
+            visited[s.x][s.y] = s.max_n - s.min_n;
+
+            while(!q.isEmpty()) {
+                Pos np = q.poll();
+
+                if(np.x == N - 1 && np.y == N - 1) {
+                    //q.clear();
+                    return true;
+                }
+
+                for(int[] d : direction) {
+                    int nx = np.x + d[0];
+                    int ny = np.y + d[1];
+
+                    if(nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
+
+                    int nmin_n = Math.min(np.min_n,arr[nx][ny].n);
+                    int nmax_n = Math.max(np.max_n,arr[nx][ny].n);
+                    int diff = nmax_n - nmin_n;
+
+                    if(visited[nx][ny] <= diff || diff > m) continue;
+
+                    visited[nx][ny] = Math.min(visited[nx][ny],diff);
+                    q.add(new Pos(nx,ny,arr[nx][ny].n,nmin_n,nmax_n));
+                }
+            }
+            return false;
+        }
+
+        private void init_setting() throws IOException {
+            N = Integer.parseInt(br.readLine());
+
+            arr = new Pos[N][N];
+
+            l = 201;
+            r = 0;
+            ans = 201;
+
+            for(int x = 0; x < N; x++) {
+                String[] input = br.readLine().split(" ");
+                for(int y = 0; y < N; y++) {
+                    int n = Integer.parseInt(input[y]);
+                    arr[x][y] = new Pos(x,y,n,n,n);
+                    l = Math.min(l,n);
+                    r = Math.max(r,n);
+                }
+            }
+
+            arr[0][0].min_n = Math.min(arr[0][0].n,arr[N - 1][N - 1].n);
+            arr[0][0].max_n = Math.max(arr[0][0].n,arr[N - 1][N - 1].n);
+
+            r -= l;
+        }
+    }
+
+    public static class WrongSolve {
+        public class Pos {
+            int x,y,n,min_n,max_n;
+
+            Pos(int x, int y, int n, int min, int max) {
+                this.x = x;
+                this.y = y;
+                this.n = n;
+                this.min_n = min;
+                this.max_n = max;
+            }
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,ans,l,r;
+        int[][] direction = {{0,-1},{-1,0},{0,1},{1,0}};
+        Pos[][] arr;
+
+        private void solve() throws IOException {
+            init_setting();
+
+            binary_search();
+
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l > r) return;
+
+            int m = (l + r) / 2;
+
+            if(bfs(arr[0][0], m)) {
+                r = m - 1;
+                ans = m;
+            } else l = m + 1;
+
+            binary_search();
+        }
+
+        private boolean bfs(Pos s, int m) {
             PriorityQueue<Pos> pq = new PriorityQueue<>(new Comparator<Pos>() {
                 @Override
                 public int compare(Pos o1, Pos o2) {
@@ -103,13 +205,13 @@ public class BOJ1981 {
                     int o2_diff = o2.max_n - o2.min_n;
                     return o1_diff - o2_diff;*/
 
-                    /* // wrong solve3
+                    // wrong solve3
                     int min_diff = o2.min_n - o1.min_n;
                     int max_diff = o1.max_n - o2.max_n;
 
                     if(min_diff > 0) return 1;
                     else if(min_diff < 0) return -1;
-                    else return max_diff;*/
+                    else return max_diff;
                 }
             });
             boolean[][] visited = new boolean[N][N];
