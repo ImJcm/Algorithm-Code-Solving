@@ -42,10 +42,35 @@ public class BOJ1300 {
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,K;
+        long l,r,ans;
         //long[][] A; // 10^5 x 10^5의 최대 크기의 배열은 OutOfMemoryError
 
         private void solve() throws IOException {
             init_setting();
+
+            binary_search();
+
+            System.out.println(ans);
+        }
+
+        private void binary_search() {
+            if(l > r) return;
+
+            long mid = (l + r) / 2;
+
+            long c = count_small_than_param(mid);
+
+            if(c >= K) {
+                r = mid - 1;
+                ans = mid;
+            }
+            else l = mid + 1;
+
+            binary_search();
+        }
+
+        private long count_small_than_param(long p) {
+
         }
 
         private void init_setting() throws IOException {
