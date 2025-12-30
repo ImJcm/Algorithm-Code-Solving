@@ -33,6 +33,16 @@ B[k]를 출력한다.
 이분 탐색
 매개 변수 탐색
  */
+/*
+알고리즘 핵심
+이분 탐색(parametric Search,매개변수 탐색)
+1. 일반적인 이분 탐색은 정렬된 상태의 데이터에서 순서를 찾는 방법이지만, 해당 문제는 10^5 x 10^5의 데이터를 1차원 배열로 나열하기에는 너무 크다.
+2. 특정 값을 정한 뒤 해당하는 값보다 작은 수의 개수를 계산하여 K번째 수를 찾는다.
+3. 2번의 특정값보다 작은 수가 K보다 큰 경우, 해당 값은 K번째의 수의 대상으로 가능하므로 업데이트한 후, r을 줄여 다음 대상을 탐색한다.
+K보다 작은 경우, 해당 값은 K번째의 수가 될 수 없으므로 l을 높여 다음 대상을 탐색한다.
+4. 2,3번 과정을 통해 K번째 수가 될 수 있는 최소 범위를 측정할 수 있고, 해당 값보다 같거나 큰 값중 최소값인 수를 찾으면 된다.
+5. 4번의 과정에서 1~N으로 나누고 나머지가 있는 경우 + 1을 하여 만들 수 있는 값인지 확인하여 최소값을 ans에 업데이트한다.
+ */
 public class BOJ1300 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -50,6 +60,8 @@ public class BOJ1300 {
 
             binary_search();
 
+            check_possible(ans);
+
             System.out.println(ans);
         }
 
@@ -63,27 +75,40 @@ public class BOJ1300 {
             if(c >= K) {
                 r = mid - 1;
                 ans = mid;
-            }
-            else l = mid + 1;
+            } else l = mid + 1;
 
             binary_search();
         }
 
-        private long count_small_than_param(long p) {
+        private void check_possible(long a) {
+            long res = (long) Math.pow(100000,2);
+            for(int i = 1; i <= N; i++) {
+                long j = (a / i) + (a % i != 0 ? 1 : 0);
+                if(j > N) continue;
+                res = Math.min(res, i * j);
+            }
 
+            ans = res;
+        }
+
+        private long count_small_than_param(long p) {
+            long cnt = Math.min(p, N);
+
+            for(int i = 2; i <= N; i++) {
+                cnt += (p / i > N ? N : p / i);
+            }
+
+            return cnt;
         }
 
         private void init_setting() throws IOException {
             N = Integer.parseInt(br.readLine());
             K = Integer.parseInt(br.readLine());
 
+            l = 1;
+            r = (long) Math.pow(N,2);
+
+            ans = 0;
         }
     }
 }
-1 2  3  4  5  6  7
-2 4  6  8  10 12 14
-3 6  9  12 15 18 21
-4 8  12 16 20 24 28
-5 10 15 20 25 30 35
-6 12 18 24 30 36 42
-7 14 21 28 35 42 49
