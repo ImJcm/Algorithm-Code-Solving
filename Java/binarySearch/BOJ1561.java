@@ -57,11 +57,46 @@ public class BOJ1561 {
 
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N,M,ans;
+        int N,M;
         int[] amusement_rides;
+        long ans,l,r;
 
         private void solve() throws IOException {
             init_setting();
+
+            binary_search();
+
+            what_is_the_number_of_the_ride_that_the_last_person_rode();
+
+            System.out.println(ans);
+        }
+
+        private void what_is_the_number_of_the_ride_that_the_last_person_rode() {
+            int one_cycle_person =
+        }
+
+        private void binary_search() {
+            if(l > r) return;
+
+            long m = (l + r) / 2;
+
+            if(is_everyone_aboard(m)) {
+                r = m - 1;
+                ans = m;
+            } else l = m + 1;
+
+            binary_search();
+        }
+
+        private boolean is_everyone_aboard(long t) {
+            long cnt = M;
+
+            for(int i = 0; i < M; i++) {
+                cnt += (t / amusement_rides[i]);
+            }
+
+            if(cnt >= N) return true;
+            else return false;
         }
 
         private void init_setting() throws IOException {
@@ -73,6 +108,10 @@ public class BOJ1561 {
             amusement_rides = Arrays.stream(br.readLine().split(" "))
                     .mapToInt(Integer::parseInt)
                     .toArray();
+
+            ans = 0;
+            l = 0;
+            r = 2_000_000_000L * 30;
         }
     }
 }
