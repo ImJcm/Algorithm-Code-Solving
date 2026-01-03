@@ -71,8 +71,26 @@ public class BOJ1561 {
             System.out.println(ans);
         }
 
+        /*
+            시간 초과 발생 가능
+            Ex) Input
+            1987654321 2
+            15 14
+         */
         private void what_is_the_number_of_the_ride_that_the_last_person_rode() {
-            int one_cycle_person =
+            long n = 0;
+
+            for(long t = 0; t <= ans; t++) {
+                for(int v = 0; v < M; v++) {
+                    if(t % amusement_rides[v] == 0) {
+                        n++;
+                    }
+                    if(n == N) {
+                        ans = v + 1;
+                        return;
+                    }
+                }
+            }
         }
 
         private void binary_search() {
@@ -99,6 +117,26 @@ public class BOJ1561 {
             else return false;
         }
 
+        private long lcms() {
+            if(M == 1) {
+                return amusement_rides[0];
+            } else {
+                long gcd = gcd(amusement_rides[0],amusement_rides[1]);
+                long lcm = ((long) amusement_rides[0] * amusement_rides[1]) / gcd;
+
+                for(int i = 2; i < M; i++) {
+                    gcd = gcd(lcm, amusement_rides[i]);
+                    lcm = (lcm * amusement_rides[i]) / gcd;
+                }
+
+                return lcm;
+            }
+        }
+
+        private long gcd(long l1, long l2) {
+            return (l2 > 0) ? gcd(l2, l1 % l2) : l1;
+        }
+
         private void init_setting() throws IOException {
             String[] input = br.readLine().split(" ");
 
@@ -115,3 +153,4 @@ public class BOJ1561 {
         }
     }
 }
+
