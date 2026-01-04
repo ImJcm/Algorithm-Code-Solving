@@ -60,6 +60,29 @@ public class BOJ1561 {
         int N,M;
         int[] amusement_rides;
         long ans,l,r;
+        private void solve() throws IOException {
+
+        }
+
+        private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
+
+            N = Integer.parseInt(input[0]);
+            M = Integer.parseInt(input[1]);
+
+            amusement_rides = Arrays.stream(br.readLine().split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+
+            ans = 0;
+        }
+    }
+
+    public static class TimeOver_Solve {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,M;
+        int[] amusement_rides;
+        long ans,l,r;
 
         private void solve() throws IOException {
             init_setting();
@@ -71,12 +94,6 @@ public class BOJ1561 {
             System.out.println(ans);
         }
 
-        /*
-            시간 초과 발생 가능
-            Ex) Input
-            1987654321 2
-            15 14
-         */
         private void what_is_the_number_of_the_ride_that_the_last_person_rode() {
             int i = 0, n = 0;
             long one_cycle_t = lcms();
