@@ -78,17 +78,18 @@ public class BOJ1561 {
             15 14
          */
         private void what_is_the_number_of_the_ride_that_the_last_person_rode() {
-            long n = 0;
+            int i = 0, n = 0;
+            long one_cycle_t = lcms();
+            long remain_time = ans % one_cycle_t;
+            long remain_person = N % one_cycle_ride_person_cnt(one_cycle_t);
 
-            for(long t = 0; t <= ans; t++) {
-                for(int v = 0; v < M; v++) {
-                    if(t % amusement_rides[v] == 0) {
+            for(long l = 0; l <= remain_time; l++) {
+                for(i = 0; i < M; i++) {
+                    if(l % amusement_rides[i] == 0) {
+                        ans = i + 1;
                         n++;
                     }
-                    if(n == N) {
-                        ans = v + 1;
-                        return;
-                    }
+                    if(n == remain_person) return;
                 }
             }
         }
@@ -107,14 +108,20 @@ public class BOJ1561 {
         }
 
         private boolean is_everyone_aboard(long t) {
+            long cnt = M + one_cycle_ride_person_cnt(t);
+
+            if(cnt >= N) return true;
+            else return false;
+        }
+
+        private long one_cycle_ride_person_cnt(long t) {
             long cnt = M;
 
             for(int i = 0; i < M; i++) {
                 cnt += (t / amusement_rides[i]);
             }
 
-            if(cnt >= N) return true;
-            else return false;
+            return cnt;
         }
 
         private long lcms() {
