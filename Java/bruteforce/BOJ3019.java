@@ -1,6 +1,8 @@
 package bruteforce;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /*
 테트리스 다국어
@@ -63,13 +65,28 @@ public class BOJ3019 {
     }
 
     public static class Solve {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int C,P;
+        int[][] field;
+
         private void solve() throws IOException {
             init_setting();
 
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            C = Integer.parseInt(input[0]);
+            P = Integer.parseInt(input[1]);
+
+            field = new int[101][101];
+
+            input = br.readLine().split(" ");
+
+            for(int i = 0; i < C; i++) {
+
+            }
         }
     }
 }
