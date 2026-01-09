@@ -66,10 +66,10 @@ public class BOJ3019 {
     }
 
     public static class Solve {
-        public class Tetromino {
+        public class Tetris {
             private int[][] shape;
 
-            public Tetromino(int[][] s) {
+            public Tetris(int[][] s) {
                 this.shape = new int[s.length][s[0].length];
 
                 for(int i = 0; i < s.length; i++) {
@@ -94,7 +94,7 @@ public class BOJ3019 {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int C,P,ans;
         int[][] field;
-        Tetromino I_Block,O_Block,S_Block,Z_Block,T_Block,J_Block,L_Block;
+        Tetris[] blocks; // I_Block,O_Block,S_Block,Z_Block,T_Block,J_Block,L_Block;
 
         private void solve() throws IOException {
             init_setting();
@@ -102,43 +102,143 @@ public class BOJ3019 {
             block_setting();
 
             place_tetris();
+
+            System.out.println(ans);
         }
 
         private void place_tetris() {
+            int rotate_cnt = duplicate_check();
 
+            for(int t = 0; t < rotate_cnt; t++) {
+                int[][] shape = blocks[P].shape;
+
+                for(int c = 1; c <= C; c++) {
+                    int r = cal_row(c);
+                    int[][] placed_field = copyOf(field);
+
+                    if(r - shape.length < 0 || c + shape[0].length - 1 > C) continue;
+
+                    boolean can_drop = true;
+
+                    for(int k = 0; k < shape[0].length; k++) {
+                        if(r == 105 || placed_field[r][c + k] + shape[shape.length - 1][k] != 1) {
+                            can_drop = false;
+                            break;
+                        }
+                    }
+
+                    int d = can_drop ? 1 : 0;
+
+                    for(int i = 0; i < shape.length; i++) {
+                        for(int j = 0; j < shape[0].length; j++) {
+                            placed_field[r - shape.length + i + d][c + j] += shape[i][j];
+                        }
+                    }
+
+                    if(check_tetris(placed_field)) ans += 1;
+                }
+                blocks[P].rotate();
+            }
+        }
+
+        private int duplicate_check() {
+            int cnt = 4;
+            int[][] rotate_0 = blocks[P].shape;
+
+            blocks[P].rotate();
+            int[][] rotate_90 = blocks[P].shape;
+
+            blocks[P].rotate();
+            int[][] rotate_180 = blocks[P].shape;
+
+            blocks[P].rotate();
+            int[][] rotate_270 = blocks[P].shape;
+
+            if(same_check(rotate_0,rotate_90)) cnt--;
+            if(same_check(rotate_0,rotate_180)) cnt--;
+            if(same_check(rotate_90,rotate_270)) cnt--;
+
+            return cnt;
+        }
+
+        private boolean same_check(int[][] a, int[][] b) {
+            if(a.length != b.length || a[0].length != b[0].length) return false;
+            else {
+                for(int i = 0; i < a.length; i++) {
+                    for(int j = 0; j < a[0].length; j++) {
+                        if(a[i][j] != b[i][j]) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private boolean check_tetris(int[][] tetris) {
+            for(int i = 1; i < tetris[0].length; i++) {
+                boolean line_chk = false;
+                for(int j = 0; j < tetris.length; j++) {
+                    if(tetris[j][i] == 1) line_chk = true;
+                    if(line_chk && tetris[j][i] == 0) return false;
+                    if(tetris[j][i] > 1) return false;
+                }
+            }
+            return true;
+        }
+
+        private int cal_row(int col) {
+            int r;
+            for(r = 0; r < 105; r++) {
+                if(field[r][col] == 1) break;
+            }
+            return r;
+        }
+
+        private int[][] copyOf(int[][] a) {
+            int[][] placed = new int[a.length][a[0].length];
+
+            for(int i = 0; i < a.length; i++) {
+                for(int j = 0; j < a[0].length; j++) {
+                    placed[i][j] = a[i][j];
+                }
+            }
+            return placed;
         }
 
         private void block_setting() {
-            I_Block = new Tetromino(new int[][] {
+            blocks = new Tetris[8];
+
+            blocks[0] = null;
+
+            blocks[1] = new Tetris(new int[][] { // I_Block
                     {1,1,1,1}
             });
 
-            O_Block = new Tetromino(new int[][] {
+            blocks[2] = new Tetris(new int[][] { // O_Block
                     {1,1},
                     {1,1}
             });
 
-            S_Block = new Tetromino(new int[][] {
+            blocks[3] = new Tetris(new int[][] { // S_Block
                     {0,1,1},
                     {1,1,0}
             });
 
-            Z_Block = new Tetromino(new int[][] {
+            blocks[4] = new Tetris(new int[][] { // Z_Block
                     {1,1,0},
                     {0,1,1}
             });
 
-            T_Block = new Tetromino(new int[][] {
+            blocks[5] = new Tetris(new int[][] { // T_Block
                     {0,1,0},
                     {1,1,1}
             });
 
-            J_Block = new Tetromino(new int[][] {
+            blocks[6] = new Tetris(new int[][] { // J_Block
                     {0,0,1},
                     {1,1,1}
             });
 
-            L_Block = new Tetromino(new int[][] {
+            blocks[7] = new Tetris(new int[][] { // L_Block
                     {1,0,0},
                     {1,1,1}
             });
@@ -151,7 +251,7 @@ public class BOJ3019 {
             C = Integer.parseInt(input[0]);
             P = Integer.parseInt(input[1]);
 
-            field = new int[105][101];
+            field = new int[105][C + 1];
 
             input = br.readLine().split(" ");
 
