@@ -3,6 +3,7 @@ package bruteforce;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 테트리스 다국어
@@ -65,14 +66,84 @@ public class BOJ3019 {
     }
 
     public static class Solve {
+        public class Tetromino {
+            private int[][] shape;
+
+            public Tetromino(int[][] s) {
+                this.shape = new int[s.length][s[0].length];
+
+                for(int i = 0; i < s.length; i++) {
+                    this.shape[i] = Arrays.copyOf(s[i],s[i].length);
+                }
+            }
+
+            public void rotate() {
+                int row = shape.length;
+                int col = shape[0].length;
+                int[][] rotated = new int[col][row];
+
+                for(int i = 0; i < row; i++) {
+                    for(int j = 0; j < col; j++) {
+                        rotated[j][row - 1 - i] = shape[i][j];
+                    }
+                }
+                shape = rotated;
+            }
+        }
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int C,P;
+        int C,P,ans;
         int[][] field;
+        Tetromino I_Block,O_Block,S_Block,Z_Block,T_Block,J_Block,L_Block;
 
         private void solve() throws IOException {
             init_setting();
 
+            block_setting();
+
+            place_tetris();
         }
+
+        private void place_tetris() {
+
+        }
+
+        private void block_setting() {
+            I_Block = new Tetromino(new int[][] {
+                    {1,1,1,1}
+            });
+
+            O_Block = new Tetromino(new int[][] {
+                    {1,1},
+                    {1,1}
+            });
+
+            S_Block = new Tetromino(new int[][] {
+                    {0,1,1},
+                    {1,1,0}
+            });
+
+            Z_Block = new Tetromino(new int[][] {
+                    {1,1,0},
+                    {0,1,1}
+            });
+
+            T_Block = new Tetromino(new int[][] {
+                    {0,1,0},
+                    {1,1,1}
+            });
+
+            J_Block = new Tetromino(new int[][] {
+                    {0,0,1},
+                    {1,1,1}
+            });
+
+            L_Block = new Tetromino(new int[][] {
+                    {1,0,0},
+                    {1,1,1}
+            });
+        }
+
 
         private void init_setting() throws IOException {
             String[] input = br.readLine().split(" ");
@@ -80,13 +151,19 @@ public class BOJ3019 {
             C = Integer.parseInt(input[0]);
             P = Integer.parseInt(input[1]);
 
-            field = new int[101][101];
+            field = new int[105][101];
 
             input = br.readLine().split(" ");
 
-            for(int i = 0; i < C; i++) {
+            for(int i = 1; i <= C; i++) {
+                int row = Integer.parseInt(input[i - 1]);
 
+                for(int j = 0; j < row; j++) {
+                    field[104 - j][i] = 1;
+                }
             }
+
+            ans = 0;
         }
     }
 }
