@@ -59,6 +59,15 @@ Olympiad > Croatian Highschool Competitions in Informatics > 2007 > Regional Com
 구현
 브루트포스 알고리즘
  */
+/*
+알고리즘 핵심
+bruteforce + implement
+1. 7가지의 테트리스 블록을 2차원 형태로 구성하고, 90도 회전하여 표현할 수 있는 메서드를 이용한다.
+2. 입력으로 주어진 블록을 각 열에 높이에 테트리스 블록의 높이만큼 겹치지 않게 위로 테트리스 블록을 배치한다.
+3. 테트리스 블록에서 아래를 기준으로 내릴 수 있는지 여부를 검사한 후, 내릴 수 있는만큼 높이를 측정한 후 블록을 배치한다.
+4. 배치가 완료된 후, 테트리스의 조건에 맞는지 검사하고 ans를 업데이트한다.
+5. 2-4과정을 테트리스의 블록을 회전시켜 반복하는데 중복되는 블록을 제외하고 반복한다.
+*/
 public class BOJ3019 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -118,16 +127,7 @@ public class BOJ3019 {
 
                     if(r - shape.length < 0 || c + shape[0].length - 1 > C) continue;
 
-                    boolean can_drop = true;
-
-                    for(int k = 0; k < shape[0].length; k++) {
-                        if(r == 105 || placed_field[r][c + k] + shape[shape.length - 1][k] != 1) {
-                            can_drop = false;
-                            break;
-                        }
-                    }
-
-                    int d = can_drop ? 1 : 0;
+                    int d = can_drop_cnt(r,c,shape,placed_field);
 
                     for(int i = 0; i < shape.length; i++) {
                         for(int j = 0; j < shape[0].length; j++) {
@@ -139,6 +139,35 @@ public class BOJ3019 {
                 }
                 blocks[P].rotate();
             }
+        }
+
+        private int can_drop_cnt(int r, int c, int[][] shape, int[][] placed_field) {
+            int d = 0;
+            if(r == 105) return d;
+            int[] one_height = new int[shape[0].length];
+            boolean can_drop = true;
+
+            for(int i = 0; i < shape[0].length; i++) {
+                for(int j = shape.length - 1; j >= 0; j--) {
+                    if(shape[j][i] == 1) {
+                        one_height[i] = j;
+                        break;
+                    }
+                }
+            }
+
+            while(can_drop) {
+                d++;
+                for(int k = 0; k < shape[0].length; k++) {
+                    int h = shape.length - one_height[k];
+                    if(r - h + d > 104 || placed_field[r - h + d][c + k] == 1) {
+                        can_drop = false;
+                        break;
+                    }
+                }
+            }
+
+            return d - 1;
         }
 
         private int duplicate_check() {
@@ -243,7 +272,6 @@ public class BOJ3019 {
                     {1,1,1}
             });
         }
-
 
         private void init_setting() throws IOException {
             String[] input = br.readLine().split(" ");
