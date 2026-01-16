@@ -3,6 +3,7 @@ package bruteforce;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /*
 인싸들의 가위바위보
@@ -158,14 +159,88 @@ public class BOJ16986 {
 
     public static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,K,ans;
+        int[] dashboard,visited;
+        int[][] participant,compatibility_chart;
 
         private void solve() throws IOException {
             init_setting();
 
+            play(0,0,1);
+
+            System.out.println(ans);
+        }
+
+        private void play(int set, int winner, int next_matcher) {
+             if(set == 3 * (K - 1) + 1) {
+                 if(dashboard[0] == K) ans = 1;
+                 System.out.println(dashboard[0] + " " + dashboard[1] + " " + dashboard[2]);
+                 return;
+             }
+
+             int res;
+             int nm = (next_matcher + 1) % 3 == winner ? (winner + 1) % 3 : (next_matcher + 1) % 3;
+
+             if(winner == 0 || next_matcher == 0) {
+                 for(int i = 0; i < N; i++) {
+                     if(visited[i] > 0) continue;
+
+                     res = (winner == 0) ? compatibility_chart[i][participant[next_matcher][set] - 1] :
+                             compatibility_chart[participant[winner][set] - 1][i];
+                     visited[i] = 1;
+
+                     if(res == 2) {
+                         dashboard[winner] += 1;
+                         play(set + 1, winner, nm);
+                         dashboard[winner] -= 1;
+                     } else { // 1 or 0
+                         dashboard[next_matcher] += 1;
+                         play(set + 1, next_matcher, nm);
+                         dashboard[next_matcher] -= 1;
+                     }
+                     visited[i] = 0;
+                 }
+             } else {
+                 res = compatibility_chart[winner][next_matcher];
+
+                 if(res == 2) {
+                     dashboard[winner] += 1;
+                     play(set + 1, winner, nm);
+                     dashboard[winner] -= 1;
+                 } else {
+                     dashboard[next_matcher] += 1;
+                     play(set + 1, next_matcher, nm);
+                     dashboard[next_matcher] -= 1;
+                 }
+             }
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            N = Integer.parseInt(input[0]);
+            K = Integer.parseInt(input[1]);
+
+            compatibility_chart = new int[N][N];
+
+            for(int i = 0; i < N; i++) {
+                compatibility_chart[i] = Arrays.stream(br.readLine().split(" "))
+                        .mapToInt(Integer::parseInt)
+                        .toArray();
+            }
+
+            dashboard = new int[3];
+            visited = new int[N];
+
+            participant = new int[3][20];
+
+            for(int i = 1; i < 3; i++) {
+                participant[i] = Arrays.stream(br.readLine().split(" "))
+                        .mapToInt(Integer::parseInt)
+                        .toArray();
+            }
+
+            ans = 0;
         }
     }
 }
