@@ -166,53 +166,74 @@ public class BOJ16986 {
         private void solve() throws IOException {
             init_setting();
 
-            play(0,0,1);
+            play(0,0,1,0,0);
 
             System.out.println(ans);
         }
 
-        private void play(int set, int winner, int next_matcher) {
-             if(set == 3 * (K - 1) + 1) {
-                 if(dashboard[0] == K) ans = 1;
-                 System.out.println(dashboard[0] + " " + dashboard[1] + " " + dashboard[2]);
-                 return;
-             }
+        private void play(int set, int winner, int next_matcher, int ko, int mo) {
+            if(set == 3 * (K - 1) + 1 && dashboard[0] < K) return;
+            if(set >= K && (dashboard[1] >= K || dashboard[2] >= K)) return;
+            if(dashboard[0] == K) {
+                ans = 1;
+                return;
+            }
+            if(ans == 1) return;
 
-             int res;
-             int nm = (next_matcher + 1) % 3 == winner ? (winner + 1) % 3 : (next_matcher + 1) % 3;
+            int res;
+            int nm = 3 - (winner + next_matcher);
 
-             if(winner == 0 || next_matcher == 0) {
-                 for(int i = 0; i < N; i++) {
-                     if(visited[i] > 0) continue;
+            if(winner == 0 || next_matcher == 0) {
+                int opponent_order = (winner == 0) ? (next_matcher == 1 ? ko : mo) : (winner == 1 ? ko : mo);
+                if(winner == 1 || next_matcher == 1) ko++;
+                else mo++;
 
-                     res = (winner == 0) ? compatibility_chart[i][participant[next_matcher][set] - 1] :
-                             compatibility_chart[participant[winner][set] - 1][i];
-                     visited[i] = 1;
+                for(int i = 0; i < N; i++) {
+                    if(visited[i] > 0) continue;
 
-                     if(res == 2) {
-                         dashboard[winner] += 1;
-                         play(set + 1, winner, nm);
-                         dashboard[winner] -= 1;
-                     } else { // 1 or 0
-                         dashboard[next_matcher] += 1;
-                         play(set + 1, next_matcher, nm);
-                         dashboard[next_matcher] -= 1;
-                     }
-                     visited[i] = 0;
-                 }
-             } else {
-                 res = compatibility_chart[winner][next_matcher];
+                    res = (winner == 0) ?
+                            compatibility_chart[i][participant[next_matcher][opponent_order] - 1] :
+                            compatibility_chart[participant[winner][opponent_order] - 1][i];
+                    visited[i] = 1;
 
-                 if(res == 2) {
-                     dashboard[winner] += 1;
-                     play(set + 1, winner, nm);
-                     dashboard[winner] -= 1;
-                 } else {
-                     dashboard[next_matcher] += 1;
-                     play(set + 1, next_matcher, nm);
-                     dashboard[next_matcher] -= 1;
-                 }
-             }
+                    if(res == 2) {
+                        dashboard[winner] += 1;
+                        play(set + 1, winner, nm, ko, mo);
+                        dashboard[winner] -= 1;
+                    } else { // 1 or 0
+                        dashboard[next_matcher] += 1;
+                        play(set + 1, next_matcher, nm, ko, mo);
+                        dashboard[next_matcher] -= 1;
+                    }
+                    visited[i] = 0;
+                }
+            } else {
+                int w_order;
+                int nm_order;
+
+                if(winner == 1 && next_matcher == 2) {
+                    w_order = participant[1][ko] - 1;
+                    nm_order = participant[2][mo] - 1;
+                } else {
+                    w_order = participant[2][mo] - 1;
+                    nm_order = participant[1][ko] - 1;
+                }
+
+                ko++;
+                mo++;
+
+                res = compatibility_chart[w_order][nm_order];
+
+                if(res == 2) {
+                    dashboard[winner] += 1;
+                    play(set + 1, winner, nm, ko, mo);
+                    dashboard[winner] -= 1;
+                } else {
+                    dashboard[next_matcher] += 1;
+                    play(set + 1, next_matcher, nm, ko, mo);
+                    dashboard[next_matcher] -= 1;
+                }
+            }
         }
 
         private void init_setting() throws IOException {
