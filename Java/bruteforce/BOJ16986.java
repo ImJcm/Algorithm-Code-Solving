@@ -151,6 +151,18 @@ A, B, C는 게임 시작 전 우승을 위해 필요한 승수와 경기 진행 
 브루트포스 알고리즘
 백트래킹
  */
+/*
+알고리즘 핵심
+bruteforce + Implementation
+1. 지우, 경희, 민호의 순서는 고정되고, 모든 경우의 수를 확인하기 위해 브루트포스를 수행한다.
+2. 지우가 낼 수 있는 경우의 수는 N개 이고, 경희, 민호의 경우는 순서가 정해져 있기 때문에 브루트포스의 경우 dfs를 사용하고 매개변수로 세트 횟수, 이전 경기 승리자, 이번 경기 대상자, 경희의 패 순서, 민호의 패 순서를 갖는다.
+3. winner와 next_matcher가 각각 지우,경희,민호일 경우를 모두 검사하여 각 조건에 맞게 설정한다.
+4. 기저 사례로 비둘기집 원리에 의해 경기의 수가 3 * (K - 1) + 1을 넘어가는 경우 누군가는 K승 이상하므로 지우의 경우가 K승이 넘어가지 않는 경우와 경희 또는 민호가 K승이 넘어가는 경우 return한다.
+그 외에 지우의 승리횟수가 K를 넘어가는 경우 ans를 1로 설정하고, 가지치기로 ans의 값에 따라 return을 수행한다.
+
+시행착오 : 이 문제는 이해하는데 어려움이 있었다.
+- 처음 이해한 문제의 경우 경희와 민호의 패를 내는 순서가 set에 결정되는 것인줄 알았다.
+ */
 public class BOJ16986 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -172,9 +184,8 @@ public class BOJ16986 {
         }
 
         private void play(int set, int winner, int next_matcher, int ko, int mo) {
-            if(set == 3 * (K - 1) + 1 && dashboard[0] < K) return;
-            if(set >= K && (dashboard[1] >= K || dashboard[2] >= K)) return;
-            if(dashboard[0] == K) {
+            if((set == 3 * (K - 1) + 1 && dashboard[0] < K) || (dashboard[1] >= K || dashboard[2] >= K)) return;
+            if(dashboard[0] >= K) {
                 ans = 1;
                 return;
             }
@@ -182,55 +193,69 @@ public class BOJ16986 {
 
             int res;
             int nm = 3 - (winner + next_matcher);
+            int order1;
+            int order2;
 
-            if(winner == 0 || next_matcher == 0) {
-                int opponent_order = (winner == 0) ? (next_matcher == 1 ? ko : mo) : (winner == 1 ? ko : mo);
-                if(winner == 1 || next_matcher == 1) ko++;
-                else mo++;
-
+            if(winner == 0) {
                 for(int i = 0; i < N; i++) {
                     if(visited[i] > 0) continue;
 
-                    res = (winner == 0) ?
-                            compatibility_chart[i][participant[next_matcher][opponent_order] - 1] :
-                            compatibility_chart[participant[winner][opponent_order] - 1][i];
                     visited[i] = 1;
+                    order2 = next_matcher == 1 ? ko : mo;
+                    res = compatibility_chart[i][participant[next_matcher][order2] - 1];
 
                     if(res == 2) {
                         dashboard[winner] += 1;
-                        play(set + 1, winner, nm, ko, mo);
+                        if(next_matcher == 1) play(set + 1, winner, nm, ko + 1, mo);
+                        else play(set + 1, winner, nm, ko, mo + 1);
                         dashboard[winner] -= 1;
                     } else { // 1 or 0
                         dashboard[next_matcher] += 1;
-                        play(set + 1, next_matcher, nm, ko, mo);
+                        if(next_matcher == 1) play(set + 1, next_matcher, nm, ko + 1, mo);
+                        else play(set + 1, next_matcher, nm, ko, mo + 1);
+                        dashboard[next_matcher] -= 1;
+                    }
+                    visited[i] = 0;
+                }
+            } else if(next_matcher == 0) {
+                for(int i = 0; i < N; i++) {
+                    if(visited[i] > 0) continue;
+
+                    visited[i] = 1;
+                    order1 = winner == 1 ? ko : mo;
+                    res = compatibility_chart[participant[winner][order1] - 1][i];
+
+                    if(res > 0) {
+                        dashboard[winner] += 1;
+                        if(winner == 1) play(set + 1, winner, nm, ko + 1, mo);
+                        else play(set + 1, winner, nm, ko, mo + 1);
+                        dashboard[winner] -= 1;
+                    } else {
+                        dashboard[next_matcher] += 1;
+                        if(winner == 1) play(set + 1, next_matcher, nm, ko + 1, mo);
+                        else play(set + 1, next_matcher, nm, ko, mo + 1);
                         dashboard[next_matcher] -= 1;
                     }
                     visited[i] = 0;
                 }
             } else {
-                int w_order;
-                int nm_order;
-
                 if(winner == 1 && next_matcher == 2) {
-                    w_order = participant[1][ko] - 1;
-                    nm_order = participant[2][mo] - 1;
+                    order1 = participant[winner][ko] - 1;
+                    order2 = participant[next_matcher][mo] - 1;
                 } else {
-                    w_order = participant[2][mo] - 1;
-                    nm_order = participant[1][ko] - 1;
+                    order1 = participant[winner][mo] - 1;
+                    order2 = participant[next_matcher][ko] - 1;
                 }
 
-                ko++;
-                mo++;
+                res = compatibility_chart[order1][order2];
 
-                res = compatibility_chart[w_order][nm_order];
-
-                if(res == 2) {
+                if(res == 2 || (res == 1 && winner > next_matcher)) {
                     dashboard[winner] += 1;
-                    play(set + 1, winner, nm, ko, mo);
+                    play(set + 1, winner, nm, ko + 1, mo + 1);
                     dashboard[winner] -= 1;
-                } else {
+                } else { // res == 0 || (res == 1 && winner < next_matcher)
                     dashboard[next_matcher] += 1;
-                    play(set + 1, next_matcher, nm, ko, mo);
+                    play(set + 1, next_matcher, nm, ko + 1, mo + 1);
                     dashboard[next_matcher] -= 1;
                 }
             }
