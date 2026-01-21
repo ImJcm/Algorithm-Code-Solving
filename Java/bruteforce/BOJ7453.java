@@ -53,12 +53,53 @@ public class BOJ7453 {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N;
         long ans;
-        int[] A,B,C,D;
+        int[] A,B,C,D,AB,CD;
 
         private void solve() throws IOException {
             init_setting();
 
+            two_point_check();
 
+            System.out.println(ans);
+
+            // 검증 필요
+        }
+
+        private void two_point_check() {
+            int ab_idx = 0,cd_idx = N * N - 1;
+
+            while(true) {
+                if(ab_idx >= N * N || cd_idx < 0) break;
+                int ret = AB[ab_idx] + CD[cd_idx];
+
+                if(ret == 0) {
+                    int ab = 0;
+                    int cd = 0;
+
+                    while(true) {
+                        if(ab_idx + ab < N * N && AB[ab_idx] == AB[ab_idx + ab]) {
+                            ab++;
+                        } else {
+                            ab_idx += ab;
+                            break;
+                        }
+                    }
+
+                    while(true) {
+                        if (cd_idx - cd >= 0 && CD[cd_idx] == CD[cd_idx - cd]) {
+                            cd--;
+                        } else {
+                            cd_idx -= cd;
+                            break;
+                        }
+                    }
+                    ans += ((long) ab * cd);
+                } else if(ret < 0) {
+                    ab_idx++;
+                } else {
+                    cd_idx--;
+                }
+            }
         }
 
         private void init_setting() throws IOException {
@@ -69,6 +110,9 @@ public class BOJ7453 {
             C = new int[N];
             D = new int[N];
 
+            AB = new int[N * N];
+            CD = new int[N * N];
+
             for(int i = 0; i < N; i++) {
                 String[] input = br.readLine().split(" ");
 
@@ -78,10 +122,20 @@ public class BOJ7453 {
                 D[i] = Integer.parseInt(input[3]);
             }
 
-            Arrays.sort(A);
-            Arrays.sort(B);
-            Arrays.sort(C);
-            Arrays.sort(D);
+            //Arrays.sort(A);
+            //Arrays.sort(B);
+            //Arrays.sort(C);
+            //Arrays.sort(D);
+
+            for(int i = 0; i < N; i++) {
+                for(int j = 0; j < N; j++) {
+                    AB[i * N + j] = A[i] + B[j];
+                    CD[i * N + j] = C[i] + D[j];
+                }
+            }
+
+            Arrays.sort(AB);
+            Arrays.sort(CD);
 
             ans = 0;
         }
