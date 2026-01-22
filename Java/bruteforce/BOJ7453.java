@@ -46,6 +46,12 @@ ICPC > Regionals > Europe > Southwestern European Regional Contest > SWERC 2005 
 /*
 알고리즘 핵심
 정렬 + 투 포인터
+1. A,B,C,D를 각각 더하여 합이 0인쌍을 만드려면 N*N*N*N이라는 시간 복잡도가 필요한데 시간초과가 발생할 가능성이 높다
+2. N*N이라는 적당한 크기의 AB,CD의 각 요소를 더하여 N*N의 쌍을 의미하는 배열을 만들고, 오름차순 정렬한다.
+3-1. 투 포인터 알고리즘을 이용하여 AB는 0부터, CD의 배열은 N*N-1부터 시작하여 같은 요소를 찾고, 같은 경우 중복되는 갯수를
+각각 곱하여 ans에 업데이트한다.
+3-2. 이분탐색의 경우, 우선 AB의 한 요소를 선택하여 CD배열에 존재하는지 확인한 후, 존재하면 중복되는 갯수를 체크하고 ans에
+업데이트한다.
  */
 public class BOJ7453 {
     public static void main(String[] args) throws IOException {
@@ -62,7 +68,8 @@ public class BOJ7453 {
         private void solve() throws IOException {
             init_setting();
 
-            two_point_check();
+            //two_point_check();
+            binary_search_check();
 
             System.out.println(ans);
         }
@@ -102,6 +109,69 @@ public class BOJ7453 {
                     cd_idx--;
                 }
             }
+        }
+
+        private void binary_search_check() {
+            for(int i = 0; i < AB.length; i++) {
+                int ab = AB[i];
+
+                if(binary_search(-ab)) {
+                    int l = binary_search_left_index(-ab);
+                    int r = binary_search_right_index(-ab);
+
+                    int cnt = r - l;
+
+                    ans += cnt;
+                }
+            }
+        }
+
+        private boolean binary_search(int t) {
+            int left = 0, right = N * N - 1;
+
+            while (left <= right) {
+                int mid = (left + right) / 2;
+
+                if(CD[mid] == t) return true;
+                if(CD[mid] > t) right = mid - 1;
+                else left = mid + 1;
+            }
+
+            return false;
+        }
+
+        private int binary_search_left_index(int t) {
+            int left = 0, right = N * N;
+            boolean flag = false;
+
+            while(left < right) {
+                int mid = (left + right) / 2;
+
+                if(CD[mid] >= t) {
+                    right = mid;
+                    if(CD[mid] == t) flag = true;
+                } else {
+                    left = mid + 1;
+                }
+            }
+
+            return left;
+        }
+
+        private int binary_search_right_index(int t) {
+            int left = 0, right = N * N;
+
+            while(left < right) {
+                int mid = (left + right) / 2;
+
+                if(CD[mid] > t) {
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+            }
+
+            return left;
         }
 
         private void init_setting() throws IOException {
