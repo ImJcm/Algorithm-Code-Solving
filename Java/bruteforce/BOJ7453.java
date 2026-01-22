@@ -43,6 +43,10 @@ ICPC > Regionals > Europe > Southwestern European Regional Contest > SWERC 2005 
 두 포인터
 중간에서 만나기
  */
+/*
+알고리즘 핵심
+정렬 + 투 포인터
+ */
 public class BOJ7453 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -61,8 +65,6 @@ public class BOJ7453 {
             two_point_check();
 
             System.out.println(ans);
-
-            // 검증 필요
         }
 
         private void two_point_check() {
@@ -87,7 +89,7 @@ public class BOJ7453 {
 
                     while(true) {
                         if (cd_idx - cd >= 0 && CD[cd_idx] == CD[cd_idx - cd]) {
-                            cd--;
+                            cd++;
                         } else {
                             cd_idx -= cd;
                             break;
