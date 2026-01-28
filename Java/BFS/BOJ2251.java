@@ -3,6 +3,8 @@ package BFS;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /*
 물통 다국어
@@ -42,12 +44,33 @@ public class BOJ2251 {
     }
 
     public static class Solve {
+        private static class Bottles {
+            int a,b,c;
+
+            Bottles(int a, int b, int c) {
+                this.a = a;
+                this.b = b;
+                this.c = c;
+            }
+        }
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int A,B,C;
+        StringBuilder ans;
 
         private void solve() throws IOException {
             init_setting();
 
+            bfs();
+        }
+
+        private void bfs() {
+            Queue<Bottles> q = new LinkedList<>();
+            q.add(new Bottles(0,0,C));
+            boolean[][][] visited = new boolean[A][B][C];
+
+            while(!q.isEmpty()) {
+
+            }
         }
 
         private void init_setting() throws IOException {
@@ -56,6 +79,8 @@ public class BOJ2251 {
             A = Integer.parseInt(input[0]);
             B = Integer.parseInt(input[1]);
             C = Integer.parseInt(input[2]);
+
+            ans = new StringBuilder();
         }
     }
 }
