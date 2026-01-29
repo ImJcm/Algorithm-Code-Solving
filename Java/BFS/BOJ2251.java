@@ -3,8 +3,11 @@ package BFS;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 /*
 물통 다국어
@@ -37,6 +40,12 @@ Olympiad > USA Computing Olympiad > 2000-2001 Season > USACO Winter 2001 Contest
 너비 우선 탐색
 깊이 우선 탐색
  */
+/*
+알고리즘 핵심
+BFS
+1. A,B,C의 물병에 담긴 물의 양을 하나의 데이터로 인식한다.
+2. BFS를 통해 A -> B or C / B -> A or C / C -> A or B의 6가지의 물의 이동을 수행한다.
+ */
 public class BOJ2251 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -55,22 +64,80 @@ public class BOJ2251 {
         }
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int A,B,C;
-        StringBuilder ans;
+        ArrayList<Integer> ans;
 
         private void solve() throws IOException {
             init_setting();
 
             bfs();
+
+            System.out.println(Arrays.stream(ans.toArray())
+                    .sorted()
+                    .distinct()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(" ")));
         }
 
         private void bfs() {
             Queue<Bottles> q = new LinkedList<>();
+            boolean[][][] visited = new boolean[A + 1][B + 1][C + 1];
+
             q.add(new Bottles(0,0,C));
-            boolean[][][] visited = new boolean[A][B][C];
+            visited[0][0][C] = true;
 
             while(!q.isEmpty()) {
+                Bottles now = q.poll();
 
+                if(now.a == 0) ans.add(now.c);
+
+                for(int i = 0; i < 6; i++) {
+                    Bottles new_bottles = move_water(i,now);
+
+                    if(visited[new_bottles.a][new_bottles.b][new_bottles.c]) continue;
+
+                    visited[new_bottles.a][new_bottles.b][new_bottles.c] = true;
+                    q.add(new Bottles(new_bottles.a, new_bottles.b, new_bottles.c));
+                }
             }
+        }
+
+        private Bottles move_water(int s, Bottles b) {
+            Bottles nb = new Bottles(b.a,b.b,b.c);
+            int sum = 0;
+
+            switch (s) {
+                case 0: // A -> B
+                    sum = b.a + b.b;
+                    nb.b = Math.min(sum, B);
+                    nb.a = Math.max(sum - nb.b, 0);
+                    break;
+                case 1: // A -> C
+                    sum = b.a + b.c;
+                    nb.c = Math.min(sum, C);
+                    nb.a = Math.max(sum - nb.c, 0);
+                    break;
+                case 2: // B -> A
+                    sum = b.a + b.b;
+                    nb.a = Math.min(sum, A);
+                    nb.b = Math.max(sum - nb.a, 0);
+                    break;
+                case 3: // B -> C
+                    sum = b.b + b.c;
+                    nb.c = Math.min(sum, C);
+                    nb.b = Math.max(sum - nb.c, 0);
+                    break;
+                case 4: // C -> A
+                    sum = b.a + b.c;
+                    nb.a = Math.min(sum, A);
+                    nb.c = Math.max(sum - nb.a, 0);
+                    break;
+                case 5: // C -> B
+                    sum = b.b + b.c;
+                    nb.b = Math.min(sum, B);
+                    nb.c = Math.max(sum - nb.b, 0);
+                    break;
+            }
+            return nb;
         }
 
         private void init_setting() throws IOException {
@@ -80,7 +147,7 @@ public class BOJ2251 {
             B = Integer.parseInt(input[1]);
             C = Integer.parseInt(input[2]);
 
-            ans = new StringBuilder();
+            ans = new ArrayList<>();
         }
     }
 }
