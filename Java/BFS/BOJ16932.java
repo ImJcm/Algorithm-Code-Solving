@@ -3,6 +3,7 @@ package BFS;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.*;
 
 /*
 모양 만들기
@@ -58,6 +59,14 @@ N×M인 배열에서 모양을 찾으려고 한다. 배열의 각 칸에는 0과
 집합과 맵
 깊이 우선 탐색
  */
+/*
+알고리즘 핵심
+BFS + 집합과 맵
+1. 입력으로 주어진 배열에서 독립적인 구역을 나누어 번호를 배정한다.
+2. 1번 과정에서 나눈 구역의 크기를 Map에 <구역, 크기>로 저장한다.
+3. 구역을 나눈 후, (1,1) -> (N,M)까지 모든 수 중에서 0인 위치에 1로 변경하였을 때 인접한 구역의 크기를 누적하여 더한다.
+4. 최대 크기의 구역을 ans에 업데이트한다.
+ */
 public class BOJ16932 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -65,15 +74,111 @@ public class BOJ16932 {
     }
 
     public static class Solve {
+        static class Pos {
+            int x,y;
+
+            Pos(int x, int y) {
+                this.x = x;
+                this.y = y;
+            }
+        }
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N,M,ans;
+        int[][] arr,section_arr,direction = {{1,0},{-1,0},{0,1},{0,-1}};
+        HashMap<Integer,Integer> section;
 
         private void solve() throws IOException {
             init_setting();
 
+            divide_section();
+
+            change_shape();
+
+            System.out.println(ans);
+        }
+
+        private void change_shape() {
+            for(int i = 0; i < N; i++) {
+                for(int j = 0; j < M; j++) {
+                    if(arr[i][j] == 1) continue;
+                    HashSet<Integer> adj = new HashSet<>();
+                    int sum = 1;
+
+                    for(int[] d : direction) {
+                        int nx = i + d[0];
+                        int ny = j + d[1];
+
+                        if(nx < 0 || nx >= N || ny < 0 || ny >= M || section_arr[nx][ny] == 0) continue;
+
+                        int sn = section_arr[nx][ny];
+
+                        if(adj.contains(sn)) continue;
+                        else {
+                            adj.add(sn);
+                            sum += section.get(sn);
+                        }
+                    }
+
+                    ans = Math.max(ans, sum);
+                }
+            }
+        }
+
+        private void divide_section() {
+            boolean[][] visited = new boolean[N][M];
+            int sec_num = 1;
+            for(int i = 0; i < N; i++) {
+                for(int j = 0; j < M; j++) {
+                    if(arr[i][j] == 0 || visited[i][j]) continue;
+                    bfs(new Pos(i,j),sec_num++,visited);
+                }
+            }
+        }
+
+        private void bfs(Pos pos, int sn, boolean[][] v) {
+            Queue<Pos> q = new LinkedList<>();
+            q.add(pos);
+            v[pos.x][pos.y] = true;
+            section_arr[pos.x][pos.y] = sn;
+            int cnt = 1;
+
+            while(!q.isEmpty()) {
+                Pos now = q.poll();
+
+                for(int[] d : direction) {
+                    int nx = now.x + d[0];
+                    int ny = now.y + d[1];
+
+                    if(nx < 0 || nx >= N || ny < 0 || ny >= M || arr[nx][ny] == 0 || v[nx][ny]) continue;
+
+                    v[nx][ny] = true;
+                    section_arr[nx][ny] = sn;
+                    cnt += 1;
+                    q.add(new Pos(nx,ny));
+                }
+            }
+
+            section.put(sn,cnt);
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            N = Integer.parseInt(input[0]);
+            M = Integer.parseInt(input[1]);
+
+            arr = new int[N][M];
+            section_arr = new int[N][M];
+
+            for(int i = 0; i < N; i++) {
+                arr[i] = Arrays.stream(br.readLine().split(" "))
+                        .mapToInt(Integer::parseInt)
+                        .toArray();
+            }
+
+            section = new HashMap<>();
+
+            ans = 0;
         }
     }
 }
