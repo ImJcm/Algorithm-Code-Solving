@@ -67,8 +67,8 @@ public class BOJ1981 {
         정하는 기준이 애매하다. + 최소값을 결정함으로써 가능한 경로가 나뉘어지고 최대-최소값이 달라질 수 있다.)
         힌트 참고 : https://www.acmicpc.net/board/view/5577
      */
-    public static class Solve {
-        public class Pos {
+    private static class Solve {
+        private class Pos {
             int x,y,n,min_n,max_n;
 
             Pos(int x, int y, int n, int min, int max) {
@@ -85,7 +85,7 @@ public class BOJ1981 {
         int[][] direction = {{0,-1},{-1,0},{0,1},{1,0}};
         Pos[][] arr;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();
@@ -173,8 +173,8 @@ public class BOJ1981 {
     /*
         틀린 코드(메모리 초과) : visited를 min,max,x,y의 4차원으로 설정하여 방문 여부를 체크하는 것으로 메모리 초과가 발생한다.
      */
-    public static class WrongSolve4 {
-        public class Pos {
+    private static class WrongSolve4 {
+        private class Pos {
             int x,y,n,min_n,max_n;
 
             Pos(int x, int y, int n, int min, int max) {
@@ -191,7 +191,7 @@ public class BOJ1981 {
         int[][] direction = {{0,-1},{-1,0},{0,1},{1,0}};
         Pos[][] arr;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();
@@ -279,8 +279,8 @@ public class BOJ1981 {
         이때, max-min의 값과 x,y의 3차원의 방문 여부 배열을 사용하여 재방문을 조정한다.
         하지만 해당 로직은 max-min의 값이 다르지만 결과값이 같은 경우는 구분하지 못하므로 최종적인 max-min의 값이 오류가 생길 수 있다.
      */
-    public static class WrongSolve3 {
-        public class Pos {
+    private static class WrongSolve3 {
+        private class Pos {
             int x,y,n,min_n,max_n;
 
             Pos(int x, int y, int n, int min, int max) {
@@ -297,7 +297,7 @@ public class BOJ1981 {
         int[][] direction = {{0,-1},{-1,0},{0,1},{1,0}};
         Pos[][] arr;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();
@@ -388,8 +388,8 @@ public class BOJ1981 {
         틀린 코드 : 이분 탐색의 대상을 max-min값으로 고정한 상태, visited를 int 타입으로 설정하여 해당 경로에 도달한 경우 max-min 값을 채워 기존의 값보다 작은 경로는 재방문이 가능하도록 하였지만
         틀린 로직이다.
      */
-    public static class WrongSolve2 {
-        public class Pos {
+    private static class WrongSolve2 {
+        private class Pos {
             int x,y,n,min_n,max_n;
 
             Pos(int x, int y, int n, int min, int max) {
@@ -406,7 +406,7 @@ public class BOJ1981 {
         int[][] direction = {{0,-1},{-1,0},{0,1},{1,0}};
         Pos[][] arr;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();
