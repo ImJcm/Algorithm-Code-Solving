@@ -67,7 +67,7 @@ public class BOJ11652 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N;
         long ans;
