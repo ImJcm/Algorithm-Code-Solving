@@ -82,7 +82,7 @@ public class BOJ16956 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         static class Pos {
             int r,c;
 
