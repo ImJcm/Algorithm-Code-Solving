@@ -169,13 +169,13 @@ public class BOJ16986 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,K,ans;
         int[] dashboard,visited;
         int[][] participant,compatibility_chart;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             play(0,0,1,0,0);
