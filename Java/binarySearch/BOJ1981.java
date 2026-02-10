@@ -496,8 +496,8 @@ public class BOJ1981 {
         하지만, 해동 로직은 올바른 최소값을 보장하지 못한다.
         한번의 이동이 최소값을 만족하지 못할 경우 다른 경로의 이동으로는 가능하지만 visited로 인해 재방문이 불가능하다.
      */
-    public static class WrongSolve {
-        public class Pos {
+    private static class WrongSolve {
+        private class Pos {
             int x,y,n,min_n,max_n;
 
             Pos(int x, int y, int n, int min, int max) {
@@ -514,7 +514,7 @@ public class BOJ1981 {
         int[][] direction = {{0,-1},{-1,0},{0,1},{1,0}};
         Pos[][] arr;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();
