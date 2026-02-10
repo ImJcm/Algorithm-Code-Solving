@@ -74,7 +74,7 @@ public class BOJ3019 {
         task.solve();
     }
 
-    static class Solve {
+    private static class Solve {
         private class Tetris {
             private int[][] shape;
 
