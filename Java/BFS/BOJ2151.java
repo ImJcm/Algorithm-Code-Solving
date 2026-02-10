@@ -64,7 +64,7 @@ public class BOJ2151 {
     }
 
     private static class Solve {
-        static class Pos {
+        private class Pos {
             int x,y,d,c;
 
             Pos(int x, int y, int d, int c) {
@@ -80,7 +80,7 @@ public class BOJ2151 {
         char[][] house;
         Pos door_s,door_e;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             bfs();
