@@ -53,7 +53,7 @@ public class BOJ2251 {
     }
 
     private static class Solve {
-        static class Bottles {
+        private class Bottles {
             int a,b,c;
 
             Bottles(int a, int b, int c) {
@@ -66,7 +66,7 @@ public class BOJ2251 {
         int A,B,C;
         ArrayList<Integer> ans;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             bfs();
