@@ -52,8 +52,8 @@ public class BOJ2251 {
         task.solve();
     }
 
-    public static class Solve {
-        private static class Bottles {
+    private static class Solve {
+        static class Bottles {
             int a,b,c;
 
             Bottles(int a, int b, int c) {
@@ -82,7 +82,7 @@ public class BOJ2251 {
             Queue<Bottles> q = new LinkedList<>();
             boolean[][][] visited = new boolean[A + 1][B + 1][C + 1];
 
-            q.add(new Bottles(0,0,C));
+            q.add(new Bottles(0, 0, C));
             visited[0][0][C] = true;
 
             while(!q.isEmpty()) {
@@ -102,7 +102,7 @@ public class BOJ2251 {
         }
 
         private Bottles move_water(int s, Bottles b) {
-            Bottles nb = new Bottles(b.a,b.b,b.c);
+            Bottles nb = new Bottles(b.a, b.b, b.c);
             int sum = 0;
 
             switch (s) {
