@@ -74,11 +74,11 @@ public class BOJ3019 {
         task.solve();
     }
 
-    public static class Solve {
-        public class Tetris {
+    static class Solve {
+        private class Tetris {
             private int[][] shape;
 
-            public Tetris(int[][] s) {
+            Tetris(int[][] s) {
                 this.shape = new int[s.length][s[0].length];
 
                 for(int i = 0; i < s.length; i++) {
@@ -86,7 +86,7 @@ public class BOJ3019 {
                 }
             }
 
-            public void rotate() {
+            void rotate() {
                 int row = shape.length;
                 int col = shape[0].length;
                 int[][] rotated = new int[col][row];
@@ -105,7 +105,7 @@ public class BOJ3019 {
         int[][] field;
         Tetris[] blocks; // I_Block,O_Block,S_Block,Z_Block,T_Block,J_Block,L_Block;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             block_setting();
