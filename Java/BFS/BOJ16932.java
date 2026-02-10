@@ -74,7 +74,7 @@ public class BOJ16932 {
     }
 
     private static class Solve {
-        static class Pos {
+        private class Pos {
             int x,y;
 
             Pos(int x, int y) {
@@ -87,7 +87,7 @@ public class BOJ16932 {
         int[][] arr,section_arr,direction = {{1,0},{-1,0},{0,1},{0,-1}};
         HashMap<Integer,Integer> section;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             divide_section();
