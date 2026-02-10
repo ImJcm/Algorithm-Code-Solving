@@ -70,11 +70,11 @@ public class BOJ2022 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         double X,Y,C,ans,l,r;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();

@@ -93,12 +93,12 @@ public class BOJ13397 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,M,ans,l,r;
         int[] arr;
 
-        private void solve() throws IOException{
+        void solve() throws IOException{
             init_setting();
 
             binary_search();
@@ -171,12 +171,12 @@ public class BOJ13397 {
     /*
         시간 초과 : bruteforce 형태의 구간의 최대값 중 최소값을 확인하는 로직이다.
      */
-    public static class TimeOut_Solve {
+    private static class TimeOut_Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,M,ans;
         int[] arr,m_arr;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             for(int i = 1; i <= M; i++) {

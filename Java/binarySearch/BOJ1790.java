@@ -56,11 +56,11 @@ public class BOJ1790 {
         task.solve();
     }
 
-    public static class Solve_binarySearch {
+    private static class Solve_binarySearch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,K,ans;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
             binarySearch();
             System.out.println(ans);
@@ -135,11 +135,11 @@ public class BOJ1790 {
         }
     }
 
-    public static class Solve_implementation {
+    private static class Solve_implementation {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,K,nl,ans;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
             cal_n_k();
         }

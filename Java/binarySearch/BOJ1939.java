@@ -66,11 +66,11 @@ public class BOJ1939 {
         task.solve();
     }
 
-    public static class Solve {
-        public class Bridge {
+    private static class Solve {
+        private class Bridge {
             int dest,weight;
 
-            public Bridge(int d, int w) {
+            Bridge(int d, int w) {
                 this.dest = d;
                 this.weight = w;
             }
@@ -80,7 +80,7 @@ public class BOJ1939 {
         int N,M,S,E,l,r,ans;
         ArrayList<ArrayList<Bridge>> bridges;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();

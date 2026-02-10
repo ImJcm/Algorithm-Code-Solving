@@ -60,7 +60,7 @@ sweeping 방식의 경우, 짧은 길이의 두 점과 비교할 점을 포함�
 두 점의 위치가 왼쪽에 2개 또는 오른쪽에 2개 또는 왼쪽,오른쪽 각각 1개씩 있는 경우를 모두 고려하여 (s,e) 구간에서의 짧은 두점을 찾아야한다.
  */
 public class BOJ2261 {
-    static class pos {
+    private static class pos {
         int x,y;
 
         pos(int x, int y) {
@@ -76,14 +76,13 @@ public class BOJ2261 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
         task.solve();
-
     }
 
-    public static class Solve {
+    private static class Solve {
         int min_dist;
         pos s,e;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             //bruteforce();

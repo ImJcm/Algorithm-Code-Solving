@@ -69,12 +69,12 @@ public class BOJ11664 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         double[] A,B,C;
         double ans,l,r;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             thrnary_search();
