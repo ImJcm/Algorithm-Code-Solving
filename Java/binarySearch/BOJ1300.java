@@ -49,13 +49,13 @@ public class BOJ1300 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,K;
         long l,r,ans;
         //long[][] A; // 10^5 x 10^5의 최대 크기의 배열은 OutOfMemoryError
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             binary_search();
