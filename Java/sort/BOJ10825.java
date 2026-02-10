@@ -76,11 +76,11 @@ public class BOJ10825 {
     }
 
     private static class Solve {
-        static class Student implements Comparable<Student> {
+        private class Student implements Comparable<Student> {
             String name;
             int korean,english,math;
 
-            public Student(String name, int kor, int eng, int math) {
+            Student(String name, int kor, int eng, int math) {
                 this.name = name;
                 this.korean = kor;
                 this.english = eng;
@@ -106,7 +106,7 @@ public class BOJ10825 {
         private ArrayList<Student> students;
         private StringBuilder ans;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             sorting();

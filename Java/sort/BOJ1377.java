@@ -83,7 +83,7 @@ public class BOJ1377 {
     }
 
     private static class Solve {
-        class Pair {
+        private class Pair {
             int index,value;
 
             Pair(int index, int value) {
@@ -95,7 +95,7 @@ public class BOJ1377 {
         int N,ans;
         ArrayList<Pair> A;
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
             compare();
             System.out.println(ans + 1);

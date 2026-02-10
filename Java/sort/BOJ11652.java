@@ -74,7 +74,7 @@ public class BOJ11652 {
         HashMap<Long,Integer> cards;
         ArrayList<Long> keySet;
 
-        public void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             card_check();
