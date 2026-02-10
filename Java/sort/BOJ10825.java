@@ -75,7 +75,7 @@ public class BOJ10825 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         static class Student implements Comparable<Student> {
             String name;
             int korean,english,math;
