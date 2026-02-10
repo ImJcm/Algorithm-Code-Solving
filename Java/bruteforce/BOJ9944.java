@@ -80,7 +80,7 @@ public class BOJ9944 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N,M,ans,remain_block,num = 1;
         char[][] board;
@@ -89,7 +89,7 @@ public class BOJ9944 {
                 {1,0},{-1,0},{0,1},{0,-1}
         };
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             while(true) {
                 if(init_setting()) return;
 
