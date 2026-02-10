@@ -83,7 +83,7 @@ public class BOJ16956 {
     }
 
     private static class Solve {
-        static class Pos {
+        private class Pos {
             int r,c;
 
             Pos(int r, int c) {
@@ -97,7 +97,7 @@ public class BOJ16956 {
         int[][] direction = new int[][] {{1,0},{-1,0},{0,1},{0,-1}};
         ArrayList<Pos> es;   // empty space = '.'
 
-        private void solve() throws IOException {
+        void solve() throws IOException {
             init_setting();
 
             bfs();
