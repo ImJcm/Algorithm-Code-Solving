@@ -82,7 +82,7 @@ public class BOJ1377 {
         task.solve();
     }
 
-    public static class Solve {
+    private static class Solve {
         class Pair {
             int index,value;
 
