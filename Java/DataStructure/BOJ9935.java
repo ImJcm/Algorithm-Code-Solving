@@ -3,7 +3,11 @@ package DataStructure;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /*
 문자열 폭발 다국어
@@ -59,7 +63,65 @@ public class BOJ9935 {
         Solve task = new Solve();
         task.solve();
     }
-    
+
+    /*
+        Wrong Solve : memory dump
+     */
+    private static class Wrong_Solve3 {
+        private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private ArrayList<Character> str;
+        private ArrayList<Character> boom_str;
+        private List<Character> sub_str;
+        private char trigger;
+        private StringBuilder ans;
+        private final String FRULA = "FRULA";
+
+        void solve() throws IOException {
+            init_setting();
+
+            boom();
+
+            System.out.println(ans);
+        }
+
+        private void boom() {
+            for(int i = 0; i < str.size(); i++) {
+                char ch = str.get(i);
+                if(ch == trigger && i - boom_str.size() + 1 >= 0) {
+                    if(str.subList(i - boom_str.size() + 1, i + 1).equals(boom_str)) {
+                        sub_str = str.subList(0,i - boom_str.size() + 1);
+                        sub_str.addAll(str.subList(i + 1,str.size()));
+                        str = new ArrayList<>(sub_str);
+                        i -= boom_str.size();
+                    }
+                }
+            }
+
+            if(str.isEmpty()) {
+                ans = new StringBuilder(FRULA);
+            } else {
+                ans = new StringBuilder(str.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining()));
+            }
+
+        }
+
+        private void init_setting() throws IOException {
+            str = Arrays.stream(br.readLine().split(""))
+                    .map(c -> c.charAt(0))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            boom_str = Arrays.stream(br.readLine().split(""))
+                    .map(c -> c.charAt(0))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            sub_str = new ArrayList<>();
+
+            trigger = boom_str.get(boom_str.size() - 1);
+        }
+    }
+
     /*
         Wrong solve : time out
      */
