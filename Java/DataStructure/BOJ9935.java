@@ -3,6 +3,7 @@ package DataStructure;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Stack;
 
 /*
 문자열 폭발 다국어
@@ -59,15 +60,81 @@ public class BOJ9935 {
         task.solve();
     }
 
-    private static class Solve {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    /*
+        Wring solve : logic error
+        input : abaabcdbcdcd
+                abcd
+
+        output : abcd
+        answer : FRULA
+     */
+    private static class Wrong_Solve {
+        private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private String str,boom_str;
+        private Stack<Character> stack;
+        private StringBuilder ans;
+        private final String FRULA = "FRULA";
+
         void solve() throws IOException {
             init_setting();
 
+            boom();
+
+            System.out.println(ans.toString().isBlank() ? FRULA : ans.toString());
+        }
+
+        private void boom() {
+            for(int i = 0; i < str.length(); i++) {
+                if(i + boom_str.length() - 1 < str.length()) {
+                    boolean equ = true;
+
+                    for(int j = 0; j < boom_str.length(); j++) {
+                        if(str.charAt(i + j) != boom_str.charAt(j)) {
+                            equ = false;
+                            break;
+                        }
+                    }
+
+                    if(equ) {
+                        i += boom_str.length() - 1;
+                        continue;
+                    }
+                }
+
+                int stack_idx = stack.size();
+
+                if(str.charAt(i) == boom_str.charAt(stack_idx)) stack.push(str.charAt(i));
+                else {
+                    StringBuilder tmp_str = new StringBuilder();
+                    while(!stack.isEmpty()) {
+                        char ch = stack.pop();
+                        tmp_str.insert(0, ch);
+                    }
+                    ans.append(tmp_str);
+
+                    if(str.charAt(i) == boom_str.charAt(0)) stack.push(str.charAt(i));
+                    else ans.append(str.charAt(i));
+                }
+                if(stack.size() == boom_str.length()) stack.clear();
+            }
+
+            if(!stack.isEmpty()) {
+                StringBuilder tmp_str = new StringBuilder();
+                while(!stack.isEmpty()) {
+                    char ch = stack.pop();
+                    tmp_str.insert(0, ch);
+                }
+                ans.append(tmp_str);
+            }
         }
 
         private void init_setting() throws IOException {
+            str = br.readLine();
+            boom_str = br.readLine();
 
+            stack = new Stack<>();
+
+            ans = new StringBuilder();
         }
     }
 }
