@@ -59,11 +59,11 @@ public class BOJ9935 {
         Solve task = new Solve();
         task.solve();
     }
-
+    
     /*
         Wrong solve : time out
      */
-    private static class Wring_Solve2 {
+    private static class Wrong_Solve2 {
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         private String str,boom_str;
         private char trigger;
