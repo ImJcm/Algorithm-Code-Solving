@@ -61,6 +61,59 @@ public class BOJ9935 {
     }
 
     /*
+        Wrong solve : time out
+     */
+    private static class Wring_Solve2 {
+        private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private String str,boom_str;
+        private char trigger;
+        private Stack<Character> stack;
+        private StringBuilder ans;
+        private final String FRULA = "FRULA";
+
+        void solve() throws IOException {
+            init_setting();
+
+            boom();
+
+            System.out.println(ans.toString().isBlank() ? FRULA : ans.toString());
+        }
+
+        private void boom() {
+            for(char ch : str.toCharArray()) {
+                stack.push(ch);
+
+                if(ch == trigger && stack.size() >= boom_str.length()) {
+                    StringBuilder tmp = new StringBuilder();
+
+                    for(int j = 0; j < boom_str.length(); j++) tmp.insert(0,stack.pop());
+
+                    if(!tmp.toString().equals(boom_str)) {
+                        for(char sch : tmp.toString().toCharArray()) stack.push(sch);
+                    }
+                }
+            }
+
+            if(!stack.isEmpty()) {
+                while(!stack.isEmpty()) ans.insert(0,stack.pop());
+            } else {
+                ans.append(FRULA);
+            }
+        }
+
+        private void init_setting() throws IOException {
+            str = br.readLine();
+            boom_str = br.readLine();
+
+            stack = new Stack<>();
+
+            ans = new StringBuilder();
+
+            trigger = boom_str.charAt(boom_str.length() - 1);
+        }
+    }
+
+    /*
         Wring solve : logic error
         input : abaabcdbcdcd
                 abcd
