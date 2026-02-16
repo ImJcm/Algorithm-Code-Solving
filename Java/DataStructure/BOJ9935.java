@@ -58,6 +58,19 @@ Contest > Croatian Open Competition in Informatics > COCI 2013/2014 > Contest #5
 문자열
 스택
  */
+/*
+알고리즘 핵심
+Data Structure (stack) + String
+1. 입력받은 문자열을 순차적으로 Stack or StringBuilder를 이용하여 문자를 담는다.
+2. 담은 문자가 폭발 문자열의 마지막 문자에 해당하는 경우, 폭발 문자열의 길이만큼 담은 공간에서 확인한다.
+
+처음 접근으로 요구사항대로 로직을 완성하였으나 시간 초과가 발생하여 어떤 부분에서 문제가 발생하였는지 감이 잡히지 않았다.
+결국 시간초과가 발생한 부분은 폭발 문자열을 제거한 최종 문자열을 담는 과정에서 StringBuilder의 insert가 O(N)이 발생할 수 있다는
+것을 확인하였고, 이를 개선하여 append를 적용하여 reverse를 적용하였다.
+
+또한, stack 대신 StringBuilder를 사용하여 로직을 구성하였을 때 자체적으로 StringBuilder에 담는 과정이 stack을 대신할 수 있다는
+것을 알 수 있었다.
+ */
 public class BOJ9935 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
