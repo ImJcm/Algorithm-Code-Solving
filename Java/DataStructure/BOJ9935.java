@@ -64,6 +64,44 @@ public class BOJ9935 {
         task.solve();
     }
 
+    private static class Solve {
+        private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private String str,boom_str;
+        private char trigger;
+        private StringBuilder ans;
+        private final String FRULA = "FRULA";
+
+        void solve() throws IOException {
+            init_setting();
+
+            boom();
+
+            System.out.println(ans.isEmpty() ? FRULA : ans.toString());
+        }
+
+        private void boom() {
+            for(int i = 0; i < str.length(); i++) {
+                char ch = str.charAt(i);
+                ans.append(ch);
+
+                if(ch == trigger && ans.length() >= boom_str.length()) {
+                    String sub_str = ans.substring(ans.length() - boom_str.length(), ans.length());
+
+                    if(boom_str.equals(sub_str)) ans.delete(ans.length() - boom_str.length(), ans.length());
+                }
+            }
+        }
+
+        private void init_setting() throws IOException {
+            str = br.readLine();
+            boom_str = br.readLine();
+
+            trigger = boom_str.charAt(boom_str.length() - 1);
+
+            ans = new StringBuilder();
+        }
+    }
+
     /*
         Wrong Solve : memory dump
      */
@@ -93,6 +131,7 @@ public class BOJ9935 {
                         sub_str.addAll(str.subList(i + 1,str.size()));
                         str = new ArrayList<>(sub_str);
                         i -= boom_str.size();
+
                     }
                 }
             }
