@@ -196,7 +196,8 @@ public class BOJ9935 {
                     }
                 }
             }
-            while(!stack.isEmpty()) ans.insert(0,stack.pop());
+            while(!stack.isEmpty()) ans.append(stack.pop());
+            ans.reverse();
         }
 
         private void init_setting() throws IOException {
@@ -252,8 +253,13 @@ public class BOJ9935 {
                     }
                 }
             }
-            while (!stack.isEmpty()) ans.append(stack.pop());
-            ans.reverse();
+
+            if(!stack.isEmpty()) {
+                while(!stack.isEmpty()) ans.insert(0,stack.pop());
+            } else {
+                ans.append(FRULA);
+            }
+
         }
 
         private void init_setting() throws IOException {
