@@ -44,11 +44,22 @@ Contest > University of Ulm Local Contest > University of Ulm Local Contest 2003
  */
 public class BOJ6549 {
     public static void main(String[] args) throws IOException {
-        Solve task = new Solve();
+        Solve_SegmentTree_helper task = new Solve_SegmentTree_helper();
         task.solve();
+
+        Solve_Stack task2 = new Solve_Stack();
+        task2.solve();
     }
 
-    private static class Solve {
+    /*
+        Stack DataStructure Solve
+        앞선 높이를 stack에 담고, 순차적으로 다음 높이를 검사한다.
+        이때, stack.top인 높이보다 현재 높이보다 낮다면, 지금까지의 가로와 stack에 저장된 높이만큼 곱하여 넓이를 구하여 업데이트한다.
+        stack.top인 높이보다 높다면, stack에 담는다.
+
+        N개의 높이 배열만큼 모두 순환한 후, 높이들의 넓이를 구하여 ans에 업데이트하여 최대 넓이를 구한다.
+     */
+    private static class Solve_Stack {
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         private int N;
         private int[] heights;
@@ -76,7 +87,7 @@ public class BOJ6549 {
     /*
         질문게시판 코드 참조
      */
-    private static class Solve_helper {
+    private static class Solve_SegmentTree_helper {
         private class Segment_tree {
             private int[] s_tree;
 
