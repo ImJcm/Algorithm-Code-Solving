@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Stack;
 
 /*
 히스토그램에서 가장 큰 직사각형 다국어
@@ -63,6 +64,7 @@ public class BOJ6549 {
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         private int N;
         private int[] heights;
+        private Stack<Integer> stack;
         private StringBuilder ans = new StringBuilder();
 
         void solve() throws IOException {
@@ -79,6 +81,8 @@ public class BOJ6549 {
             heights = Arrays.stream(input,1,input.length)
                     .mapToInt(Integer::parseInt)
                     .toArray();
+
+            stack = new Stack<>();
 
             return true;
         }
