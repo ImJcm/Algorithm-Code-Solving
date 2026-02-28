@@ -59,6 +59,9 @@ public class BOJ6549 {
         stack.top인 높이보다 높다면, stack에 담는다.
 
         N개의 높이 배열만큼 모두 순환한 후, 높이들의 넓이를 구하여 ans에 업데이트하여 최대 넓이를 구한다.
+
+        처음 시도 => 틀린 코드 : 8%
+        원인 : 논리 오류, 반례 : 9 4 6 8 0 10 9 7 5 3 => answer : 21 / output = 12
      */
     private static class Solve_Stack {
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -69,16 +72,16 @@ public class BOJ6549 {
 
         void solve() throws IOException {
             while(init_setting()) {
-                int res = 0;
+                long res = 0;
                 for(int i = 0; i < N; i++) {
                     while(!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
-                        res = Math.max(res, (i - stack.peek()) * heights[stack.pop()]);
+                        res = Math.max(res, (long) (i - stack.peek()) * heights[stack.pop()]);
                     }
                     if(!stack.isEmpty() && heights[stack.peek()] == heights[i]) continue;
                     if(heights[i] != 0) stack.push(i);
                 }
                 while(!stack.isEmpty()) {
-                    res = Math.max(res, (N - stack.peek()) * heights[stack.pop()]);
+                    res = Math.max(res, (long) (N - stack.peek()) * heights[stack.pop()]);
                 }
                 ans.append(res).append("\n");
             }
@@ -105,6 +108,8 @@ public class BOJ6549 {
 
     /*
         질문게시판 코드 참조
+        처음 시도 => 틀린 코드 8%
+        원인#1 : 최대 크기의 직사각형 넓이 값이 int의 범위를 넘어갈 수 있다. int -> long 변경
      */
     private static class Solve_SegmentTree_helper {
         private class Segment_tree {
@@ -153,10 +158,10 @@ public class BOJ6549 {
         /*
             특정 구간에서 최소 높이를 찾은 후, 최소 높이 인덱스를 기준으로 구간을 나누어 최대 넓이를 구한 후, 이를 반복하여 최대 넓이 값을 구한다.
          */
-        private int find_largest_rectangle(int[] h, int s, int e) {
+        private long find_largest_rectangle(int[] h, int s, int e) {
             int lower_height_idx = stree.query(h,0, h.length - 1, s, e, 1);
 
-            int area = (e - s + 1) * h[lower_height_idx];
+            long area = (long) (e - s + 1) * h[lower_height_idx];
 
             if(s <= lower_height_idx - 1) {
                 area = Math.max(area, find_largest_rectangle(h, s, lower_height_idx - 1));
