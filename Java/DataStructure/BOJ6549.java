@@ -45,8 +45,8 @@ Contest > University of Ulm Local Contest > University of Ulm Local Contest 2003
  */
 public class BOJ6549 {
     public static void main(String[] args) throws IOException {
-        Solve_SegmentTree_helper task = new Solve_SegmentTree_helper();
-        task.solve();
+        /*Solve_SegmentTree_helper task = new Solve_SegmentTree_helper();
+        task.solve();*/
 
         Solve_Stack task2 = new Solve_Stack();
         task2.solve();
@@ -68,7 +68,22 @@ public class BOJ6549 {
         private StringBuilder ans = new StringBuilder();
 
         void solve() throws IOException {
+            while(init_setting()) {
+                int res = 0;
+                for(int i = 0; i < N; i++) {
+                    while(!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
+                        res = Math.max(res, (i - stack.peek()) * heights[stack.pop()]);
+                    }
+                    if(!stack.isEmpty() && heights[stack.peek()] == heights[i]) continue;
+                    if(heights[i] != 0) stack.push(i);
+                }
+                while(!stack.isEmpty()) {
+                    res = Math.max(res, (N - stack.peek()) * heights[stack.pop()]);
+                }
+                ans.append(res).append("\n");
+            }
 
+            System.out.println(ans.toString());
         }
 
         private boolean init_setting() throws IOException {
