@@ -62,6 +62,9 @@ public class BOJ6549 {
 
         처음 시도 => 틀린 코드 : 8%
         원인 : 논리 오류, 반례 : 9 4 6 8 0 10 9 7 5 3 => answer : 21 / output = 12
+        해결 시도 방법:
+            1. 양 끝을 기준으로 2번의 과정을 반복
+            2. 1~N까지 한번의 반복으로 내부에서 이전 높이를 검사하여 넓이를 추가 검사
      */
     private static class Solve_Stack {
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
