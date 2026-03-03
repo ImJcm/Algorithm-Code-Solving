@@ -61,11 +61,12 @@ public class BOJ6549 {
         N개의 높이 배열만큼 모두 순환한 후, 높이들의 넓이를 구하여 ans에 업데이트하여 최대 넓이를 구한다.
 
         처음 시도 => 틀린 코드 : 8%
-        원인 : 논리 오류, 반례 : 9 4 6 8 0 10 9 7 5 3 => answer : 21 / output = 12
+        원인 : 논리 오류, 반례 : 9 4 6 8 0 10 9 7 5 3 => answer = 21 / output = 12
         오름차순으로 높아지는 높이의 직사각형의 넓이를 구하는 것은 문제없지만, 내림차순으로 이어지는 높이의 넓이를 구하는
         과정에서 이전 직사각형과의 넓이를 구하지 못하는 문제가 있다.
         해결 시도 방법:
             1. 양 끝을 기준으로 2번의 과정을 반복
+                반례 : 3 5 2 5 => answer = 6 / output = 5
             2. 1~N까지 한번의 반복으로 내부에서 이전 높이를 검사하여 넓이를 추가 검사
      */
     private static class Solve_Stack {
@@ -80,24 +81,24 @@ public class BOJ6549 {
                 long res = 0;
                 for(int i = 0; i < N; i++) {
                     while(!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
-                        res = Math.max(res, (long) (i - stack.peek()) * heights[stack.pop()]);
+                        res = Math.max(res, ((long) (i - stack.peek()) * heights[stack.pop()]));
                     }
                     if(!stack.isEmpty() && heights[stack.peek()] == heights[i]) continue;
                     if(heights[i] != 0) stack.push(i);
                 }
                 while(!stack.isEmpty()) {
-                    res = Math.max(res, (long) (N - stack.peek()) * heights[stack.pop()]);
+                    res = Math.max(res, ((long) (N - stack.peek()) * heights[stack.pop()]));
                 }
 
                 for(int i = N - 1; i >= 0; i--) {
                     while(!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
-                        res = Math.max(res, (long) (stack.peek() - i) * heights[stack.pop()]);
+                        res = Math.max(res, ((long) (stack.peek() - i) * heights[stack.pop()]));
                     }
                     if(!stack.isEmpty() && heights[stack.peek()] == heights[i]) continue;
                     if(heights[i] != 0) stack.push(i);
                 }
                 while(!stack.isEmpty()) {
-                    res = Math.max(res, (long) (stack.peek() + 1) * heights[stack.pop()]);
+                    res = Math.max(res, ((long) (stack.peek() + 1) * heights[stack.pop()]));
                 }
 
                 ans.append(res).append("\n");
