@@ -43,6 +43,21 @@ Contest > University of Ulm Local Contest > University of Ulm Local Contest 2003
 분할 정복
 스택
  */
+/*
+알고리즘 핵심
+Data Structure (Stack, Segment Tree)
+- Stack
+1. 1~N까지 순차적으로 직사각형의 높이를 탐색한다.
+2. 현재 높이와 위치를 stack에 담는다. 이때, 스택이 비어있지 않고 현재 높이가 스택의 데이터의 높이보다 크다면 현재 위치와 높이를 스택에 담는다.
+스택이 비어있지 않고 현재 높이가 스택의 데이터의 높이보다 작다면, 스택의 높이와 해당 높이로 가능한 가로길이로 넓이를 구한다.
+3. 스택을 통해 현재 높이가 스택의 데이터들 중에서 높이가 더 크다면, 현재 높이로 이전 직사각형들의 넓이에 추가될 수 있으므로 위치를 현재 높이와 함께 저장한다.
+즉, 이전 직사각형의 위치(가로 길이)를 업데이트 한다.
+
+- Segment Tree
+1. Segment Tree를 이용하여 1~N구간에서의 최소 높이를 갖는 데이터를 만든다.
+2. 분할 정복을 통해 구간을 나누어 해당 구간에서의 최소 높이를 구하고 구간의 길이와 최소 높이를 통해 넓이를 구한다.
+3. 특정 구간에서 최소 높이를 구한 인덱스를 찾으면, 해당 구간에서의 넓이를 구하고, 최소 높이를 갖는 인덱스를 기준으로 분할하여 다음 넓이를 구한다.
+ */
 public class BOJ6549 {
     public static void main(String[] args) throws IOException {
         /*Solve_SegmentTree_helper task = new Solve_SegmentTree_helper();
@@ -68,37 +83,40 @@ public class BOJ6549 {
             1. 양 끝을 기준으로 2번의 과정을 반복
                 반례 : 3 5 2 5 => answer = 6 / output = 5
             2. 1~N까지 한번의 반복으로 내부에서 이전 높이를 검사하여 넓이를 추가 검사
+                - 현재 높이가 이전 높이보다 작다면 이전 높이의 직사각형까지 포함하여 넓이를 계산해야 하므로, 이전 가로 길이 정보를 가지고 있어야 한다.
+                따라서, stack에 저장할 정보는 현재 높이가 이전 직사각형의 높이보다 같거나 큰 경우까지의 위치와 현재 높이를 담는다.
+                현재 높이가 stack.peek의 높이보다 작다면, 해당 stack 데이터의 가로 위치까지 직사각형 넓이를 계산한다.
+                이유 : 이전 직사각형의 높이가 다음 직사각형의 높이보다 크다면, 다음 직시각형의 높이만큼 직시각형의 넓이를 추가할 수 있기 때문이다.
      */
     private static class Solve_Stack {
+        private class info {
+            int i,h;
+
+            public info(int i, int h) {
+                this.i = i;
+                this.h = h;
+            }
+        }
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         private int N;
         private int[] heights;
-        private Stack<Integer> stack;
+        private Stack<info> stack;
         private StringBuilder ans = new StringBuilder();
 
         void solve() throws IOException {
             while(init_setting()) {
                 long res = 0;
                 for(int i = 0; i < N; i++) {
-                    while(!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
-                        res = Math.max(res, ((long) (i - stack.peek()) * heights[stack.pop()]));
+                    int ii = i;
+                    while(!stack.isEmpty() && stack.peek().h > heights[i]) {
+                        ii = stack.peek().i;
+                        res = Math.max(res, ((long) (i - stack.peek().i) * stack.pop().h));
                     }
-                    if(!stack.isEmpty() && heights[stack.peek()] == heights[i]) continue;
-                    if(heights[i] != 0) stack.push(i);
+                    if(!stack.isEmpty() && stack.peek().h == heights[i]) continue;
+                    if(heights[i] != 0) stack.push(new info(ii,heights[i]));
                 }
                 while(!stack.isEmpty()) {
-                    res = Math.max(res, ((long) (N - stack.peek()) * heights[stack.pop()]));
-                }
-
-                for(int i = N - 1; i >= 0; i--) {
-                    while(!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
-                        res = Math.max(res, ((long) (stack.peek() - i) * heights[stack.pop()]));
-                    }
-                    if(!stack.isEmpty() && heights[stack.peek()] == heights[i]) continue;
-                    if(heights[i] != 0) stack.push(i);
-                }
-                while(!stack.isEmpty()) {
-                    res = Math.max(res, ((long) (stack.peek() + 1) * heights[stack.pop()]));
+                    res = Math.max(res, ((long) (N - stack.peek().i) * stack.pop().h));
                 }
 
                 ans.append(res).append("\n");
@@ -147,7 +165,8 @@ public class BOJ6549 {
                 return s_tree[n] = arr[l] < arr[r] ? l : r;
             }
 
-            // [s,e] 구간 내에서 또다른 부분 구간 [l,r]에서의 최소 높이를 갖는 인덱스를 반환
+            // [s,e] 구간 내에서 s <= l && r <= e이면, stree 값 반환
+            // l,r의 값을 s,e의 값 내부로 좁히기 위해 분할하고, 최소 높이의 인덱스를 찾는다.
             int query(int[] arr, int l, int r, int s, int e, int n) {
                 if(l > e || r < s) return -1;
                 if(l >= s && r <= e) return s_tree[n];
