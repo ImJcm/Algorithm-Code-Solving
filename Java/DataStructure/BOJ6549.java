@@ -60,8 +60,8 @@ Data Structure (Stack, Segment Tree)
  */
 public class BOJ6549 {
     public static void main(String[] args) throws IOException {
-        /*Solve_SegmentTree_helper task = new Solve_SegmentTree_helper();
-        task.solve();*/
+        Solve_SegmentTree_helper task = new Solve_SegmentTree_helper();
+        task.solve();
 
         Solve_Stack task2 = new Solve_Stack();
         task2.solve();
