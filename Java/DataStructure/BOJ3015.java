@@ -3,6 +3,7 @@ package DataStructure;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Stack;
 
 /*
 오아시스 재결합 다국어
@@ -55,15 +56,61 @@ public class BOJ3015 {
     }
 
     private static class Solve {
+        private class info {
+            double h;
+            int l_c;
+
+            public info(double h, int l_c) {
+                this.h = h;
+                this.l_c = l_c;
+            }
+        }
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private int N,ans;
+        private double[] heights;
+        private Stack<info> stack;
 
         void solve() throws IOException {
             init_setting();
 
+            pair_check();
+
+            System.out.println(ans);
+        }
+
+        private void pair_check() {
+            for(int i = 0; i < N; i++) {
+                ans += 1;
+
+                while(!stack.empty() && stack.peek().h < heights[i]) {
+                    ans += stack.pop().l_c;
+                }
+
+                if(!stack.isEmpty()) {
+                    if(stack.peek().h > heights[i]) {
+                        stack.push(new info(heights[i], stack.peek().l_c + 1));
+                    } else {
+                        stack.push(new info(heights[i], stack.peek().l_c));
+                    }
+
+                } else {
+                    stack.push(new info(heights[i], 0));
+                }
+            }
         }
 
         private void init_setting() throws IOException {
+            N = Integer.parseInt(br.readLine());
 
+            heights = new double[N];
+
+            for(int i = 0; i < N; i++) {
+                heights[i] = Double.parseDouble(br.readLine());
+            }
+
+            stack = new Stack<>();
+
+            ans = 0;
         }
     }
 }
