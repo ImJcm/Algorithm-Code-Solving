@@ -75,9 +75,19 @@ public class BOJ3015 {
 
             pair_check();
 
-            System.out.println(ans);
+            System.out.println(ans - 1);
         }
 
+        /*
+            stack에 높이를 넣고, top의 높이보다 큰 경우, 앞선 업데이트한 쌍의 개수를 누적하는 형태인 것 같은데 구체적인 로직이 필요
+            7 2 4 1 2 2 5 1
+            2 - 4
+            4 - 1 2 2 5
+            1 - 2
+            2 - 2 5
+            2 - 5
+            5 - 1
+         */
         private void pair_check() {
             for(int i = 0; i < N; i++) {
                 ans += 1;
@@ -86,16 +96,6 @@ public class BOJ3015 {
                     ans += stack.pop().l_c;
                 }
 
-                if(!stack.isEmpty()) {
-                    if(stack.peek().h > heights[i]) {
-                        stack.push(new info(heights[i], stack.peek().l_c + 1));
-                    } else {
-                        stack.push(new info(heights[i], stack.peek().l_c));
-                    }
-
-                } else {
-                    stack.push(new info(heights[i], 0));
-                }
             }
         }
 
