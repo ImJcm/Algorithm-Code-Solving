@@ -49,6 +49,16 @@ Olympiad > Croatian Highschool Competitions in Informatics > 2007 > Croatian Oly
 자료 구조
 스택
  */
+/*
+알고리즘 핵심
+Stack
+1.
+
+첫 접근 방식으로, 순차적으로 높이를 앞선 stack에 담아두고 쌍의 개수를 만들어가는 형태라고 생각은 했지만 코드로 구현하는 과정에서
+어려움이 있었다. 간단하게 코드를 구현하였고 이를 TC와 비교하였지만 맞지 않는 경우가 있어서 틀린 로직이라고 생각하여 오래걸리게 되었다.
+그래서 힌트를 참고하여 코드를 구성하려고 한다.
+참고 코드 : https://www.acmicpc.net/board/view/143719
+ */
 public class BOJ3015 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
