@@ -76,7 +76,8 @@ public class BOJ3015 {
             }
         }
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        private int N,ans;
+        private int N;
+        private long ans;
         private double[] heights;
         private Stack<info> stack;
 
@@ -85,7 +86,7 @@ public class BOJ3015 {
 
             pair_check();
 
-            System.out.println(ans - 1);
+            System.out.println(ans);
         }
 
         /*
@@ -101,12 +102,24 @@ public class BOJ3015 {
          */
         private void pair_check() {
             for(int i = 0; i < N; i++) {
-                ans += 1;
+                int l_c = 0;
+                double h = 0;
+                while(!stack.empty()) {
+                    if(stack.peek().h > heights[i]) {
+                        ans += 1;
+                        break;
+                    } else if(stack.peek().h < heights[i]) {
+                        ans += stack.pop().l_c + 1;
+                    } else { // stack.peek().h == heights[i]
+                        l_c =  stack.peek().l_c + 1;
+                        h = stack.pop().h;
 
-                while(!stack.empty() && stack.peek().h < heights[i]) {
-                    ans += stack.pop().l_c;
+                        ans += l_c;
+                        break;
+                    }
                 }
-
+                if(l_c != 0 && h != 0) stack.push(new info(h, l_c));
+                else stack.push(new info(heights[i],0));
             }
         }
 
@@ -121,7 +134,7 @@ public class BOJ3015 {
 
             stack = new Stack<>();
 
-            ans = 0;
+            ans = 0L;
         }
     }
 }
