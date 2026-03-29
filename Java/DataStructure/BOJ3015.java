@@ -58,6 +58,16 @@ Stack
 어려움이 있었다. 간단하게 코드를 구현하였고 이를 TC와 비교하였지만 맞지 않는 경우가 있어서 틀린 로직이라고 생각하여 오래걸리게 되었다.
 그래서 힌트를 참고하여 코드를 구성하려고 한다.
 참고 코드 : https://www.acmicpc.net/board/view/143719
+
+stack에 높이를 넣고, top의 높이보다 큰 경우, 앞선 업데이트한 쌍의 개수를 누적하는 형태인 것 같은데 구체적인 로직이 필요
+해당 로직으로 코드를 설계하는 과정에서 맞지 않는 tc 존재하여 다시 생각해야 함
+7 2 4 1 2 2 5 1
+2 - 4
+4 - 1 2 2 5
+1 - 2
+2 - 2 5
+2 - 5
+5 - 1
  */
 public class BOJ3015 {
     public static void main(String[] args) throws IOException {
@@ -89,21 +99,11 @@ public class BOJ3015 {
             System.out.println(ans);
         }
 
-        /*
-            stack에 높이를 넣고, top의 높이보다 큰 경우, 앞선 업데이트한 쌍의 개수를 누적하는 형태인 것 같은데 구체적인 로직이 필요
-            해당 로직으로 코드를 설계하는 과정에서 맞지 않는 tc 존재하여 다시 생각해야 함
-            7 2 4 1 2 2 5 1
-            2 - 4
-            4 - 1 2 2 5
-            1 - 2
-            2 - 2 5
-            2 - 5
-            5 - 1
-         */
         private void pair_check() {
             for(int i = 0; i < N; i++) {
                 int l_c = 0;
                 double h = 0;
+
                 while(!stack.empty()) {
                     if(stack.peek().h > heights[i]) {
                         ans += 1;
@@ -111,15 +111,12 @@ public class BOJ3015 {
                     } else if(stack.peek().h < heights[i]) {
                         ans += stack.pop().l_c + 1;
                     } else { // stack.peek().h == heights[i]
-                        l_c =  stack.peek().l_c + 1;
-                        h = stack.pop().h;
-
+                        l_c = stack.pop().l_c + 1;
                         ans += l_c;
-                        break;
                     }
                 }
-                if(l_c != 0 && h != 0) stack.push(new info(h, l_c));
-                else stack.push(new info(heights[i],0));
+
+                stack.push(new info(heights[i], l_c));
             }
         }
 
