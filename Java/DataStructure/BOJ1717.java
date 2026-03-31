@@ -3,7 +3,7 @@ package DataStructure;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.concurrent.RecursiveAction;
+import java.util.HashSet;
 
 /*
 집합의 표현 스페셜 저지
@@ -82,13 +82,83 @@ public class BOJ1717 {
 
     private static class Solve {
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private int n,m;
+        private StringBuilder ans;
 
+        /*
+            Wrong Solve : 7%
+            단순하게 a b만 연결 관계인줄 알았는데, (a,b), (a,c)이면, (b,c)도 연결 상태인 것을 몰랐다.
+            반례 : output = No, answer = Yes
+            3 3
+            0 1 2
+            0 1 3
+            1 2 3
+         */
         void solve() throws IOException {
             init_setting();
+
+
+            System.out.println(ans.toString());
         }
 
         private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
 
+            n = Integer.parseInt(input[0]);
+            m = Integer.parseInt(input[1]);
+
+            ans = new StringBuilder();
+        }
+    }
+
+    private static class WrongSolve {
+        private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private int n,m;
+        private StringBuilder ans;
+        private HashSet<Integer>[] parent;
+
+        /*
+            Wrong Solve : 7%
+            단순하게 a b만 연결 관계인줄 알았는데, (a,b), (a,c)이면, (b,c)도 연결 상태인 것을 몰랐다.
+            반례 : output = No, answer = Yes
+            3 3
+            0 1 2
+            0 1 3
+            1 2 3
+         */
+        void solve() throws IOException {
+            init_setting();
+
+            while(m-- > 0) {
+                String[] input = br.readLine().split(" ");
+
+                int order = Integer.parseInt(input[0]);
+                int a = Integer.parseInt(input[1]);
+                int b = Integer.parseInt(input[2]);
+
+                if(order == 1) {
+                    ans.append(parent[a].contains(b) ? "YES\n" : "NO\n");
+                } else {
+                    parent[a].add(b);
+                }
+            }
+
+            System.out.println(ans.toString());
+        }
+
+        private void init_setting() throws IOException {
+            String[] input = br.readLine().split(" ");
+
+            n = Integer.parseInt(input[0]);
+            m = Integer.parseInt(input[1]);
+
+            parent = new HashSet[n + 1];
+
+            for(int i = 0; i <= n; i++) {
+                parent[i] = new HashSet<>();
+            }
+
+            ans = new StringBuilder();
         }
     }
 }
