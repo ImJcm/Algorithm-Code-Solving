@@ -81,22 +81,44 @@ public class BOJ1717 {
     }
 
     private static class Solve {
+        private class DisjointSet {
+            public int find(int a) {
+                if(root[a] == -1) return a;
+
+                root[a] = find(root[a]);
+                return root[a];
+            }
+            public void union(int a, int b) {
+                int rootA = find(a);
+                int rootB = find(b);
+
+                if(rootA <= rootB) {
+                    root[rootB] = rootA;
+                }
+            }
+        }
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         private int n,m;
+        private int[] root;
+        private DisjointSet disjointSet;
         private StringBuilder ans;
 
-        /*
-            Wrong Solve : 7%
-            단순하게 a b만 연결 관계인줄 알았는데, (a,b), (a,c)이면, (b,c)도 연결 상태인 것을 몰랐다.
-            반례 : output = No, answer = Yes
-            3 3
-            0 1 2
-            0 1 3
-            1 2 3
-         */
         void solve() throws IOException {
             init_setting();
 
+            while(m-- > 0) {
+                String[] input = br.readLine().split(" ");
+
+                int order = Integer.parseInt(input[0]);
+                int a = Integer.parseInt(input[1]);
+                int b = Integer.parseInt(input[2]);
+
+                if(order == 1) {
+                    ans.append(disjointSet.find(a) == disjointSet.find(b) ? "Yes" : "No");
+                } else {
+                    disjointSet.union(a,b);
+                }
+            }
 
             System.out.println(ans.toString());
         }
@@ -106,6 +128,14 @@ public class BOJ1717 {
 
             n = Integer.parseInt(input[0]);
             m = Integer.parseInt(input[1]);
+
+            root = new int[n + 1];
+
+            for(int i = 0; i <= n; i++) {
+                root[i] = -1;
+            }
+
+            disjointSet = new DisjointSet();
 
             ans = new StringBuilder();
         }
