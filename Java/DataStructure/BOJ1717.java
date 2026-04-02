@@ -74,6 +74,19 @@ YES
 자료 구조
 분리 집합
  */
+/*
+알고리즘 핵심
+분리 집합(Disjoint Set)
+1. 집합의 포함여부를 알기 위해 분리 집합을 이용한 union-find 자료구조를 활용한다.
+2. (a,b)의 합집합을 union을 통해 구성하고, (a,b)의 집합 여부를 find을 통해 판단한다.
+3. (a,b) 중 작은 값을 부모 노드로 설정하여 집합 여부를 부모 노드의 값으로 판단한다.
+
+처음 접근으로 a,b가 같을 수 있다라는 조건을 보고 0 1 1의 예시에서 {1,1}이라는 집합이 만들어질 것이라고 생각하여 boolean 타입의 배열을 만들고
+같은 a,b의 경우 boolean 배열에 true로 설정하여 포함 여부를 판단하려고 했지만 틀린 로직이였다는 것을 알게되었고, 0 1 1과 같은 로직은 {1}이라는 집합을
+만들어내므로 1의 부모 노드를 1이라고 설정한 것과 같다.
+
+따라서 해당 배열을 없애고 기존의 분리 집합 로직을 구성하는 것이 올바른 로직이였다.
+ */
 public class BOJ1717 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -83,7 +96,7 @@ public class BOJ1717 {
     private static class Solve {
         private class DisjointSet {
             public int find(int a) {
-                if(root[a] == -1) return a;
+                if(root[a] == a) return a;
 
                 root[a] = find(root[a]);
                 return root[a];
@@ -94,6 +107,8 @@ public class BOJ1717 {
 
                 if(rootA <= rootB) {
                     root[rootB] = rootA;
+                } else {
+                    root[rootA] = rootB;
                 }
             }
         }
@@ -114,7 +129,7 @@ public class BOJ1717 {
                 int b = Integer.parseInt(input[2]);
 
                 if(order == 1) {
-                    ans.append(disjointSet.find(a) == disjointSet.find(b) ? "Yes" : "No");
+                    ans.append(disjointSet.find(a) == disjointSet.find(b) ? "YES\n" : "NO\n");
                 } else {
                     disjointSet.union(a,b);
                 }
@@ -132,7 +147,7 @@ public class BOJ1717 {
             root = new int[n + 1];
 
             for(int i = 0; i <= n; i++) {
-                root[i] = -1;
+                root[i] = i;
             }
 
             disjointSet = new DisjointSet();
