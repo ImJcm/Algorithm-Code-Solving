@@ -49,6 +49,14 @@ Olympiad > 한국정보올림피아드 > 한국정보올림피아드시․도지
 너비 우선 탐색
 깊이 우선 탐색
  */
+/*
+알고리즘 핵심
+BFS, DFS
+1. 입력으로 주어진 컴퓨터를 그래프화하여 각 컴퓨터끼리 인접한 형태를 나타내도록 배열에 담는다.
+2. BFS or DFS로 1번을 시작으로 탐색하여 이동한 횟수를 ans에 업데이트한다.
+
+또 다른 방법으로는 분리 집합으로 union-find 자료구조로 집합의 개수를 루트 노드에 업데이트하는 방법도 가능한 것같다.
+ */
 public class BOJ2606 {
     public static void main(String[] args) throws IOException {
         Solve task = new Solve();
@@ -71,7 +79,7 @@ public class BOJ2606 {
         void solve() throws IOException {
             init_setting();
 
-            //spread_virus();
+            spread_virus();
 
             spread_virus2(1);
 
