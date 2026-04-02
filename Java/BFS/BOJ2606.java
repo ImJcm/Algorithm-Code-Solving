@@ -55,7 +55,6 @@ public class BOJ2606 {
         task.solve();
     }
 
-    // BFS
     private static class Solve {
         private class Com {
             private ArrayList<Integer> adj;
@@ -72,11 +71,14 @@ public class BOJ2606 {
         void solve() throws IOException {
             init_setting();
 
-            spread_virus();
+            //spread_virus();
+
+            spread_virus2(1);
 
             System.out.println(ans);
         }
 
+        // BFS
         private void spread_virus() {
             Queue<Com> q = new LinkedList<>();
             q.add(coms[1]);
@@ -95,12 +97,23 @@ public class BOJ2606 {
             }
         }
 
+        // DFS
+        private void spread_virus2(int v){
+            visited[v] = true;
+
+            for(Integer i : coms[v].adj) {
+                if(visited[i]) continue;
+                ans++;
+                spread_virus2(i);
+            }
+        }
+
         private void init_setting() throws IOException {
             c = Integer.parseInt(br.readLine());
             p = Integer.parseInt(br.readLine());
 
             coms = new Com[c + 1];
-            visited = new  boolean[c + 1];
+            visited = new boolean[c + 1];
 
             for(int i = 1; i <= c; i++) {
                 coms[i] = new Com();
