@@ -3,6 +3,8 @@ package DataStructure;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /*
 최소 힙
@@ -55,6 +57,8 @@ Kotlin (JVM): 2 초
  */
 /*
 알고리즘 핵심
+자료구조 (PriorityQueue)
+1. 오름차순의 기준으로 정렬하는 우선순위 큐를 사용한다.
  */
 public class BOJ1927 {
     public static void main(String[] args) throws IOException {
@@ -65,13 +69,42 @@ public class BOJ1927 {
     private static class Solve {
         private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         private int N;
+        private PriorityQueue<Integer> pq;
+        private StringBuilder ans;
 
         void solve() throws IOException {
             init_setting();
+
+            program();
+
+            System.out.println(ans);
+        }
+
+        private void program() throws IOException {
+            while(N-- > 0) {
+                int op = Integer.parseInt(br.readLine());
+                switch (op) {
+                    case 0:
+                        ans.append(pq.isEmpty() ? "0" : pq.poll()).append("\n");
+                        break;
+                    default:
+                        pq.add(op);
+                        break;
+                }
+            }
         }
 
         private void init_setting() throws IOException {
+            N = Integer.parseInt(br.readLine());
 
+            pq = new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o1 - o2;
+                }
+            });     // default : Order(오름차순)
+
+            ans = new StringBuilder();
         }
     }
 }
