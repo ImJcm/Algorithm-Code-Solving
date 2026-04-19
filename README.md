@@ -11,10 +11,12 @@
 </div>
 <br>
 
-# BackJoon (main)
-https://github.com/ImJcm/Algorithm-Code-Solving/tree/master/Java <br>
+# BackJoon
+<!--https://github.com/ImJcm/Algorithm-Code-Solving/tree/master/Java <br>-->
 
 BackJoon Account info : https://www.acmicpc.net/user/jcm
+
+BOJ 서비스 종료(~2026/04/28)로 업데이트 중단
 
 # Programmers
 https://github.com/ImJcm/Programmers
