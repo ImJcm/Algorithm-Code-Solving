@@ -36,7 +36,7 @@ N	result
 /*
 
  */
-class Solution {
+class 점프와_순간_이동 {
     public static void main(String[] args) {
         int n = 5;
         System.out.println(solution(n));

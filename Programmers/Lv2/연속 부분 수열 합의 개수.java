@@ -33,7 +33,7 @@ elements	result
     위의 과정을 수행하여 만들어진 부분수열을 Set 자료구조에 저장하여 중복된 값을 제거하여 연속 부분 수열 합으로 만들 수 있는
     개수 도출
  */
-class Solution {
+class 연속_부분_수열_합의_개수 {
     public static void main(String[] args) {;
         int[] elements = {7,9,1,1,4};
         System.out.println(solution(elements));

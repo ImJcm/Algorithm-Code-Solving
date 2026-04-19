@@ -29,7 +29,7 @@ n	return
     fibo[i] = fibo[i-1] + fibo[i-2]; 이렇게 표현하는 경우, n이 큰 수일 때, int에 저장할 수 있는 값의 범위를 넘어설 수 있기
     때문에 long 타입 또는 문제에서 요구하는 1234567로 나눈 나머지를 피보나치 값에 넣어주는 방법을 이용해야한다.
  */
-class Solution {
+class 피보나치_수 {
     public static void main(String[] args) {
         System.out.println(solution(1));
     }

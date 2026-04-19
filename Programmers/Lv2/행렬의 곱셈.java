@@ -21,7 +21,7 @@ A 행렬 : M x R / B 행렬 : R x N
 연산 횟수 : M x N x R
 
  */
-class Solution {
+class 행렬의_곱셈 {
     public static int[][] solution(int[][] arr1, int[][] arr2) {
         int[][] answer = new int[arr1.length][arr2[0].length];
 

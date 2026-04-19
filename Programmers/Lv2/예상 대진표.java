@@ -23,7 +23,7 @@ N	A	B	answer
     a,b를 시작으로 부모노드에 해당하는 인덱스 번호로 재지정된다. 즉, 항상 이기기 때문에 반복문을 통해 반복횟수마다 부모노드 인덱스 번호로
     지정해주고 a,b가 같을때 반복횟수를 반환하면 된다.
  */
-class Solution {
+class 예상_대진표 {
     public static void main(String[] args) {
         System.out.println(solution(16,4,7));
     }

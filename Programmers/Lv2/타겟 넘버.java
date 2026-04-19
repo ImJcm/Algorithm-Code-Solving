@@ -35,7 +35,7 @@ numbers	target	return
 +4-1+2-1 = 4
 총 2가지 방법이 있으므로, 2를 return 합니다.
  */
-class Solution {
+class 타겟_넘버 {
     static class Node {
         int idx;
         int sum;

@@ -67,7 +67,7 @@ A에서 첫번째 숫자인 1, B에서 두번째 숫자인 4를 뽑아 곱하여
  */
 import java.util.Arrays;
 
-class Solution
+class 최솟값_만들기
 {
     public int solution(int []A, int []B)
     {

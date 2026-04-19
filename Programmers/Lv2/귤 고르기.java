@@ -37,7 +37,7 @@ k	tangerine	result
     그 배열을 내림차순으로 정렬하고 주어진 k개를 내림차순으로 정렬된 배열의 0에서의 값부터 빼나갔을 때 0보다 작아지는 경우
     해당 index가 최소한의 귤종류를 의미한다.
  */
-class Solution {
+class 귤_고르기 {
     public static void main(String[] args) {;
         long n = 2;
         //int[] tangerine = {1,3,2,5,4,5,2,3};

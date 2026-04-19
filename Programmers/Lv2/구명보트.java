@@ -32,7 +32,7 @@ people	limit	return
     무게 제한보다 작다면, 같이 보트에 태워보낸다. 이를 i 와 j가 교차할 때까지 반복하여 보트의 수를 구한다.
     위의 과정을 투포인트 알고리즘과 유사하다.
  */
-class Solution {
+class 구명보트 {
     public static void main(String[] args) {
         int[] people = new int[]{70, 80, 50};
         System.out.println(solution(people,100));

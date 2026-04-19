@@ -27,7 +27,7 @@ n	result
     정수 n을 이진수 String으로 다시, 이진수 String을 십진수 정수형으로 변환하는 과정을 하지않고 binary 1의 bit수를 반환하는
     함수를 이용하여 n+1씩 반복하면서 1 bit의 개수와 같은 n을 반환해준다.
  */
-class Solution {
+class 다음_큰_숫자 {
     public static void main(String[] args) {
         System.out.println(solution(15));
     }

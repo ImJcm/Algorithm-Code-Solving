@@ -30,7 +30,7 @@ brown	yellow	return
 /*
 
  */
-class Solution {
+class 카펫 {
     public static void main(String[] args) {
         System.out.println(solution(24,24));
     }

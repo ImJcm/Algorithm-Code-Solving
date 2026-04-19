@@ -23,7 +23,7 @@ n	result
     i부터 시작하는 연속된 합 조합을 만들기 위해 j:i~n 반복문_2
     합이 n과 같으면 결과 갯수 카운트 + 1, 합이 넘어가면 j 반복문 탈출하고 다음 i 진행한다.
  */
-class Solution {
+class 숫자의_표현 {
     public static void main(String[] args) {
         System.out.println(solution(15));
     }

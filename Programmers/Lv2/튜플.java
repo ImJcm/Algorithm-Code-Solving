@@ -65,7 +65,7 @@ class 튜플 {
 
         List<String> entries = new ArrayList<>(m.keySet());
 
-        Collections.sort(entries, Collections.reverseOrder())
+        Collections.sort(entries, Collections.reverseOrder());
 
         Collections.sort(entries, (v1, v2) -> m.get(v2).compareTo(m.get(v1)));
 

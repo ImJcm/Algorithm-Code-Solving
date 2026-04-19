@@ -21,7 +21,7 @@ s	return
         StringBuilder sb = new StringBuilder();
         sb.append("String");
  */
-public class Solution {
+class 최댓값과_최솟값 {
     public static String solution(String s) {
         String answer = "";
 

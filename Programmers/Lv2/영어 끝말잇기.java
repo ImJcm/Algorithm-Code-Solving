@@ -71,7 +71,7 @@ n	words	result
     반복문을 1~words.length만큼 진행하여 현재의 단어와 이전단어의 앞과 뒷문자를 비교했을 때 두 조건 중 하나라도 만족하면
     현재의 인덱스를 차례와 사람을 구별할 수 있도록 answer에 저장하고 return한다.
  */
-class Solution {
+class 영어_끝말잇기 {
     public static void main(String[] args) {
         String[] words = {"hello", "observe", "effect", "take", "either", "recognize", "encourage", "ensure", "establish", "hang", "gather", "refer", "reference", "estimate", "executive"};
 

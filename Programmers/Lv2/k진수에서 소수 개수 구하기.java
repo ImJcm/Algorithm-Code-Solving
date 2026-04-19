@@ -33,7 +33,7 @@ n	k	result
 
 #1과 #11에서의 실패를 해결하기 위해 int -> long 타입을 매개변수로 전달받아 처리할 수 있도록 변경하였다.
  */
-class Solution {
+class k진수에서_소수_개수_구하기 {
     static int[] sieve;
 
     public static int solution(int n, int k) {

@@ -50,7 +50,7 @@ set1의 모든 요소를 KeySet을 통해 set2와 겹치는 요소가 있다면,
 겹치지 않는 key가 존재하는 경우, union_size에 set1(key)의 value를 누적한다.
 추가로, set2를 기준으로 모든 요소에서 set1과 겹치지 않는 요소들만 union_size에 누적하여 로직을 마무리하여 자카드 유사도를 구한다.
  */
-public class Solution {
+class 뉴스_클러스터링 {
     static Map<String,Integer> set1 = new HashMap<>(),set2 = new HashMap<>();
     //static ArrayList<String> intersection = new ArrayList<>(), union = new ArrayList<>();
     static int intersection_size = 0, union_size = 0;

@@ -21,7 +21,7 @@ arr	result
     아닌 경우는 그대로 값이 내려오고 나누어떨어지는 수들만 나눈 값을 내려주고 이 과정을 각각의 수들이 서로소일 때까지 반복하는 것이였다.
     https://mathbang.net/204#gsc.tab=0 - 최소공배수 개념 참고
  */
-class Solution {
+class N개의_최소공배수 {
     public static void main(String[] args) {
         int[] arr = {14,2,7};
         System.out.println(solution(arr));

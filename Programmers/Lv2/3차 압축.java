@@ -1,3 +1,5 @@
+package Programmers;
+
 import java.util.*;
 
 /*
@@ -70,7 +72,7 @@ ABABABABABABABAB	[1, 2, 27, 29, 28, 31, 30]
 ArrayIndexOutOfBound 예외가 발생할 수 있으므로, 마지막 문자에 도달한 경우 branch(분기)를 달리하여 실행할 코드를 분리하도록 하였다.
 
  */
-class Solution {
+class 삼차_압축 {
     static Map<String, Integer> dictionary;
     static int index_number;
     static ArrayList<Integer> answer;

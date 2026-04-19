@@ -54,7 +54,7 @@ ex2
     2 + 1, 1 + 1, 1 + 1, 2 + 1 = 3, 2, 2, 3
 
  */
-class Solution {
+class n2_배열_자르기 {
     public static void main(String[] args) {;
         int n = 3;
         long left = 2;

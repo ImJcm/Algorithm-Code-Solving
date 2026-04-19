@@ -40,7 +40,7 @@ https://en.wikipedia.org/wiki/H-index
 h-index (f) = max{i ∈ N : f(i) >= i}
 
  */
-class Solution {
+class H_Index {
     static int h_index = 0;
 
     public static int solution(int[] citations) {

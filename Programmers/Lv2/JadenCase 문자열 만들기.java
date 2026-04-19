@@ -21,7 +21,7 @@ s	                    return
 
 문자 하나하나를 기준으로 공백문자일 경우, 다음 문자를 대문자로 바꿔서 문자열을 완성하는 형식으로 코드 구현
  */
-class Solution {
+class JadenCase_문자열_만들기 {
     public String solution(String s) {
         String answer = "";
 

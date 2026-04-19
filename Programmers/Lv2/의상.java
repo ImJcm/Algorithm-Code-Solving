@@ -57,7 +57,7 @@ A타입의 옷이 a개, B타입의 옷이 b개 있을 때, 만들 수 있는 조
 cloth_type별로 옷의 갯수를 갖는 <String, Integer> Map 데이터를 생성한 후, 반복문을 통해 공식을 적용하여 조합이 가능한 경우의 수를 계산한다.
 마지막으로, 아무옷도 선택하지 않는 경우의 수도 있기 때문에 1을 뺴고 결과를 출력한다.
  */
-class Solution {
+class 의상 {
     static HashMap<String, Integer> clothes_box;
     static int cnt = 1;
 

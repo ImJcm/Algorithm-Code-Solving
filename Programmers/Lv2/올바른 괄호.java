@@ -25,7 +25,7 @@ s	answer
    앞 문자부터 검사하여 '(' : +1 , ')' : -1로 균형치를 조사한다. 반복문을 통해 검사하면서 true이려면 0에 수렴해야한다. 그러나, 이미 올바르지 않은
    괄호 문자열이라면 반복문을 진행하는 도중 음수가 발생하거나 최종적인 standard 의 값이 0이 아닌 값이 될 것이다.
  */
-class Solution {
+class 올바른_괄호 {
     boolean solution(String s) {
         boolean answer = true;
 

@@ -41,7 +41,7 @@ ArrayList를 사용하는 경우 중복된 city를 검사해야 하므로 별도
 cache가 전부 찼을 때, 다음으로 검사하는 city가 cache에 존재하는 경우, cache의 해당 위치의 city를 지우고 마지막으로 cache를 업데이트 해준다.
 만약, 없는 경우는 맨 앞 city를 지우고 cache에 더하여 업데이트 해준다.
  */
-class Solution {
+class FirstCache {
     public static int solution(int cacheSize, String[] cities) {
         int answer = 0;
         boolean dup_check = false;

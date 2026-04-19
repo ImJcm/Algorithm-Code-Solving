@@ -61,7 +61,7 @@ dfs, bfs모두 테스트#1~21은 통과하지만, dfs의 경우 효율성 테스
 Node의 dist의 값으로 최소 경로를 업데이트하면서 찾아간다.
 bfs의 경우 이동하는 경로가 최단경로임을 최초 방문을 통해 만족하기 때문에 효율성 테스트에 통과한다고 생각한다.
  */
-public class Solution {
+class 게임_맵_최단거리 {
     static int r,c,min_dist = Integer.MAX_VALUE;
     static boolean[][] visited;
     static int[][] direction = {{-1,0},{0,1},{1,0},{0,-1}};

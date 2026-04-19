@@ -44,7 +44,7 @@ n	result
     count[3] = 1 + 1 + 1, 1 + 2, 2 + 1 = count[2] + count[1] = 2 + 1 = 3
     n = 3을 구성하는 경우의 수가 2를 구성하는 경우의 수 (1+1,2) + 1하는 경우와 1를 구성하는 수 (1) + 2
  */
-class Solution {
+class 멀리_뛰기 {
     public static void main(String[] args) {;
         int n = 3;
         System.out.println(solution(n));

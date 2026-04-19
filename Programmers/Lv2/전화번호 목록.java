@@ -1,3 +1,5 @@
+package Programmers;
+
 import java.util.*;
 
 /*
@@ -43,7 +45,7 @@ phone_book	return
 예시#1 ["119", "97674223", "1195524421"]에서 119는 1, 11 까지만 sets에서 포함여부를 체크하고, 1195524421에서 1,11,119,....
     119에서 접두사로 체크된다.
  */
-class Solution {
+class 전화번호_목록 {
     static HashSet<String> sets;
     static boolean solution(String[] phone_book) {
         boolean answer = true;
@@ -81,7 +83,7 @@ class Solution {
 /*
 전화번호부에 존재하는 전화번호를 하나의 String으로 만들어 접두어를 고려하지 않는 포함여부를 체크하는 코드 + 효율성 실패
  */
-class Solution_singleSentence_WrongAnswer {
+class 전화번호_목록_WrongSovle {
     static String combine_phone_numbers;
     static boolean solution(String[] phone_book) {
         boolean answer = true;

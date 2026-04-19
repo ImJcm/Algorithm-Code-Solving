@@ -51,7 +51,7 @@ s	result
 
    이런 과정을 반복하여 최종적으로 1이 될때, 0의 개수와 반복한 개수를 answer에 반환하여 종료
  */
-class Solution {
+class 이진_변환_반복하기 {
     public int[] solution(String s) {
         int[] answer = new int[2];
         int zero_cnt = 0;

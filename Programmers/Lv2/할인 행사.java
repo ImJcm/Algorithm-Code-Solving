@@ -30,7 +30,7 @@ want	number	discount	result
 
 사과가 할인하는 날이 없으므로 0을 return 합니다.
  */
-class Solution {
+class 할인_행사 {
     static int solution_2Point(String[] want, int[] number, String[] discount) {
         int answer = 0;
         int total = 0;
@@ -119,6 +119,7 @@ class Solution {
         String[] discount = {"chicken", "apple", "apple", "banana", "rice", "apple", "pork", "banana", "pork", "rice", "pot", "banana", "apple", "banana"};
 
 
-        System.out.println(solution(want, number, discount));
+        System.out.println(solution_2Point(want, number, discount));
+        //System.out.println(solution_simpleLogic(want, number, discount));
     }
 }

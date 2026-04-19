@@ -34,7 +34,7 @@ cdcd	0
     Stack을 이용하는 방법은 스택이 비어있다면 i=0부터 시작하는 문자를 push하고, 다음 문자와 stack.peek()을 비교하였을 때 같으면 pop한다.
     이를 반복해서 stack이 비어있다면,1 비어있지 않다면 0을 반환한다.
  */
-class Solution {
+class 짝지어_제거하기 {
     public static void main(String[] args) {
         System.out.println(solution("baabaa"));
     }
