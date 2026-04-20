@@ -28,6 +28,13 @@ topping	result
 
 롤케이크를 공평하게 나눌 수 없습니다.
  */
+/*
+알고리즘 핵심
+구현
+1. 양끝을 시작으로 토핑의 종류를 중복없이 개수를 누적하여 두 배열에 각각 저장한다.
+2. 0~N-2까지의 순서에서 left, right의 토핑의 종류를 저장한 배열의 값을 left[i] ?= right[i + 1]로 비교한다.
+3. 비교값이 같으면 동등한 분배가 가능하므로 해당 위치의 개수를 ans에 업데이트한다.
+ */
 public class 롤케이크_자르기 {
     public static void main() throws IOException{
         Solution sol = new Solution();
