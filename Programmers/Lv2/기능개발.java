@@ -89,15 +89,13 @@ class 기능개발 {
             remaining_progress.add((int)Math.ceil((100 - progresses[i]) / speeds[i]));
         }
 
-        int idx = 0;
         while(!remaining_progress.isEmpty()) {
-            progressing_day = Math.max(progressing_day, remaining_progress.get(idx));
+            progressing_day = Math.max(progressing_day, remaining_progress.poll());
             boolean check = false;
             int completed_progress = 1;
 
-
-            remaining_progress.remove(idx);
-            while(remaining_progress.get(idx++) <= progressing_day) {
+            while(!remaining_progress.isEmpty() && remaining_progress.peek() <= progressing_day) {
+                remaining_progress.poll();
                 completed_progress++;
             }
 
