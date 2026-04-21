@@ -21,22 +21,63 @@ triangle	result
  */
 public class 정수_삼각형 {
     public static void main() {
+        int[][] input = {
+                {7},{3,8},{8,1,0},{2,7,4,4},{4,5,2,6,5}
+        };
+
         Solve task = new Solve();
-        task.solution();
+        System.out.println(task.solution(input));
     }
 
     private static class Solve {
-        private int[][] triangle;
+        private int[][] triangle,dp;
         private int ans;
 
         public int solution(int[][] triangle) {
             init_setting(triangle);
 
+            ans = check(triangle,0,0);
+            check2(triangle);
+
             return ans;
         }
 
-        private void init_setting(int[][] triangle) {
+        // bottom-up
+        private int check(int[][] triangle, int h, int i) {
+            if(h == triangle.length - 1) return triangle[h][i];
+            if(dp[h][i] != -1) return dp[h][i];
 
+            dp[h][i] = triangle[h][i] + Math.max(check(triangle,h + 1, i),check(triangle,h + 1, i + 1));
+
+            return dp[h][i];
+        }
+
+        // top-down
+        private void check2(int[][] triangle) {
+            dp[0][0] = triangle[0][0];
+
+            for(int i = 1; i < triangle.length; i++) {
+                for(int j = 0; j < triangle[i].length; j++) {
+                    dp[i][j] = triangle[i][j] + (j == 0 ? dp[i - 1][j] :
+                            Math.max(dp[i - 1][j - 1], dp[i - 1][j]));
+                }
+            }
+
+            for(int i = 0; i < triangle.length; i++) {
+                ans = Math.max(ans, dp[triangle.length - 1][i]);
+            }
+        }
+
+        private void init_setting(int[][] triangle) {
+            dp = new int[triangle.length][triangle.length];
+
+            for(int i = 0; i < triangle.length; i++) {
+                for(int j = 0; j < i + 1; j++) {
+                    dp[i][j] = -1;
+                }
+            }
+
+            ans = 0;
         }
     }
 }
