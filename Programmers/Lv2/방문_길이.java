@@ -56,6 +56,12 @@ dirs	answer
 입출력 예 #2
 문제의 예시와 같습니다.
  */
+/*
+알고리즘 핵심
+dfs + implementation
+1. 하나의 점에서 방문할 수 있는 경우가 4개(위,아래,오른쪽,왼쪽)이므로 방문여부를 [x][y][d] 3차원으로 설정한다.
+2. (11,11) 배열을 만들고, dfs로 입력으로 주어진 움직이는 순서대로 진행하여 visited를 통해 방문한 경로를 제외한 횟수를 업데이트한다.
+ */
 public class 방문_길이 {
     public static void main() {
         String[] dirs = {
@@ -68,16 +74,18 @@ public class 방문_길이 {
     private static class Solve {
         private class Pos {
             int x,y;
-            boolean visited;
+            boolean[] visited;
 
             public Pos(int x, int y) {
                 this.x = x;
                 this.y = y;
-                this.visited = false;
+                this.visited = new boolean[4];
             }
 
-            public void visit() {
-                this.visited = true;
+            public boolean visit(int d) {
+                boolean state = this.visited[d];
+                if(!state) this.visited[d] = true;
+                return state;
             }
         }
         private int ans;
@@ -87,7 +95,71 @@ public class 방문_길이 {
         public int solution(String dir) {
             init_setting(dir);
 
-            move(0,Pos[5][5]);
+            ans = move(0,dir,map[5][5]);
+
+            return ans;
+        }
+
+        private int move(int l, String d, Pos p) {
+            if(l == d.length()) return 0;
+
+            int nx = p.x;
+            int ny = p.y;
+            int route = 0;
+
+            switch (d.charAt(l)) {
+                case 'U':
+                    nx += direction[0][0];
+                    ny += direction[0][1];
+
+                    if(check(nx,ny)) {
+                        if(!p.visit(0) && !map[nx][ny].visit(1)) route += 1;
+                    } else {
+                        nx = p.x;
+                        ny = p.y;
+                    }
+                    break;
+                case 'D':
+                    nx += direction[1][0];
+                    ny += direction[1][1];
+
+                    if(check(nx,ny)) {
+                        if(!p.visit(1) && !map[nx][ny].visit(0)) route += 1;
+                    } else {
+                        nx = p.x;
+                        ny = p.y;
+                    }
+                    break;
+                case 'R':
+                    nx += direction[2][0];
+                    ny += direction[2][1];
+
+                    if(check(nx,ny)) {
+                        if(!p.visit(2) && !map[nx][ny].visit(3)) route += 1;
+                    } else {
+                        nx = p.x;
+                        ny = p.y;
+                    }
+                    break;
+                case 'L':
+                    nx += direction[3][0];
+                    ny += direction[3][1];
+
+                    if(check(nx,ny)) {
+                        if(!p.visit(3) && !map[nx][ny].visit(2)) route += 1;
+                    } else {
+                        nx = p.x;
+                        ny = p.y;
+                    }
+                    break;
+            }
+
+            return route + move(l + 1, d, map[nx][ny]);
+        }
+
+        private boolean check(int x, int y) {
+            if(x < 0 || x > 10 || y < 0 || y > 10) return false;
+            return true;
         }
 
         private void init_setting(String dir) {
@@ -99,8 +171,8 @@ public class 방문_길이 {
                 }
             }
 
-            direction = new int[][]{
-                    {0, -1}, {0, 1}, {1, 0}, {-1, 0}
+            direction = new int[][]{ // U, D, R, L
+                    {-1, 0}, {1, 0}, {0, 1}, {0, -1}
             };
 
             ans = 0;
