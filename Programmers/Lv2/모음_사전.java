@@ -1,5 +1,8 @@
 package Programmers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
 모음 사전
 제출 내역
@@ -55,28 +58,50 @@ public class 모음_사전 {
                 "AAAAE", "AAAE", "I", "EIO"
         };
         Solve task = new Solve();
-        task.solution(words[0]);
+        System.out.println(task.solution(words[3]));
     }
 
     private static class Solve {
         private final int max_l = 5;
-        private int ans,L,l;
+        private Map<Character, Integer> dict;
+        private int ans,l;
 
         public int solution(String word) {
             init_setting(word);
 
-            ans = dictionary(word,L,l);
+            ans = dictionary(word,l);
 
             return ans;
         }
 
-        private int dictionary(String word, int l, int l1) {
+        private int dictionary(String word, int l) {
+            int data = 0;
+            int result = 0;
 
+            for(int i = 0; i < max_l; i++) {
+                data += (int) Math.pow(max_l,i);
+                if(i < max_l - l) continue;
+
+                int j = max_l - i - 1;
+
+                result += (dict.get(word.charAt(j)) * data) + 1;
+            }
+
+            return result;
         }
 
         private void init_setting(String word) {
-            L = word.length();
-            l = max_l - L;
+            l = word.length();
+
+            dict = new HashMap<>() {
+                {
+                    put('A',0);
+                    put('E',1);
+                    put('I',2);
+                    put('O',3);
+                    put('U',4);
+                }
+            };
 
             ans = 0;
         }
