@@ -36,38 +36,18 @@ word	result
  */
 /*
 알고리즘 핵심
-
-AAAAA = 5
-AAAA = 9
+구현
+1. 다음과 같은 규칙이 존재한다.
+A = 1, AA = 2, AAA = 3, AAAA = 4, AAAAA = 5, AAAAE = 6
 AAAE = 10
-AAAEA = 11
-AAAEE 12
-AAAEI 13
-AAAEO 14
-AAAEU 15
-AAAI 16
-AAAIA 17
-AAAIE 18
-AAAII 19
-AAAIO 20
-AAAIU 21
-AAAO 22
-AAAOA 23
-AAAOE 24
-AAAOI 25
-AAAOO 26
-AAAOU 27
-AAAU 28
-AAAUA 29
-AAAUE 30
-AAAUI 31
-AAAUO 32
-AAAUU 33
-AAA 34
-AAE 35
-AAEAA 36
-AAEAE 37
-AA =
+AAE = 34
+...
+Ax -> Ex로 넘어갈 때 필요한 변경횟수는 AA,AE,AI,AO,AU = 5 + 1
+Axx -> Exx로 넘어갈 때 필요한 변경횟수는 AA,AAA,AAE,AAI,AAO,AAU,AE,AEA,AEE,AEI,AEO,AEU, ... = 25 + 5 + 1
+Axxx -> Exxx 또한, 이전 변경횟수와 연관되므로, (25 x 5) + 30 + 1
+Axxxx -> Exxxx, (125 x 5) + 155 + 1
+이때, 마지막 + 1의 경우 해당 자릿수에서 다음 문자로 넘어가기 위한 횟수로 각 자리수마다 적용해야 한다.
+2. 위 규칙을 적용하여, 각 자리에서 변경이 필요한 문자의 차이만큼 (X - A) x {(5^n) + 이전 문자 변경횟수} + 1을 누적한다.
  */
 public class 모음_사전 {
     public static void main() {
@@ -79,15 +59,26 @@ public class 모음_사전 {
     }
 
     private static class Solve {
-        private int ans;
+        private final int max_l = 5;
+        private int ans,L,l;
+
         public int solution(String word) {
             init_setting(word);
+
+            ans = dictionary(word,L,l);
 
             return ans;
         }
 
-        private void init_setting(String word) {
+        private int dictionary(String word, int l, int l1) {
 
+        }
+
+        private void init_setting(String word) {
+            L = word.length();
+            l = max_l - L;
+
+            ans = 0;
         }
     }
 }
