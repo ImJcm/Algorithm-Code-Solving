@@ -1,5 +1,8 @@
 package Programmers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /*
 뒤에 있는 큰 수 찾기
 제출 내역
@@ -25,8 +28,12 @@ numbers	result
  */
 public class 뒤에_있는_큰_수_찾기 {
     public static void main() {
+        ArrayList<int[]> numbers = new ArrayList<>(Arrays.asList(
+                new int[] {2,3,3,5},
+                new int[] {9,1,5,3,6,2}
+        ));
         Solve task = new Solve();
-        System.out.println(task.solution());
+        System.out.println(Arrays.toString(task.solution(numbers.get(1))));
     }
 
     private static class Solve {
@@ -35,7 +42,36 @@ public class 뒤에_있는_큰_수_찾기 {
         public int[] solution(int[] numbers) {
             init_setting(numbers);
 
+            find_big_number_behind(numbers);
+
             return ans;
+        }
+
+        private void find_big_number_behind(int[] numbers) {
+            ans[numbers.length - 1] = -1;
+
+            for(int i = numbers.length - 2; i >= 0; i--) {
+                if(numbers[i] < numbers[i + 1]) ans[i] = i + 1;
+                else if(numbers[i] == numbers[i + 1]) ans[i] = ans[i + 1];
+                else {
+                    int ii = ans[i + 1];
+                    while(true) {
+                        if(ii == -1) break;
+                        if(numbers[i] > numbers[ii]) ii = ans[ii];
+                        else if(numbers[i] <= numbers[ii]) break;
+                    }
+                    ans[i] = ii;
+                }
+            }
+
+            matching(ans,numbers);
+        }
+
+        private void matching(int[] ans, int[] numbers) {
+            for(int i = 0; i < numbers.length; i++) {
+                if(ans[i] == -1) continue;
+                ans[i] = numbers[ans[i]];
+            }
         }
 
         private void  init_setting(int[] numbers) {
