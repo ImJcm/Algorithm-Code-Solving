@@ -26,6 +26,13 @@ numbers	result
 
 ※ 공지 - 2025년 2월 10일 테스트케이스가 추가되었습니다.
  */
+/*
+알고리즘 핵심
+구현
+1. 뒤에서 큰 값을 찾는 것이므로, 배열의 크기가 n이면 n-1부터 시작하여 큰 값의 인덱스를 저장하도록 한다.
+2. i기준으로 i + 1의 값과 i + 1에서의 뒤에서 큰 값의 인덱스로 값을 비교하여 i의 뒤에서 큰 값의 인덱스를 찾는다.
+3. 2번 과정에서 i에서 i~n까지의 모든 경우를 보는 것이 아닌 해당 지점의 뒤에서 큰 값의 인덱스를 통해 연산과정을 줄인다.
+ */
 public class 뒤에_있는_큰_수_찾기 {
     public static void main() {
         ArrayList<int[]> numbers = new ArrayList<>(Arrays.asList(
@@ -58,7 +65,10 @@ public class 뒤에_있는_큰_수_찾기 {
                     while(true) {
                         if(ii == -1) break;
                         if(numbers[i] > numbers[ii]) ii = ans[ii];
-                        else if(numbers[i] <= numbers[ii]) break;
+                        else if(numbers[i] == numbers[ii]) {
+                            ii = ans[ii];
+                            break;
+                        } else break;
                     }
                     ans[i] = ii;
                 }
