@@ -1,5 +1,10 @@
 package Programmers;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.stream.Collectors;
+
 /*
 더 맵게
 제출 내역
@@ -32,6 +37,14 @@ scoville	K	return
 ※ 공지 - 2022년 12월 23일 테스트 케이스가 추가되었습니다. 기존에 제출한 코드가 통과하지 못할 수도 있습니다.
 ※ 공지 - 2023년 03월 23일 테스트 케이스가 추가되었습니다. 기존에 제출한 코드가 통과하지 못할 수도 있습니다.
  */
+/*
+알고리즘 핵심
+자료구조(우선순위 큐)
+1. 스코빌 수치에 따른 오름차순으로 정렬된 우선순위 큐를 사용한다.
+2. 우선순위 큐의 헤드 값이 K보다 작은 경우, 스코빌을 섞는 과정을 거친다.
+3. 2번 과정에서 헤드의 값이 K보다 이상의 수치가 나오는 경우, 횟수를 출력한다.
+이때, 큐의 데이터의 크기가 1인 경우, 헤드의 값에 따라 -1 or 횟수를 출력한다.
+ */
 public class 더_맵게 {
     public static void main() {
         int[] scoville = {
@@ -44,15 +57,113 @@ public class 더_맵게 {
 
     private static class Solve {
         private int ans;
+        private PriorityQueue<Integer> pq;
 
         public int solution(int[] scoville, int k) {
-            init_setting(scoville,k);
+            init_setting(scoville);
+
+            mix_scoville(k);
 
             return ans;
         }
 
-        private void init_setting(int[] scoville, int k) {
+        private void mix_scoville(int k) {
+            while(true) {
+                if (pq.peek() >= k) return;
+                if (pq.size() == 1 && pq.peek() < k) {
+                    ans = -1;
+                    return;
+                }
 
+                long k1 = pq.poll();
+                long k2 = pq.poll();
+                long mixed = k1 + (k2 * 2);
+
+                ans++;
+                pq.offer(mixed >= Integer.MAX_VALUE ?
+                        Integer.MAX_VALUE : (int) mixed);
+            }
+        }
+
+        private void init_setting(int[] scoville) {
+            pq = new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o1.compareTo(o2);
+                }
+            });
+
+            Arrays.stream(scoville).forEach(x -> pq.offer(x));
+
+            ans = 0;
+        }
+    }
+
+    /*
+        스코빌 지수를 섞다보면 int의 범위를 넘어가는 경우의 수가 생길 것이라고 판단하여 Long타입으로 작성하였지만,
+        효율성 테스트가 적합하지 않았다.
+
+        따라서, 계산은 Long으로 하지만, 문제의 요구되는 K의 범위가 1,000,000,000이므로 스코빌을 합친 수치가 int의
+        범위를 넘어가는 경우 long타입의 값을 넣는 것이 아닌 int의 MAX값을 넣어 int의 범위내로 타입을 조정하도록 한다.
+
+        K의 범위보다 int의 범위가 더 크기때문에 MAX값을 넣는 것으로 대체할 수 있다.
+     */
+    private static class Not_Efficiency_Solve {
+        private int ans;
+        private PriorityQueue<Long> pq;
+
+        public int solution(int[] scoville, int k) {
+            init_setting(scoville);
+
+            mix_scoville(k);
+
+            return ans;
+        }
+
+        private void mix_scoville(int k) {
+            while(true) {
+                if(pq.peek() >= k) return;
+                if(pq.size() == 1 && pq.peek() < k) {
+                    ans = -1;
+                    return;
+                }
+
+                long k1 = pq.poll();
+                long k2 = pq.poll();
+
+                ans++;
+                pq.offer(k1 + (k2 * 2));
+            }
+        }
+
+        private void init_setting(int[] scoville) {
+            pq = new PriorityQueue<>(new Comparator<Long>() {
+                @Override
+                public int compare(Long o1, Long o2) {
+                    return o1.compareTo(o2);
+                }
+            });
+
+            // JDK 16 버전 이상 호환
+            /*pq.addAll(Arrays.stream(scoville)
+                    .mapToObj(Long::valueOf)
+                    .toList());*/
+
+            Arrays.stream(scoville)
+                    .mapToLong(i -> i)
+                    .forEach(pq::offer);
+
+            // JDK16 아래 버전 호환
+            /*pq.addAll(Arrays.stream(scoville)
+                    .mapToObj(Long::valueOf)
+                    .collect(Collectors.toList()));*/
+
+            // 비효율 버전
+            /*for(Integer s : scoville) {
+                pq.offer(Long.valueOf(s));
+            }*/
+
+            ans = 0;
         }
     }
 }
