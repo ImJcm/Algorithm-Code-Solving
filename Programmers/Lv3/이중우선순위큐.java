@@ -1,6 +1,8 @@
 package Lv3;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /*
 이중우선순위큐
@@ -59,16 +61,58 @@ public class 이중우선순위큐 {
 
     private static class Solve {
         private int[] ans;
+        private PriorityQueue<Integer> pq_up,pq_down;
 
         public int[] solution(String[] operations) {
             init_setting(operations);
 
+            dual_priority_queue(operations);
+
             return ans;
+        }
+
+        private void dual_priority_queue(String[] operations) {
+            for(String ops : operations) {
+                String[] op = ops.split(" ");
+
+                String command = op[0];
+                Integer num = Integer.valueOf(op[1]);
+
+                switch (command) {
+                    case "I":
+                        pq_up.add(num);
+                        pq_down.add(num);
+                        break;
+                    case "D": {
+                        if(num == 1) {
+
+                        } else {
+
+                        }
+                    }
+
+                }
+            }
         }
 
         private void init_setting(String[] operations) {
             ans = new int[2];
 
+            pq_up = new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o1.compareTo(o2);
+                }
+            });
+
+            pq_down =  new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o2.compareTo(o1);
+                }
+            });
+
+            ans[0] = ans[1] = 0;
         }
     }
 }
