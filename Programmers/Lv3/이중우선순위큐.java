@@ -55,8 +55,13 @@ public class 이중우선순위큐 {
                 "I -45", "I 653", "D 1", "I -642", "I 45", "I 97", "D 1", "D -1", "I 333"
         };
 
+        String[] custom = new String[] {
+                "I 10", "I 20", "D 1", "I 30", "I 40", "D -1", "D -1"
+        };
+
         Solve task = new Solve();
-        System.out.println(Arrays.toString(task.solution(operations)));
+        System.out.println(Arrays.toString(task.solution(operations2)));
+        //System.out.println(Arrays.toString(task.solution(custom)));
     }
 
     private static class Solve {
@@ -85,14 +90,17 @@ public class 이중우선순위큐 {
                         break;
                     case "D": {
                         if(num == 1) {
-
+                            pq_up.remove(pq_down.poll());
                         } else {
-
+                            pq_down.remove(pq_up.poll());
                         }
+                        break;
                     }
-
                 }
             }
+
+            ans[0] = pq_down.isEmpty() ? 0 : pq_down.poll();
+            ans[1] = pq_up.isEmpty() ? 0 : pq_up.poll();
         }
 
         private void init_setting(String[] operations) {
