@@ -71,6 +71,7 @@ public class 단어_변환 {
             init_setting(begin, target, words);
 
             dfs(0,begin,target,words);
+            bfs(begin,target,words);
 
             return ans == Integer.MAX_VALUE ? 0 : ans;
         }
