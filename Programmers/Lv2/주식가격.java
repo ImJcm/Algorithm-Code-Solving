@@ -1,6 +1,7 @@
 package Programmers;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 /*
 주식가격
@@ -36,15 +37,24 @@ public class 주식가격 {
 
     private static class Solve {
         private int[] ans;
+        private Stack<Integer> stack;
 
         public int[] solution(int[] prices) {
             init_setting(prices);
 
+            stock(prices);
+
             return ans;
+        }
+
+        private void stock(int[] prices) {
+
         }
 
         private void init_setting(int[] prices) {
             ans = new int[prices.length];
+
+            stack = new Stack<>();
         }
     }
 }
