@@ -1,5 +1,11 @@
 package Lv3;
 
+import java.security.Key;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+
 /*
 단어 변환
 제출 내역
@@ -29,12 +35,19 @@ begin	target	words	return
 예제 #2
 target인 "cog"는 words 안에 없기 때문에 변환할 수 없습니다.
  */
+/*
+알고리즘 핵심
+DFS/BFS
+1. begin을 시작으로 words의 문자열로 변경이 가능할 때 target으로 변경이 되어야 하므로 최단경로탐색인 dfs/bfs를 사용한다.
+2. 현재 문자열에서 다음 문자열로 이동이 이루어질때 words의 단어에서 변경이 이루어질 수 있는 조건을 만족하고 중복 여부를 검사한다.
+ */
 public class 단어_변환 {
     public static void main() {
         String begin = "hit";
         String target = "cog";
         String[] words = {
-                "hot", "dot", "dog", "lot", "log", "cog"
+                //"hot", "dot", "dog", "lot", "log", "cog"
+                "hot", "dot", "dog", "lot", "log"
         };
 
         Solve task = new Solve();
@@ -42,16 +55,81 @@ public class 단어_변환 {
     }
 
     private static class Solve {
+        private class Node {
+            String str;
+            int cnt;
+
+            public Node(String str, int cnt) {
+                this.str = str;
+                this.cnt = cnt;
+            }
+        }
         private int ans;
+        private boolean[] visited;
 
         public int solution(String begin, String target, String[] words) {
             init_setting(begin, target, words);
 
-            return ans;
+            dfs(0,begin,target,words);
+
+            return ans == Integer.MAX_VALUE ? 0 : ans;
+        }
+
+        private void dfs(int n, String cur_str, String target, String[] words) {
+            if(cur_str.equals(target)) {
+                ans = Math.min(ans,n);
+                return;
+            }
+
+            for(int i = 0; i < words.length; i++) {
+                if(visited[i]) continue;
+                if(!changeable(words[i],cur_str)) continue;
+                else {
+                    visited[i] = true;
+                    dfs(n+1,words[i],target,words);
+                    visited[i] = false;
+                }
+            }
+        }
+
+        private void bfs(String begin, String target, String[] words) {
+            Queue<Node> q = new LinkedList<>();
+            q.add(new Node(begin,0));
+
+            while(!q.isEmpty()) {
+                Node now = q.poll();
+
+                if(now.str.equals(target)) {
+                    ans = Math.min(ans,now.cnt);
+                    return;
+                }
+
+                for(int i = 0; i < words.length; i++) {
+                    if(visited[i]) continue;
+                    if(!changeable(words[i],now.str)) continue;
+                    else {
+                        visited[i] = true;
+                        q.add(new Node(words[i],now.cnt+1));
+                    }
+                }
+            }
+        }
+
+        private boolean changeable(String s,String cur_str) {
+            int diff = 0;
+
+            for(int i = 0; i < s.length(); i++) {
+                if(s.charAt(i) != cur_str.charAt(i)) diff++;
+            }
+
+            if(diff == 1) return true;
+            else return false;
         }
 
         private void init_setting(String begin, String target, String[] words) {
+            ans = Integer.MAX_VALUE;
 
+            visited = new boolean[words.length];
         }
     }
 }
