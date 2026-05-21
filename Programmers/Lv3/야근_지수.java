@@ -58,6 +58,7 @@ public class 야근_지수 {
         System.out.println(task2.solution(n_2, works_2));
     }
 
+    // 우선순위 큐 사용 o
     private static class Solve2 {
         private long ans;
         private PriorityQueue<Integer> pq;
@@ -100,6 +101,7 @@ public class 야근_지수 {
         }
     }
 
+    // 우선순위 큐 사용 x
     private static class Solve {
         private long ans;
         private int max_work;
