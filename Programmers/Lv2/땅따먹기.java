@@ -1,5 +1,7 @@
 package Programmers;
 
+import java.util.Arrays;
+
 /*
 땅따먹기
 제출 내역
@@ -29,6 +31,12 @@ land	answer
 입출력 예 #1
 문제의 예시와 같습니다.
  */
+/*
+알고리즘 핵심
+DP(동적계획법)
+1. 출발점을 시작으로 마지막 위치로 최대값을 갖는 경로를 찾는 것이므로 DFS를 기반으로 구성한다.
+2. 출발점이 4개이지만, 4개의 출발점에서 각각 중복되는 경로가 존재하여 불필요한 연산을 줄이기위해 DP를 사용한다.
+ */
 public class 땅따먹기 {
     static void main() {
         int[][] land = new int[][] {
@@ -43,15 +51,41 @@ public class 땅따먹기 {
 
     private static class Solve {
         private int ans;
+        private int[][] dp;
 
         public int solution(int[][] land) {
             init_setting(land);
 
+            ans = move(0,-1, land.length, land);
+
             return ans;
         }
 
-        private void init_setting(int[][] land) {
+        private int move(int n, int l, int end, int[][] land) {
+            if(n == end) return 0;
 
+            if(l != -1 && dp[n][l] != -1) return dp[n][l];
+
+            int m_res = 0;
+
+            for(int i = 1; i <= 4; i++) {
+                int nl = (l + i) % 4;
+                if(nl == l) continue;
+
+                m_res = Math.max(m_res, land[n][nl] + move(n + 1, nl, end, land));
+            }
+
+            return m_res;
+        }
+
+        private void init_setting(int[][] land) {
+            ans = 0;
+
+            dp = new int[land.length][4];
+
+            for(int i = 0; i < land.length; i++) {
+                Arrays.fill(dp[i], -1);
+            }
         }
     }
 }
