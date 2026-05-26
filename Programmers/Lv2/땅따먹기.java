@@ -56,7 +56,12 @@ public class 땅따먹기 {
         public int solution(int[][] land) {
             init_setting(land);
 
-            ans = move(0,-1, land.length, land);
+            for(int i = 0; i < 4; i++) {
+                for(int j = 0; j < 4; j++) {
+                    if(i == j) continue;
+                    ans = Math.max(ans, land[0][i] + move(1, j, land.length, land));
+                }
+            }
 
             return ans;
         }
@@ -64,28 +69,21 @@ public class 땅따먹기 {
         private int move(int n, int l, int end, int[][] land) {
             if(n == end) return 0;
 
-            if(l != -1 && dp[n][l] != -1) return dp[n][l];
+            if(dp[n][l] != 0) return dp[n][l];
 
-            int m_res = 0;
+            for(int i = 0; i < 4; i++) {
+                if(i == l) continue;
 
-            for(int i = 1; i <= 4; i++) {
-                int nl = (l + i) % 4;
-                if(nl == l) continue;
-
-                m_res = Math.max(m_res, land[n][nl] + move(n + 1, nl, end, land));
+                dp[n][l] = Math.max(dp[n][l], land[n][l] + move(n + 1, i, end, land));
             }
 
-            return m_res;
+            return dp[n][l];
         }
 
         private void init_setting(int[][] land) {
             ans = 0;
 
             dp = new int[land.length][4];
-
-            for(int i = 0; i < land.length; i++) {
-                Arrays.fill(dp[i], -1);
-            }
         }
     }
 }
