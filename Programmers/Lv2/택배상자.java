@@ -1,5 +1,7 @@
 package Programmers;
 
+import java.util.Stack;
+
 /*
 택배상자
 제출 내역
@@ -28,6 +30,17 @@ order	result
 
 모든 상자를 보조 컨테이너 벨트에 모두 넣고, 역순으로 하나씩 빼서 트럭에 싣습니다.
  */
+/*
+알고리즘 핵심
+스택
+1. 현재 택배상자와 넣어야할 택배상자를 구분하기 위해 별도의 스택을 사용한다.
+2. 현재 택배상자가 넣어야할 택배상자의 번호와 비교하여 쌓을 수 있는 횟수를 측정한다.
+2-1. 현재 택배상자 < 넣어야할 택배상자) 현재 택배상자를 stack에 저장하고 현재 택배상자를 + 1
+2-2. 현재 택배상자 = 넣어야할 택배상자) 쌓은 횟수와 다음 넣어야할 택배상자로 업데이트한다.
+2-3. 현재 택배상자 > 넣어야할 택배상자) stack에 앞서 저장된 택배와 넣어야할 택배를 비교하여 넣을 수 있는지 판단한다.
+2-3-1. 이때, 상단의 택배가 현재 넣어야할 택배상자와 다르다면, 더 이상 넣을 수 없다.
+2-3-2. 같다면, 스택의 top을 제거하고, 쌓은 횟수 + 다음 넣어야할 택배상자로 업데이트한다.
+ */
 public class 택배상자 {
     static void main() {
         int[] order_1 = new int[] {
@@ -38,21 +51,49 @@ public class 택배상자 {
                 5,4,3,2,1
         };
 
+        int[] order_custom = new int[] {
+                2,1,4,5,3
+        };
+
         Solve task = new Solve();
         System.out.println(task.solution(order_1));
+        System.out.println(task.solution(order_2));
+        System.out.println(task.solution(order_custom));
     }
 
     private static class Solve {
         private int ans;
+        private Stack<Integer> stack;
 
         public int solution(int[] order) {
             init_setting(order);
 
+            delivery(order);
+
             return ans;
+        }
+
+        private void delivery(int[] order) {
+            int i = 1, j = 0;
+
+            while(true) {
+                if(i < order[j]) stack.push(i++);
+                else {
+                    if(i == order[j]) i++;
+                    else { // (i > order[j])
+                        if (stack.isEmpty() || stack.peek() != order[j]) return;
+                        stack.pop();
+                    }
+                    ans++;
+                    if(j < order.length - 1) j++;
+                }
+            }
         }
 
         private void init_setting(int[] order) {
             ans = 0;
+
+            stack = new Stack<>();
         }
     }
 }
