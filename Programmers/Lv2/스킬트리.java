@@ -34,7 +34,7 @@ public class 스킬트리 {
     static void main() {
         String skill = "CBD";
         String[] skill_trees = new String[] {
-                "BACDE", "CBADF", "AECB", "BDA"
+                "BACDE", "CBADF", "AECB", "BDA","CBAFE","C"
         };
 
         Solve task = new Solve();
@@ -47,11 +47,34 @@ public class 스킬트리 {
         public int solution(String skill, String[] skill_trees) {
             init_setting(skill, skill_trees);
 
+            verify_skill_tree(skill,skill_trees);
+
             return ans;
         }
 
-        private void init_setting(String skill, String[] skill_trees) {
+        private void verify_skill_tree(String skill, String[] skill_trees) {
+            for(String st : skill_trees) {
+                int idx = 0;
+                int order = 0, n_order = 0;
+                boolean flag = false; // 스킬트리가 끊어진 시점에서 선행 스킬이 요구되는 스킬을 배우려는 경우 차단
 
+                while(true) {
+                    if(idx == skill.length()) {
+                        ans++;
+                        break;
+                    }
+                    char ch = skill.charAt(idx++);
+                    n_order = st.indexOf(ch);
+
+                    if(n_order == -1 && order != -1) flag = true;
+                    else if((n_order != -1 && flag) || n_order < order) break;
+                    order = n_order;
+                }
+            }
+        }
+
+        private void init_setting(String skill, String[] skill_trees) {
+            ans = 0;
         }
     }
 }
