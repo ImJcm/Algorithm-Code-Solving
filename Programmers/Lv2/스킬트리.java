@@ -1,5 +1,7 @@
 package Programmers;
 
+import java.util.ArrayList;
+
 /*
 스킬트리
 제출 내역
@@ -30,6 +32,20 @@ skill	skill_trees	return
 "BDA": B 스킬을 배우기 전에 C 스킬을 먼저 배워야 합니다. 불가능한 스킬트리입니다.
 스킬 트리: 유저가 스킬을 배울 순서 ↩
  */
+/*
+알고리즘 핵심
+구현
+1. skill_tree의 순서를 선행 skill의 순서와 맞는지 검사한다.
+
+처음 시도로는 선행 스킬의 문자를 순차적으로 위치를 찾아 현재 스킬이 선행 스킬보다 인덱스의 값이 높은지를 검사하는 방식을
+생각하였다.
+해당 방법으로는 앞선 선행 스킬의 위치와 현재 스킬의 위치를 비교하기 때문에 선행 스킬의 위치를 보존해야하고, 검사하는 조건이 복잡했다.
+
+그래서, 좀더 생각해보면 스킬은 선행 조건이 존재하므로 순서를 갖는다는 점을 통해서 스킬 트리의 순차적인 문자들을 선행 스킬에서 위치를
+찾고 해당 스킬을 배운다는 별도의 공간을 두어 선행 조건을 만족하는지 비교하는 것이 좋다고 생각했다.
+스킬 트리의 문자들을 선행 스킬 순서에서 위치를 찾고, 해당 위치의 값이 현재 배운 스킬 수량과 비교하여 검증하면 코드가 간결해진다.
+(만약, 스킬을 중복하여 배울 수 있다고 한다면, 배우는 수량이 늘어날 수 있으므로 ArrayList -> HashSet을 사용하여 중복방지)
+ */
 public class 스킬트리 {
     static void main() {
         String skill = "CBD";
@@ -48,6 +64,7 @@ public class 스킬트리 {
             init_setting(skill, skill_trees);
 
             verify_skill_tree(skill,skill_trees);
+            verify_skill_tree_2(skill,skill_trees);
 
             return ans;
         }
@@ -70,6 +87,27 @@ public class 스킬트리 {
                     else if((n_order != -1 && flag) || n_order < order) break;
                     order = n_order;
                 }
+            }
+        }
+
+        private void verify_skill_tree_2(String skill, String[] skill_trees) {
+            ArrayList<Character> arr;
+
+            for(String st : skill_trees) {
+                arr = new ArrayList<>();
+                boolean avail = true;
+
+                for(char ch : st.toCharArray()) {
+                    if(!avail) break;
+                    int idx = skill.indexOf(ch);
+
+                    if(idx == -1) continue;
+                    if(arr.size() == idx) {
+                        arr.add(ch);
+                    } else avail = false;
+                }
+
+                if(avail) ans++;
             }
         }
 
