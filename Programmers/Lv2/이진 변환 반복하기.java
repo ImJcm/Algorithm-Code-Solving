@@ -1,4 +1,4 @@
-package Programmers;
+package Lv2;
 /*
 이진 변환 반복하기
 문제 설명

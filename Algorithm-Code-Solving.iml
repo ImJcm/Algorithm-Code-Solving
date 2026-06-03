@@ -6,7 +6,6 @@
       <sourceFolder url="file://$MODULE_DIR$/BackJoon" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/BackJoon/Java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Programmers" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Programmers/Lv2" isTestSource="false" packagePrefix="Programmers" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

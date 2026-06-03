@@ -1,4 +1,4 @@
-package Programmers;
+package Lv2;
 
 /*
 [3차] n진수 게임
