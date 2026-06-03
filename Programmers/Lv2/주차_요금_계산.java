@@ -1,5 +1,7 @@
 package Programmers;
 
+import java.util.*;
+
 /*
 주차 요금 계산
 제출 내역
@@ -120,6 +122,13 @@ fees	records	result
 제한시간 안내
 정확성 테스트 : 10초
  */
+/*
+알고리즘 핵심
+자료구조(Map), 구현
+1. 입력으로 주어지는 차량번호에 IN인 경우 출입시간을 저장하고, OUT시 출입시간과 차이를 계산하여 저장한다.
+(IN은 존재하지만, OUT이 없는 경우, 23:59로 시간 차이를 차량번호에 누적하여 저장한다.)
+2. 차량 번호에 해당하는 총 시간에 해당하는 요금을 계산하여 차량번호에 따른 오름차순으로 ans에 요금을 저장한다.
+ */
 public class 주차_요금_계산 {
     static void main() {
         int[] fees = new int[] {    //기본 시간(분), 기본 요금(원), 단위 시간(분), 단위 요금(원)
@@ -132,20 +141,128 @@ public class 주차_요금_계산 {
         };
 
         Solve task = new Solve();
-        System.out.println(task.solution(fees,records));
+        System.out.println(Arrays.toString(task.solution(fees, records)));
     }
 
     private static class Solve {
+        private class Record {
+            String car_number;
+            int total_time;
+            int fee;
+
+            public Record(String car_number) {
+                this.car_number = car_number;
+            }
+
+            public void setTotal_time(int total_time) {
+                this.total_time = total_time;
+            }
+
+            public void setFee(int fee) {
+                this.fee = fee;
+            }
+        }
+        private HashMap<String, String> entry_list;
+        private HashMap<String, Record> fee_records;
         private int[] ans;
 
         public int[] solution(int[] fees, String[] records) {
-            init_setting(fees,records);
+            init_setting();
+
+            time_calculation(records,entry_list,fee_records);
+
+            parking_fees_calculation(fees,fee_records);
 
             return ans;
         }
 
-        private void init_setting(int[] fees, String[] records) {
+        private void parking_fees_calculation(int[] fees, HashMap<String, Record> fee_records) {
+            for(Record record : fee_records.values()) {
+                if(record.total_time <= fees[0]) record.setFee(fees[1]);
+                else record.setFee((int) (fees[1] + Math.ceil((double) (record.total_time - fees[0]) / fees[2]) * fees[3]));
+            }
 
+            List<String> keySet = new ArrayList<>(fee_records.keySet());
+            ans = new int[keySet.size()];
+
+            Collections.sort(keySet);
+
+            int idx = 0;
+            for(String key : keySet) {
+                ans[idx++] = fee_records.get(key).fee;
+            }
+        }
+
+        private void time_calculation(String[] records, HashMap<String, String> entry_list, HashMap<String, Record> fee_records) {
+            for(String record : records) {
+                String[] r = record.split(" ");
+                String time = r[0];
+                String car_number = r[1];
+                String type = r[2];
+
+                switch (type) {
+                    case "IN":
+                        entry_list.put(car_number,time);
+                        break;
+                    case "OUT":
+                        String it = entry_list.get(car_number);
+                        String ot = time;
+
+                        if(fee_records.containsKey(car_number)) {
+                            int t = fee_records.get(car_number).total_time;
+                            fee_records.get(car_number).setTotal_time(t + time_diff(it,ot));
+                        } else {
+                            Record nr = new Record(car_number);
+                            nr.setTotal_time(time_diff(it,ot));
+                            fee_records.put(car_number, nr);
+                        }
+
+                        entry_list.remove(car_number);
+                        break;
+                }
+            }
+
+            for(Map.Entry<String,String> e : entry_list.entrySet()) {
+                if(fee_records.containsKey(e.getKey())) {
+                    Record nr = fee_records.get(e.getKey());
+                    int t = nr.total_time;
+                    int nt = time_diff(e.getValue(), "23:59");
+                    nr.setTotal_time(t + nt);
+                } else {
+                    Record nr = new Record(e.getKey());
+                    nr.setTotal_time(time_diff(e.getValue(), "23:59"));
+                    fee_records.put(e.getKey(), nr);
+                }
+            }
+        }
+
+        private int time_diff(String it, String ot) {
+            String[] its =  it.split(":");
+            String[] ots =  ot.split(":");
+
+            Integer it_h = Integer.parseInt(its[0]);
+            Integer it_m = Integer.parseInt(its[1]);
+            Integer ot_h = Integer.parseInt(ots[0]);
+            Integer ot_m = Integer.parseInt(ots[1]);
+
+            int dh,dm;
+
+            if(it_m > ot_m) {
+                ot_h -= 1;
+
+                dh = ot_h - it_h;
+                dm = 60 + ot_m - it_m ;
+            } else {
+                dh = ot_h - it_h;
+                dm = ot_m - it_m;
+            }
+
+            return 60 * dh + dm;
+        }
+
+        private void init_setting() {
+            fee_records = new HashMap<>();
+            entry_list = new HashMap<>();
         }
     }
 }
