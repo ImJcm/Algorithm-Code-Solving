@@ -49,15 +49,47 @@ public class 숫자_게임 {
 
     private static class Solve {
         private int ans;
+        private int[] sorted_A, sorted_B;
 
         public int solution(int[] A, int[] B) {
             init_setting(A,B);
 
+            number_game(sorted_A,sorted_B);
+
             return ans;
         }
 
-        private void init_setting(int[] A, int[] B) {
+        private void number_game(int[] A, int[] B) {
+            int a_idx = 0;
+            int b_idx = 0;
+            int b_l_idx = B.length - 1;
 
+            while(true) {
+                if(b_idx > b_l_idx) break;
+                if(A[a_idx] >= B[b_idx]) b_l_idx--;
+                else {
+                    ans++;
+                    b_idx++;
+                }
+
+                a_idx++;
+            }
+        }
+
+        private void init_setting(int[] A, int[] B) {
+            ans = 0;
+
+            sorted_A = Arrays.stream(A)
+                    .boxed()
+                    .sorted(Comparator.reverseOrder())
+                    .mapToInt(Integer::intValue)
+                    .toArray();
+
+            sorted_B = Arrays.stream(B)
+                    .boxed()
+                    .sorted(Comparator.reverseOrder())
+                    .mapToInt(Integer::intValue)
+                    .toArray();
         }
     }
 }
