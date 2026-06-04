@@ -1,5 +1,8 @@
 package Lv3;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 /*
 숫자 게임
 제출 내역
@@ -31,5 +34,30 @@ B 팀원들을 4번, 2번, 3번, 1번의 순서대로 출전시킬 경우 팀원
 B 팀원들을 어떤 순서로 출전시켜도 B팀의 승점은 0점입니다.
  */
 public class 숫자_게임 {
+    static void main() {
+        int[] A = new int[] {
+                5,1,3,7
+        };
 
+        int[] B = new int[] {
+                2,2,6,8
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(A,B));
+    }
+
+    private static class Solve {
+        private int ans;
+
+        public int solution(int[] A, int[] B) {
+            init_setting(A,B);
+
+            return ans;
+        }
+
+        private void init_setting(int[] A, int[] B) {
+
+        }
+    }
 }
