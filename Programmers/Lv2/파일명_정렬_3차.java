@@ -52,6 +52,12 @@ files는 1000 개 이하의 파일명을 포함하는 문자열 배열이다.
 입력: ["F-5 Freedom Fighter", "B-50 Superfortress", "A-10 Thunderbolt II", "F-14 Tomcat"]
 출력: ["A-10 Thunderbolt II", "B-50 Superfortress", "F-5 Freedom Fighter", "F-14 Tomcat"]
  */
+/*
+알고리즘 핵심
+정렬 + 구현
+1. 입력으로 주어진 문자열을 HEAD,NUMBER로 문자열을 구분하고 사전순, 오름차순 정렬한다.
+2. HEAD, NUMBER를 구분하기 위해 Pattern, Matcher를 사용하여 숫자인 문자열의 인덱스를 찾아서 구분한다.
+ */
 public class 파일명_정렬_3차 {
     static void main() {
         String[] files = new String[] {
