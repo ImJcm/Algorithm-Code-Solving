@@ -69,11 +69,45 @@ public class 파일명_정렬_3차 {
         public String[] solution(String[] files) {
             init_setting(files);
 
+            file_sort(files);
+
             return ans;
         }
 
-        private void init_setting(String[] files) {
+        private void file_sort(String[] files) {
+            ans = Arrays.stream(files)
+                    .sorted(new Comparator<String>() {
+                        @Override
+                        public int compare(String o1, String o2) {
+                            int[] o1_idx = numberIndexOf(o1);
+                            int[] o2_idx = numberIndexOf(o2);
 
+                            String o1_head = o1.substring(0, o1_idx[0]).toLowerCase();
+                            int o1_num = Integer.parseInt(o1.substring(o1_idx[0], o1_idx[1]));
+
+                            String o2_head = o2.substring(0, o2_idx[0]).toLowerCase();
+                            int o2_num = Integer.parseInt(o2.substring(o2_idx[0], o2_idx[1]));
+
+                            int headCompare = o1_head.compareTo(o2_head);
+                            if (headCompare != 0) return headCompare;
+
+                            return Integer.compare(o1_num, o2_num);
+                        }
+
+                        private int[] numberIndexOf(String s) {
+                            Pattern pattern = Pattern.compile("\\d+");
+                            Matcher matcher = pattern.matcher(s);
+                            if (matcher.find()) {
+                                return new int[]{matcher.start(), matcher.end()};
+                            }
+                            return new int[]{s.length(), s.length()};
+                        }
+                    })
+                    .toArray(String[]::new);
+        }
+
+        private void init_setting(String[] files) {
+            ans = new String[files.length];
         }
     }
 }
