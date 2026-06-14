@@ -1,5 +1,8 @@
 package Lv3;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 /*
 단속카메라
 제출 내역
@@ -24,6 +27,10 @@ routes	return
 
 -15 지점에 카메라를 설치하면 첫 번째, 세 번째 차량이 카메라를 만납니다.
  */
+/*
+알고리즘 핵심
+
+ */
 public class 단속카메라 {
     static void main() {
         int[][] routes = new int[][] {
@@ -35,16 +42,76 @@ public class 단속카메라 {
     }
 
     private static class Solve {
+        private class section {
+            int section;
+            int car_flow;
+
+            public section(int section, int car_flow) {
+                this.section = section;
+                this.car_flow = car_flow;
+            }
+        }
+        private final int ROUTE = 30000;
         private int ans;
+        private int[][] sorted_routes;
+        private boolean[] cars;
+        private section[] cars_in_section;
 
         public int solution(int[][] routes) {
             init_setting(routes);
 
+            check_car_flow(sorted_routes, cars_in_section);
+
+            place_camera(sorted_routes, cars_in_section,cars);
+
             return ans;
         }
 
-        private void init_setting(int[][] routes) {
+        private void place_camera(int[][] sorted_routes, section[] cars_in_section, boolean[] cars) {
+            for(section s : cars_in_section) {
+                if(s.car_flow == 0) continue;
+                int sec = s.section;
+                int cnt = 0;
 
+                for(int i = 0; i < sorted_routes.length; i++) {
+                    if(sorted_routes[i][0] + ROUTE > sec) break;
+                    if(sorted_routes[i][0] + ROUTE <= sec && sec <= sorted_routes[i][1] + ROUTE) {
+                        if(cars[i]) break;
+                        cars[i] = true;
+                        cnt++;
+                    }
+                }
+
+                if(cnt == s.car_flow) ans++;
+            }
+        }
+
+        private void check_car_flow(int[][] sorted_routes, section[] cars_in_section) {
+            for(int[] r : sorted_routes) {
+                int in = r[0] + ROUTE;
+                int out = r[1] + ROUTE;
+
+                for(int i = in; i <= out; i++) {
+                    cars_in_section[i].car_flow++;
+                }
+            }
+
+            Arrays.sort(cars_in_section, (s1,s2) -> s2.car_flow - s1.car_flow);
+        }
+
+        private void init_setting(int[][] routes) {
+            ans = 0;
+
+            cars = new boolean[routes.length];
+            cars_in_section = new section[ROUTE * 2 + 1];
+
+            Arrays.setAll(cars_in_section, i -> new section(i,0));
+
+            sorted_routes = routes.clone();
+
+            Arrays.sort(sorted_routes, Comparator.comparingInt(o -> o[0]));
         }
     }
 }
+
+
