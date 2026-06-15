@@ -29,7 +29,17 @@ routes	return
  */
 /*
 알고리즘 핵심
+Greedy
+1. 차량의 들어오는 지점을 기준으로 오름차순 정렬한다.
+2. 가장 왼쪽의 차량의 출구를 지점으로 시작하여 다음 차량의 출입 지점과 비교하여 카메라 설치를 결정한다.
+출구 지점보다 출입 지점이 크거나 같은 경우, 다음 차량은 출구 지점의 카메라로 발견이 가능하므로 다음 차량의 출입 지점으로 2번 과정을 수행한다.
+출구 지점보다 출입 지점이 작은 경우, 이전 차량의 출구 지점에 카메라를 설치하고 출입 지점의 차량의 출구 지점에 카메라 지점으로 설정한다.
 
+처음 접근으로 입구 지점을 기준으로 오름차순 정렬하고, 지점 별로 존재하는 차량의 수를 저장하는 배열을 만들고 해당 배열의 값을 내림차순 정렬하여
+해당 지점에 카메라를 배치하여 해당 지점에 해당하는 차량을 지우는 형태로 구성하였는데 잘못된 방법이였다.
+그래서, 접근 방법을 참고하였다.
+
+이 문제의 핵심은 입구 지점이 빠른 순서의 차량의 출구 지점을 기준으로 카메라를 설치하여 다른 차량이 들어간 경우를 빼는 것으로 탐욕 알고리즘 구조이다.
  */
 public class 단속카메라 {
     static void main() {
@@ -42,74 +52,35 @@ public class 단속카메라 {
     }
 
     private static class Solve {
-        private class section {
-            int section;
-            int car_flow;
-
-            public section(int section, int car_flow) {
-                this.section = section;
-                this.car_flow = car_flow;
-            }
-        }
-        private final int ROUTE = 30000;
         private int ans;
         private int[][] sorted_routes;
-        private boolean[] cars;
-        private section[] cars_in_section;
 
         public int solution(int[][] routes) {
             init_setting(routes);
 
-            check_car_flow(sorted_routes, cars_in_section);
-
-            place_camera(sorted_routes, cars_in_section,cars);
+            place_camera(sorted_routes);
 
             return ans;
         }
 
-        private void place_camera(int[][] sorted_routes, section[] cars_in_section, boolean[] cars) {
-            for(section s : cars_in_section) {
-                if(s.car_flow == 0) continue;
-                int sec = s.section;
-                int cnt = 0;
+        private void place_camera(int[][] sortedRoutes) {
+            ans = 1;
+            int cam_pos = sortedRoutes[0][1];
 
-                for(int i = 0; i < sorted_routes.length; i++) {
-                    if(sorted_routes[i][0] + ROUTE > sec) break;
-                    if(sorted_routes[i][0] + ROUTE <= sec && sec <= sorted_routes[i][1] + ROUTE) {
-                        if(cars[i]) break;
-                        cars[i] = true;
-                        cnt++;
-                    }
-                }
-
-                if(cnt == s.car_flow) ans++;
-            }
-        }
-
-        private void check_car_flow(int[][] sorted_routes, section[] cars_in_section) {
-            for(int[] r : sorted_routes) {
-                int in = r[0] + ROUTE;
-                int out = r[1] + ROUTE;
-
-                for(int i = in; i <= out; i++) {
-                    cars_in_section[i].car_flow++;
+            for(int i = 1; i < sortedRoutes.length; i++) {
+                if(sortedRoutes[i][0] > cam_pos) {
+                    ans++;
+                    cam_pos = sortedRoutes[i][1];
                 }
             }
-
-            Arrays.sort(cars_in_section, (s1,s2) -> s2.car_flow - s1.car_flow);
         }
 
         private void init_setting(int[][] routes) {
             ans = 0;
 
-            cars = new boolean[routes.length];
-            cars_in_section = new section[ROUTE * 2 + 1];
-
-            Arrays.setAll(cars_in_section, i -> new section(i,0));
-
-            sorted_routes = routes.clone();
-
-            Arrays.sort(sorted_routes, Comparator.comparingInt(o -> o[0]));
+            sorted_routes = Arrays.copyOf(routes, routes.length);
+            Arrays.sort(sorted_routes, Comparator.comparingInt(route -> route[0]));
+            //Arrays.sort(sorted_routes, (a,b) -> a[0] - b[0]);
         }
     }
 }
