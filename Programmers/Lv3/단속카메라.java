@@ -79,7 +79,7 @@ public class 단속카메라 {
             ans = 0;
 
             sorted_routes = Arrays.copyOf(routes, routes.length);
-            Arrays.sort(sorted_routes, Comparator.comparingInt(route -> route[0]));
+            Arrays.sort(sorted_routes, Comparator.comparingInt(route -> route[1]));
             //Arrays.sort(sorted_routes, (a,b) -> a[0] - b[0]);
         }
     }
