@@ -40,6 +40,12 @@ Greedy
 그래서, 접근 방법을 참고하였다.
 
 이 문제의 핵심은 입구 지점이 빠른 순서의 차량의 출구 지점을 기준으로 카메라를 설치하여 다른 차량이 들어간 경우를 빼는 것으로 탐욕 알고리즘 구조이다.
+
+issue : Efficiency#4 - time out
+Arrays.sort는 binarySort를 지원하기 때문에 O(NlogN)이지만, 평균과 최악의 경우인 O(N^2)이므로 정렬하는 과정에서 시간 초과가 발생했을 가능성이 높다.
+
+시간 초과 발생 이유 : 문제에서는 주어지지 않은 조건 : (입구 < 출구) or (입구 > 출구) 두 가지 경우를 고려해야 한다.
+
  */
 public class 단속카메라 {
     static void main() {
@@ -79,8 +85,15 @@ public class 단속카메라 {
             ans = 0;
 
             sorted_routes = Arrays.copyOf(routes, routes.length);
-            Arrays.sort(sorted_routes, Comparator.comparingInt(route -> route[1]));
-            //Arrays.sort(sorted_routes, (a,b) -> a[0] - b[0]);
+            Arrays.sort(sorted_routes, new Comparator<int[]>() {
+                @Override
+                public int compare(int[] o1, int[] o2) {
+                    return o1[1] == o2[1] ? o1[0] - o2[0] : o1[1] - o2[1];
+                }
+            });
+            //Arrays.sort(sorted_routes, Comparator.comparingInt(route -> route[1])); // binarySort
+            //Arrays.sort(sorted_routes, Comparator.comparing(route -> route[1]));
+            //Arrays.sort(sorted_routes, (a,b) -> a[1] - b[1]);
         }
     }
 }
