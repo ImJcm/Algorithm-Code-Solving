@@ -42,15 +42,37 @@ Greedy
 이 문제의 핵심은 입구 지점이 빠른 순서의 차량의 출구 지점을 기준으로 카메라를 설치하여 다른 차량이 들어간 경우를 빼는 것으로 탐욕 알고리즘 구조이다.
 
 issue : Efficiency#4 - time out
-Arrays.sort는 binarySort를 지원하기 때문에 O(NlogN)이지만, 평균과 최악의 경우인 O(N^2)이므로 정렬하는 과정에서 시간 초과가 발생했을 가능성이 높다.
+가능성
+1. Arrays.sort는 binarySort를 지원하기 때문에 O(NlogN)이지만, 평균과 최악의 경우인 O(N^2)이므로 정렬하는 과정에서 시간 초과가 발생했을 가능성이 높다.
+2. 문제에서는 주어지지 않은 조건 : (입구 < 출구) or (입구 > 출구) 두 가지 경우를 고려해야 한다.
+-> (입구 > 출구)인 경우를 문제에서는 가정하는 듯하다.
 
-시간 초과 발생 이유 : 문제에서는 주어지지 않은 조건 : (입구 < 출구) or (입구 > 출구) 두 가지 경우를 고려해야 한다.
+출구를 기준으로 오름차순한 경우, 효율성#4에서 시간초과가 발생하지만, 출구 기준 오름차순 + 같을 경우 입구 기준 오름차순으로 할 시,
+통과되는 현상이 발생한다.
+출구지점을 오름차순만 적용한 테스트와 출구지점 오름차순 + 출입지점 오름차순인 테스트의 정확성 테스트에 걸린 시간은 약 2ms차이가 나는 것으로 확인했다.
 
+테스트#2
+아무리 생각해봐도 출구 지점을 기준으로 오름차순한 테스트에 출입 지점은 아무런 상관이 없는데 테스트에 걸린시간이 차이가 나는 것이
+이해가 가지않았다.
+그래서 Comparator의 부분을 수정해보는 테스트를 진행하였다.
+기존 : Arrays.sort(routes, Comparator.comparingInt(route -> route[1]));
+수정 : Arrays.sort(routes, new Comparator<int[]>() {
+                @Override
+                public int compare(int[] o1, int[] o2) {
+                    return o1[1] - o2[1];
+                    //return o1[1] == o2[1] ? o1[0] - o2[0] : o1[1] - o2[1];
+                }
+            });
+new Comparator로 지정한 결과 이 부분이 원인인 것을 확인하였다.
+람다식을 사용하는 경우 내부적으로 처리과정에서 시간을 사용하는 것이다.
  */
 public class 단속카메라 {
     static void main() {
         int[][] routes = new int[][] {
-                {-20,-15},{-14,-5},{-18,-13},{-5,-3}
+                //{-20,-15},{-14,-5},{-18,-13},{-5,-3}
+                //{1,5},{8,5},{6,5},{7,5} // > 이런 케이스는 없다고 가정하는 듯?
+                //{1,5},{4,5},{2,5},{3,5}
+                {0,12},{1,12},{2,12},{3,12},{5,6},{6,12},{10,12},{9,12}
         };
 
         Solve task = new Solve();
@@ -70,13 +92,16 @@ public class 단속카메라 {
         }
 
         private void place_camera(int[][] sortedRoutes) {
-            ans = 1;
-            int cam_pos = sortedRoutes[0][1];
+            ans = 0;
+            int cam_pos = -30001;
 
-            for(int i = 1; i < sortedRoutes.length; i++) {
-                if(sortedRoutes[i][0] > cam_pos) {
+            for(int i = 0; i < sortedRoutes.length; i++) {
+                int s = sortedRoutes[0][0];
+                int e = sortedRoutes[0][1];
+
+                if(s > cam_pos) {
                     ans++;
-                    cam_pos = sortedRoutes[i][1];
+                    cam_pos = e;
                 }
             }
         }
@@ -88,9 +113,10 @@ public class 단속카메라 {
             Arrays.sort(sorted_routes, new Comparator<int[]>() {
                 @Override
                 public int compare(int[] o1, int[] o2) {
-                    return o1[1] == o2[1] ? o1[0] - o2[0] : o1[1] - o2[1];
+                    return o1[1] - o2[1];
                 }
             });
+            // 람다식의 경우, 시간소모가 크다.
             //Arrays.sort(sorted_routes, Comparator.comparingInt(route -> route[1])); // binarySort
             //Arrays.sort(sorted_routes, Comparator.comparing(route -> route[1]));
             //Arrays.sort(sorted_routes, (a,b) -> a[1] - b[1]);
