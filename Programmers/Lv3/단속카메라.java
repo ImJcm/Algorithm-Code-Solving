@@ -97,8 +97,8 @@ public class 단속카메라 {
             int cam_pos = -30001;
 
             for(int i = 0; i < sortedRoutes.length; i++) {
-                int s = sortedRoutes[0][0];
-                int e = sortedRoutes[0][1];
+                int s = sortedRoutes[i][0];
+                int e = sortedRoutes[i][1];
 
                 if(s > cam_pos) {
                     ans++;
