@@ -71,6 +71,13 @@ record	result
 입출력 예 #1
 문제의 설명과 같다.
  */
+/*
+알고리즘 핵심
+자료구조(Map) + 구현
+1. <uid, name>의 <Key, value> 형태의 Map uid 테이블을 만든다.
+2. record로 주어지는 명령어를 분리하여 Enter, Leave만을 cmd, uid 형태로 저장한다.
+3. 2번에서 저장된 log를 uid에 해당하는 name으로 변경하여 출력한다.
+ */
 public class 오픈채팅방 {
     static void main() {
         String[] record = new String[] {
