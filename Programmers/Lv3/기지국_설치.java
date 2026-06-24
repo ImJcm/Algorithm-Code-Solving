@@ -1,5 +1,8 @@
 package Lv3;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 기지국 설치
 제출 내역
@@ -45,13 +48,18 @@ N	stations	W	answer
 이미지 - 문제의 링크를 통해 참고.
  */
 /*
-
+알고리즘 핵심
+수학 + 구현
+1. 기존의 설치된 기지국을 기준으로 두개의 기지국의 사이의 전파가 통하지 않는 구간의 수를 구한다.
+2. 해당 구간을 2 * W + 1로 나누고, 나머지 값을 올림하여 기지국의 수를 카운팅한다.
  */
 public class 기지국_설치 {
     static void main() {
-        int N = 11;
-        int[] stations = new int[] {4,11};
-        int W = 1;
+        int N = 16;
+        int[] stations = new int[] {
+                1,3
+        };
+        int W = 2;
 
         Solve task = new Solve();
         System.out.println(task.solution(N, stations, W));
@@ -59,24 +67,35 @@ public class 기지국_설치 {
 
     private static class Solve {
         private int answer;
-        private boolean[] visited;
+        private int range;
 
         public int solution(int N, int[] stations, int W) {
-            init_setting(N,stations,W);
+            init_setting(N,W);
+
+            build_stations(N,stations,W);
 
             return answer;
         }
 
-        private void init_setting(int N, int[] stations, int W) {
-            answer = 0;
-            visited = new boolean[N + 1];
+        private void build_stations(int N, int[] stations, int W) {
+            int remain_section = 0;
 
-            for(int s : stations) {
-                visited[s] = true;
+            remain_section = Math.max(0, stations[0] - W - 1);
+            answer += (remain_section / range) + (remain_section % range == 0 ? 0 : 1);
 
-                for(int i = 1; i <= W && s - i > 0; i++) visited[s - i] = true;
-                for(int i = 1; i <= W && s + i <= N; i++) visited[s + i] = true;
+            remain_section = Math.max(0, N - stations[stations.length - 1] - W);
+            answer += (remain_section / range) + (remain_section % range == 0 ? 0 : 1);
+
+            for(int i = 1; i < stations.length; i++) {
+                remain_section = (stations[i] - W) - (stations[i - 1] + W + 1);
+                if(remain_section < 0) continue;
+                answer += (remain_section / range) + (remain_section % range == 0 ? 0 : 1);
             }
+        }
+
+        private void init_setting(int N, int W) {
+            answer = 0;
+            range = 2 * W + 1;
         }
     }
 }
