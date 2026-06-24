@@ -1,8 +1,5 @@
 package Lv3;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 /*
 기지국 설치
 제출 내역
