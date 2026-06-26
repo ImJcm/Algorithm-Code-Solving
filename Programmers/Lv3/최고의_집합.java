@@ -40,29 +40,55 @@ n	s	result
 
 그중 각 원소의 곱이 최대인 { 4, 4 }가 최고의 집합입니다.
  */
+/*
+알고리즘 핵심
+구현
+1. 문제에서 주어지는 요구사항으로 s,n이 주어질 때, 최고의 집합은 오름차순으로 정렬된 요소들의 합이 s를 만족하며, 모든 곱이 최대이어야 하므로
+각 요소들 간의 차이가 최소이어여 한다.
+2. (s / n)의 값이 요소의 최소 요소이고, (s % n)의 값이 각 요소에서 +1할 수 있는 횟수이다.
+이유 : n = 2, s = 9) (s / n) = 4, (s % n) = 1 => [4,4] -> [4,5] 오름차순의 조건을 만족해야 하므로, 마지막 요소 증가
+n = 3, s = 14) (s / n) = 4, (s % n) = 2 => [4,4,4] -> [4,5,5]
+이때, (s % n)의 값을 마지막 요소에 모두 더하는 경우가 크지 않는가?
+=> (n = 3, s = 14) [4,5,5] vs [4,4,6] = 100 vs 96
+=> (n = 4, s = 19) [4,5,5,5] vs [4,4,4,7] vs [4,4,5,6] = 500 vs 448 vs 480
+즉, 요소간의 차이가 적을수록 곱은 크다.
+ */
 public class 최고의_집합 {
     static void main() {
         int n = 2;
-        int s = 9;
+        int s = 8;
 
         Solve task = new Solve();
         System.out.println(Arrays.toString(task.solution(n,s)));
     }
 
     private static class Solve {
-        private int N;
+        private int minimum,up_cnt;
         private int[] ans;
 
         public int[] solution(int n, int s) {
             init_setting(n,s);
 
+            make_set(n, minimum, up_cnt);
+
             return ans;
+        }
+
+        private void make_set(int n, int mini, int uc) {
+            if(mini < 1) ans = new int[] {-1};
+            else {
+                for(int i = 0; i < n; i++) {
+                    if(i >= n - uc) ans[i] = mini + 1;
+                    else ans[i] = mini;
+                }
+            }
         }
 
         private void init_setting(int n, int s) {
             ans = new int[n];
 
-            N = n;
+            minimum = (s / n);
+            up_cnt = (s % n);
         }
     }
 
