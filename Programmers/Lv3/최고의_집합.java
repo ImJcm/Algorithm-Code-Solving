@@ -50,27 +50,66 @@ public class 최고의_집합 {
     }
 
     private static class Solve {
-        private long result;
         private int N;
         private int[] ans;
 
         public int[] solution(int n, int s) {
-            init_setting(n);
-
-            make_set(n,s,0,1);
+            init_setting(n,s);
 
             return ans;
         }
 
-        private void make_set(int n, int s, int p, int ps) {
-            if(n == N) {
+        private void init_setting(int n, int s) {
+            ans = new int[n];
 
+            N = n;
+        }
+    }
+
+    /*
+        wrong solve : time out
+     */
+    private static class Wrong_Solve {
+        private long result;
+        private int N;
+        private int[] ans,set;
+
+        public int[] solution(int n, int s) {
+            init_setting(n,s);
+
+            make_set(0,s,1,0,set);
+
+            return result == -1 ? new int[] {-1} : ans;
+        }
+
+        private void make_set(int n, int s, int p, int ps, int[] set) {
+            if(n == N) {
+                if(s == ps) {
+                    long res = 1;
+                    for(int i = 0; i < set.length; i++) {
+                        res *= set[i];
+                    }
+
+                    if(res > result) {
+                        result = res;
+                        ans = Arrays.copyOf(set, set.length);
+                    }
+                }
+                return;
+            }
+
+            for(int i = p; i <= s - ps; i++) {
+                if(i + ps > s) break;
+
+                set[n] = i;
+                make_set(n + 1, s, i, i + ps, set);
             }
         }
 
-        private void init_setting(int n) {
-            result = 0;
+        private void init_setting(int n, int s) {
+            result = -1;
             ans = new int[n];
+            set = new int[n];
 
             N = n;
         }
