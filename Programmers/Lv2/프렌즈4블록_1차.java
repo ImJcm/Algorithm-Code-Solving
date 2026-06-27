@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /*
 [1차] 프렌즈4블록
 제출 내역
@@ -49,6 +52,78 @@ m	n	board	answer
  */
 public class 프렌즈4블록_1차 {
     static void main() {
+        int m = 6, n = 6;
+        String[] board = new String[] {
+                //"CCBDE", "AAADE", "AAABF", "CCBBF"
+                "TTTANT", "RRFACC", "RRRFCC", "TRRRAA", "TTMMMF", "TMMTTJ"
+        };
 
+        Solve task = new Solve();
+        System.out.println(task.solution(m,n,board));
+    }
+
+    private static class Solve {
+        private class Pos {
+            int m,n;
+
+            public  Pos(int m, int n) {
+                this.m = m;
+                this.n = n;
+            }
+        }
+        private int ans;
+        private ArrayList<Pos> removed;
+        private char[][] boards;
+        private boolean[][] visited;
+
+        public int solution(int m, int n, String[] board) {
+            change_data_structure(board);
+
+            init_setting(m,n);
+
+            check_block(0,0, visited, boards);
+
+            remove_block(removed, boards);
+
+            return ans;
+        }
+
+        private void remove_block(ArrayList<Pos> removed, char[][] boards) {
+            for(Pos p : removed) {
+                int m = p.m, n = p.n;
+
+                boards[m][n] = boards[m][n + 1] = boards[m + 1][n] = boards[m + 1][n + 1] = ' ';
+            }
+        }
+
+        private void check_block(int m, int n, boolean[][] visited, char[][] boards) {
+            char ch = boards[m][n];
+            int cnt = ch == ' ' ? 0 : 1;
+
+            if(visited[m][n]) return;
+            visited[m][n] = true;
+
+            if(m + 1 >= boards.length || n + 1 >= boards[0].length) return;
+
+            cnt += (boards[m + 1][n] == ch ? 1 : 0);
+            check_block(m + 1, n, visited, boards);
+
+            cnt += (boards[m][n + 1] == ch ? 1 : 0);
+            check_block(m, n + 1, visited, boards);
+
+            cnt += (boards[m + 1][n + 1] == ch ? 1 : 0);
+            check_block(m + 1, n + 1, visited, boards);
+
+            if(cnt == 4) removed.add(new Pos(m,n));
+        }
+
+        private void init_setting(int m, int n) {
+            removed = new ArrayList<>();
+            visited = new boolean[m][n];
+        }
+
+        private void change_data_structure(String[] board) {
+            boards = Arrays.stream(board).map(String::toCharArray).toArray(char[][]::new);
+        }
     }
 }
