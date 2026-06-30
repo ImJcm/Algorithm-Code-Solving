@@ -75,24 +75,53 @@ public class 프렌즈4블록_1차 {
         private ArrayList<Pos> removed;
         private char[][] boards;
         private boolean[][] visited;
+        private int[][] direction = {{0,1},{1,0},{1,1}};
 
         public int solution(int m, int n, String[] board) {
             change_data_structure(board);
 
-            init_setting(m,n);
+            while(true) {
+                init_setting(m,n);
 
-            check_block(0,0, visited, boards);
+                check_block(0,0, visited, boards);
 
-            remove_block(removed, boards);
+                if(removed.isEmpty()) break;
+
+                remove_block(removed, boards);
+
+                rebase_block(boards);
+            }
 
             return ans;
+        }
+
+        private void rebase_block(char[][] boards) {
+            for(int i = 0; i < boards[0].length; i++) {
+                for(int j = boards.length - 1; j > 0 ; j--) {
+                    if(boards[j][i] == ' ') {
+                        int idx = j - 1;
+                        while(idx >= 0 && boards[idx][i] == ' ') idx--;
+                        if(idx < 0) break;
+                        else {
+                            boards[j][i] = boards[idx][i];
+                            boards[idx][i] = ' ';
+                        }
+                    }
+                }
+            }
         }
 
         private void remove_block(ArrayList<Pos> removed, char[][] boards) {
             for(Pos p : removed) {
                 int m = p.m, n = p.n;
 
-                boards[m][n] = boards[m][n + 1] = boards[m + 1][n] = boards[m + 1][n + 1] = ' ';
+                ans += (boards[m][n] == ' ' ? 0 : 1);
+                boards[m][n] = ' ';
+
+                for(int[] d : direction) {
+                    ans += boards[m + d[0]][n + d[1]] == ' ' ? 0 : 1;
+                    boards[m + d[0]][n + d[1]] = ' ';
+                }
             }
         }
 
@@ -105,14 +134,10 @@ public class 프렌즈4블록_1차 {
 
             if(m + 1 >= boards.length || n + 1 >= boards[0].length) return;
 
-            cnt += (boards[m + 1][n] == ch ? 1 : 0);
-            check_block(m + 1, n, visited, boards);
-
-            cnt += (boards[m][n + 1] == ch ? 1 : 0);
-            check_block(m, n + 1, visited, boards);
-
-            cnt += (boards[m + 1][n + 1] == ch ? 1 : 0);
-            check_block(m + 1, n + 1, visited, boards);
+            for(int[] d : direction) {
+                cnt += (boards[m + d[0]][n + d[1]] == ch ? 1 : 0);
+                check_block(m + d[0], n + d[1], visited, boards);
+            }
 
             if(cnt == 4) removed.add(new Pos(m,n));
         }
