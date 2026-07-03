@@ -41,6 +41,7 @@ public class 가장_큰_수 {
         System.out.println(task.solution(numbers));
     }
 
+    // TestCase #11 - wrong solve
     private static class Solve {
         private StringBuilder ans;
         private String[] str_arr;
