@@ -24,10 +24,18 @@ numbers	return
 [3, 30, 34, 5, 9]	"9534330"
 ※ 공지 - 2021년 10월 20일 테스트케이스가 추가되었습니다.
  */
+/*
+알고리즘 핵심
+정렬
+1. int[] 타입으로 넘어온 데이터를 가장 큰 수로 만들기 위해 String타입의 정렬 기준 + 내림차순을 적용해야 한다.
+2. 내림차순 정렬 과정에서 String타입의 경우, 앞자리가 같은 경우 자릿수가 작은 수가 앞으로 나오기 때문에 추가적인 조건이 필요하다.
+2-a. 두 문자열의 앞자리 수가 같은 경우, 두개의 문자열을 번갈아 덧붙힌 두개의 문자열을 비교하여 큰수가 앞으로 나올 수 있도록 한다.
+-> s1 = o1 + o2, s2 = o2 + o1) [3,30] => s1 = 330, s2 = 303, 따라서, 더 큰 수 + 내림차순 => s2.compareTo(s1);
+ */
 public class 가장_큰_수 {
     static void main() {
         int[] numbers = new int[] {
-                3, 30, 34, 5, 9
+                300, 30, 34, 5, 9
         };
 
         Solve task = new Solve();
@@ -35,6 +43,38 @@ public class 가장_큰_수 {
     }
 
     private static class Solve {
+        private StringBuilder ans;
+        private String[] str_arr;
 
+        public String solution(int[] numbers) {
+            init_setting(numbers);
+
+            search_most_number(str_arr);
+
+            return ans.toString();
+        }
+
+        private void search_most_number(String[] numbers) {
+            Arrays.sort(numbers, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    String s1 = o1 + o2;
+                    String s2 = o2 + o1;
+                    return s2.compareTo(s1);
+                }
+            });
+
+            for(String s : numbers) {
+                ans.append(s);
+            }
+        }
+
+        private void init_setting(int[] numbers) {
+            ans = new StringBuilder();
+
+            str_arr = Arrays.stream(numbers)
+                    .mapToObj(Integer::toString)
+                    .toArray(String[]::new);
+        }
     }
 }
