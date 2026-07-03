@@ -30,11 +30,15 @@ numbers	return
 2. 내림차순 정렬 과정에서 String타입의 경우, 앞자리가 같은 경우 자릿수가 작은 수가 앞으로 나오기 때문에 추가적인 조건이 필요하다.
 2-a. 두 문자열의 앞자리 수가 같은 경우, 두개의 문자열을 번갈아 덧붙힌 두개의 문자열을 비교하여 큰수가 앞으로 나올 수 있도록 한다.
 -> s1 = o1 + o2, s2 = o2 + o1) [3,30] => s1 = 330, s2 = 303, 따라서, 더 큰 수 + 내림차순 => s2.compareTo(s1);
+
+TestCase #11 - input) 0,0,0,0,... 모든 입력이 0일 때, 출력은 "0"이어야 한다.
+따라서, 가장 앞자리의 수가 0이라면 모든 수는 0이므로 출력을 0으로 만드는 조건을 추가한다.
  */
 public class 가장_큰_수 {
     static void main() {
         int[] numbers = new int[] {
-                300, 30, 34, 5, 9
+                //3, 30, 34, 5, 9
+                0,0,0,0
         };
 
         Solve task = new Solve();
@@ -67,6 +71,8 @@ public class 가장_큰_수 {
             for(String s : numbers) {
                 ans.append(s);
             }
+
+            if(ans.charAt(0) == '0') ans = new StringBuilder("0");
         }
 
         private void init_setting(int[] numbers) {
