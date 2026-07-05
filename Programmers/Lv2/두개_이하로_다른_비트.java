@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.Arrays;
+
 /*
 2개 이하로 다른 비트
 제출 내역
@@ -36,6 +38,43 @@ numbers	result
 // 실제 문제 제목 : 2개 이하로 다른 비트
 public class 두개_이하로_다른_비트 {
     static void main() {
+        long[] numbers = new long[] {
+                2,7
+        };
 
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(numbers)));
+    }
+
+    private static class Solve {
+        private long[] ans;
+
+        public long[] solution(long[] numbers) {
+            init_setting(numbers);
+
+            for(int i = 0; i < numbers.length; i++) {
+                ans[i] = f(numbers[i]);
+            }
+
+            return ans;
+        }
+
+        private long f(long num) {
+            long res = num;
+
+            String bs = "0" + Long.toBinaryString(res);
+
+            for(int i = bs.length() - 1; i > 0; i--) {
+                if(bs.charAt(i) == '0' || (bs.charAt(i) == '1' && bs.charAt(i - 1) == '0')) {
+                    res += (long) Math.pow(2, bs.length() - i - 1);
+                    break;
+                }
+            }
+            return res;
+        }
+
+        private void init_setting(long[] numbers) {
+            ans = new  long[numbers.length];
+        }
     }
 }
