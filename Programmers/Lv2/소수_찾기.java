@@ -39,11 +39,15 @@ public class 소수_찾기 {
         public int solution(String numbers) {
             init_setting(numbers);
 
+            // 에레스토테네스의 체 = 소수 배열 구하기
+
+            // DFS or BFS로 numbers로 만들 수 있는 숫자인 문자열 구하고 소수 판별
+
             return ans;
         }
 
         private void init_setting(String numbers) {
-            
+
         }
     }
 }
