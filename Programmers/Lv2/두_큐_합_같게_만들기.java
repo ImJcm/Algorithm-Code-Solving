@@ -3,7 +3,6 @@ package Lv2;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /*
@@ -51,15 +50,70 @@ queue1	queue2	result
 public class 두_큐_합_같게_만들기 {
     static void main() {
         int[] queue_1 = new int[] {
-                3, 2, 7, 2
+                //3, 2, 7, 2
+                //1,2,1,2
+                1,1
         };
         int[] queue_2 = new int[] {
-                4, 6, 5, 1
+                //4, 6, 5, 1
+                //1,10,1,2
+                1,5
         };
 
         Solve task = new Solve();
         System.out.println(task.solution(queue_1, queue_2));
     }
 
-    
+    /*
+        Wrong Solve : #11, #28 => time out
+                      #20, #21, #23, #24 => failure
+     */
+    private static class Solve {
+        private int ans;
+        private long q1_sum, q2_sum, target;
+        private Queue<Integer> q1,q2;
+
+        public int solution(int[] queue_1, int[] queue_2) {
+            init_setting(queue_1,queue_2);
+
+            make_same_sum(q1,q2);
+
+            return ans;
+        }
+
+        private void make_same_sum(Queue<Integer> q1, Queue<Integer> q2) {
+            while(true) {
+                int a = q1.isEmpty() ? 0 : q1.peek();
+                int b = q2.isEmpty() ? 0 : q2.peek();
+
+                if(a > target || b > target || (Math.min(q1_sum, q2_sum) > target || Math.max(q1_sum,q2_sum) < target)) ans = -1;
+                if((q1_sum == q2_sum && target == q1_sum) || ans == -1) return;
+
+                if(q1_sum > q2_sum) {
+                    q1.poll();
+                    q2.add(a);
+                    q1_sum -= a;
+                    q2_sum += a;
+                } else {
+                    q2.poll();
+                    q1.add(b);
+                    q1_sum += b;
+                    q2_sum -= b;
+                }
+                ans++;
+            }
+        }
+
+        private void init_setting(int[] queue_1, int[] queue_2) {
+            ans = 0;
+            q1_sum = Arrays.stream(queue_1).sum();
+            q2_sum = Arrays.stream(queue_2).sum();
+            long sum = q1_sum + q2_sum;
+            if(sum % 2 != 0) ans = -1;
+            target =  sum / 2;
+
+            q1 = Arrays.stream(queue_1).boxed().collect(Collectors.toCollection(LinkedList::new));
+            q2 = Arrays.stream(queue_2).boxed().collect(Collectors.toCollection(LinkedList::new));
+        }
+    }
 }
