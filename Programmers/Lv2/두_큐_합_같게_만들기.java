@@ -50,14 +50,16 @@ queue1	queue2	result
 public class 두_큐_합_같게_만들기 {
     static void main() {
         int[] queue_1 = new int[] {
+                1,1,1,1
                 //3, 2, 7, 2
                 //1,2,1,2
-                1,1
+                //100000000,100000000
         };
         int[] queue_2 = new int[] {
+                1,1,7,1
                 //4, 6, 5, 1
                 //1,10,1,2
-                1,5
+                //100000000,10000000
         };
 
         Solve task = new Solve();
@@ -66,10 +68,17 @@ public class 두_큐_합_같게_만들기 {
 
     /*
         Wrong Solve : #11, #28 => time out
+                        - 이유 : 불가능한 경우를 추가하지 않았다.
+                        - 결론 : ans의 값이 q1,q2의 배열 길이의 합만큼 넘어가는 경우는 불가능한 경우이므로 q1_size * 2가 넘는 경우 조건 추가하였다.
                       #20, #21, #23, #24 => failure
+                        - 이유 : q1_sum, q2_sum을 구할 때, sum()의 메서드는 int[]타입의 배열이므로 int를 반환하여 오류가 발생
+                        - 결론 : q1, q2 배열을 int[] -> long[]으로 변환하여 sum을 수행하여 long타입 결과를 반환받는다.
+                      #1 => failure (위 문제를 해결한 코드에서 발생한 실패)
+                        - 이유 : limit의 횟수를 q1_size * 2만큼만 설정했을 때, 반례 [1,1,1,1], [1,1,7,1]
+                        - 결론 : limit의 횟수를 q1_size * 3만큼 설정하여 늘렸다.
      */
     private static class Solve {
-        private int ans;
+        private int ans, limit;
         private long q1_sum, q2_sum, target;
         private Queue<Integer> q1,q2;
 
@@ -86,7 +95,7 @@ public class 두_큐_합_같게_만들기 {
                 int a = q1.isEmpty() ? 0 : q1.peek();
                 int b = q2.isEmpty() ? 0 : q2.peek();
 
-                if(a > target || b > target || (Math.min(q1_sum, q2_sum) > target || Math.max(q1_sum,q2_sum) < target)) ans = -1;
+                if(a > target || b > target || (Math.min(q1_sum, q2_sum) > target || Math.max(q1_sum,q2_sum) < target) || ans > limit) ans = -1;
                 if((q1_sum == q2_sum && target == q1_sum) || ans == -1) return;
 
                 if(q1_sum > q2_sum) {
@@ -106,8 +115,9 @@ public class 두_큐_합_같게_만들기 {
 
         private void init_setting(int[] queue_1, int[] queue_2) {
             ans = 0;
-            q1_sum = Arrays.stream(queue_1).sum();
-            q2_sum = Arrays.stream(queue_2).sum();
+            limit = queue_1.length * 3;
+            q1_sum = Arrays.stream(queue_1).mapToLong(l -> l).sum();
+            q2_sum = Arrays.stream(queue_2).mapToLong(l -> l).sum();
             long sum = q1_sum + q2_sum;
             if(sum % 2 != 0) ans = -1;
             target =  sum / 2;
