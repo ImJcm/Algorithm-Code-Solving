@@ -34,4 +34,19 @@ public class 스티커_모으기_2 {
         Solve task = new Solve();
         System.out.println(task.solution(sticker));
     }
+
+    private static class Solve {
+        private int ans;
+
+        public int solution(int[] sticker) {
+            init_setting(sticker);
+
+
+            return ans;
+        }
+
+        private void init_setting(int[] sticker) {
+
+        }
+    }
 }
