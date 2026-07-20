@@ -29,24 +29,44 @@ public class 스티커_모으기_2 {
     static void main() {
         int[] sticker = new int[] {
                 14, 6, 5, 11, 3, 9, 2, 10
+                //1,3,2,5,4
         };
 
         Solve task = new Solve();
         System.out.println(task.solution(sticker));
     }
 
-    private static class Solve {
-        private int ans;
+    /*
+        Wrong solve : 효율성 테스트 실패
+        재귀형태 + DP로 인해 시간초과 발생
+     */
+    private static class WrongSolve {
+        private int ans, length;
+        private int[][] dp;
 
         public int solution(int[] sticker) {
             init_setting(sticker);
 
-
+            ans = Math.max(removing_sticker(2, 0, sticker) + sticker[0], removing_sticker(1, 1, sticker));
+            
             return ans;
         }
 
-        private void init_setting(int[] sticker) {
+        private int removing_sticker(int stickerIndex, int removeFirstSticker, int[] sticker) {
+            if(stickerIndex > length - 2 + removeFirstSticker) return 0;
 
+            if(dp[removeFirstSticker][stickerIndex] != 0) return dp[removeFirstSticker][stickerIndex];
+
+            return dp[removeFirstSticker][stickerIndex] = Math.max(removing_sticker(stickerIndex + 2, removeFirstSticker, sticker) + sticker[stickerIndex],
+                    removing_sticker(stickerIndex + 1, removeFirstSticker, sticker));
+            
+        }
+
+        private void init_setting(int[] sticker) {
+            ans = 0;
+            length = sticker.length;
+            
+            dp = new int[2][sticker.length];
         }
     }
 }
