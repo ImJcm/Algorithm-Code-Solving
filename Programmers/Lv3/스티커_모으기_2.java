@@ -25,15 +25,72 @@ sticker	answer
 입출력 예 #2
 3, 5가 적힌 스티커를 떼어 냈을 때 8로 최대가 됩니다.
  */
+/*
+알고리즘 핵심
+DP
+1. 첫번째 스티커를 선택하는지 여부에 따라 이후 행동을 결정할 수 있다.
+2. 이전의 스티커에 대한 행동을 선택하고 난 이후 행동은 2가지로 나뉜다.
+2-1. i번째 스티커를 땐 경우, i + 2번째 스티커부터 행동을 결정할 수 있다.
+2-2. i번째 스티커를 때지 않은 경우, i + 1번째 스티커부터 행동을 결정할 수 있다.
+3. i번째 스티커에 대한 행동이후, 다음 스티커 위치에서 동일한 과정을 수행하므로 중복되는 과정을 수행하여 dp를 적용할 수 있다.
+4. 따라서, 첫번째 스티커를 땐 경우와 때지 않은 경우 2가지에 대한 dp를 설정하여 남은 스티커에서 최대값을 갖는 경우를 만든다.
+
+Wrong solve : 재귀함수를 통한 dp로 시간초과가 발생할 수 있다.
+따라서, 반복문 + dp로 적용하여 시간초과를 해결한다.
+ */
 public class 스티커_모으기_2 {
     static void main() {
         int[] sticker = new int[] {
-                14, 6, 5, 11, 3, 9, 2, 10
+                //14, 6, 5, 11, 3, 9, 2, 10
                 //1,3,2,5,4
+                1,2
         };
 
         Solve task = new Solve();
         System.out.println(task.solution(sticker));
+    }
+
+    private static class Solve {
+        private int ans, length;
+        private int[][] dp;
+
+        public int solution(int[] sticker) {
+            init_setting(sticker);
+
+            removing_sticker(sticker);
+
+            return ans;
+        }
+
+        private void removing_sticker(int[] sticker) {
+            if(length == 1) {
+                ans = sticker[0];
+                return;
+            }
+
+            for(int i = 2; i < length - 1; i++) {
+                dp[0][i] = Math.max(dp[0][i - 2] + sticker[i], dp[0][i - 1]);
+            }
+
+            for(int i = 2; i < length; i++) {
+                dp[1][i] = Math.max(dp[1][i - 1], dp[1][i - 2] + sticker[i]);
+            }
+
+            ans = Math.max(dp[0][length - 2], dp[1][length - 1]);
+
+            return;
+        }
+
+        private void init_setting(int[] sticker) {
+            ans = 0;
+            length = sticker.length;
+
+            dp = new int[2][length + 1];
+
+            dp[0][0] = dp[0][1] = sticker[0];
+            dp[1][0] = 0;
+            dp[1][1] = sticker[1];
+        }
     }
 
     /*
