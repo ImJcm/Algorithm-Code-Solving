@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 다리를 지나는 트럭
 제출 내역
@@ -34,15 +37,62 @@ bridge_length	weight	truck_weights	return
 
 ※ 공지 - 2020년 4월 06일 테스트케이스가 추가되었습니다.
  */
+/*
+알고리즘 핵심
+큐(Queue)
+1. 다리에 트럭을 배치하고, 배치된 트럭은 이동을 수행하는 작업이 초단위로 진행된다.
+2. 초단위로 각각의 행위를 수행하므로 다리에 배치된 트럭이 나가는 작업을 우선으로하여 후에 다리 무게에 맞게
+트럭을 배치한다.
+ */
 public class 다리를_지나는_트럭 {
     static void main() {
-        int bridge_length = 2;
-        int weight = 10;
+        int bridge_length = 2; // 100;
+        int weight = 10; // 100;
         int[] truck_weigth = new int[] {
                 7,4,5,6
+                //10
+                //10,10,10,10,10,10,10,10,10,10
         };
 
         Solve task = new Solve();
         System.out.println(task.solution(bridge_length, weight, truck_weigth));
+    }
+
+    private static class Solve {
+        private int ans;
+        private Queue<Integer> q;
+
+        public int solution(int bridge_length, int weight, int[] truck_weight) {
+            init_setting();
+
+            crossing_bridge(bridge_length, weight, truck_weight, q);
+
+            return ans;
+        }
+
+        private void crossing_bridge(int bridge_length, int weight, int[] truck_weight, Queue<Integer> q) {
+            int idx = 0, cnt = 0, w = weight;
+            while(true) {
+                if(cnt == truck_weight.length) break;
+
+                ans += 1;
+
+                if(!q.isEmpty() && q.peek() == ans) {
+                    w += truck_weight[cnt];
+                    cnt++;
+                    q.poll();
+                }
+
+                if(idx < truck_weight.length && w - truck_weight[idx] >= 0) {
+                    w -= truck_weight[idx++];
+                    q.add(ans + bridge_length);
+                }
+            }
+        }
+
+        private void init_setting() {
+            ans = 0;
+            q = new LinkedList<>();
+        }
     }
 }
