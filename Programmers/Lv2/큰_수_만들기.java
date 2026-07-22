@@ -18,10 +18,106 @@ number	        k	return
 "1924"	        2	"94"
 "1231234"	    3	"3234"
 "4177252841"	4	"775841"
+ */
+/*
+알고리즘 핵심
+탐욕(Greedy)
+1. k개를 제외하고 순서에 맞게 가장 큰 수를 만드는 것이므로 규칙에 맞는 수를 제거하는 방법의 탐욕법을 사용한다.
+2. 앞의 자리부터 다음 수와 비교하여 현재 수가 작다면 해당 수를 제거한다.
+3. 2번 과정을 반복하여 k개 만큼 제외하면 큰 수를 만들 수 있다.
 
+이때, String 타입의 변수를 다루게 될 경우, 시간초과 발생 가능성이 있기때문에 StringBuidler를 사용하여 number를 다룬다.
  */
 public class 큰_수_만들기 {
     static void main() {
+        String number = new String(
+                //"4177252841"
+                //"1231234"
+                //"1924"
+                //"9988"
+                //"987654321
+                //"12121212"
+                "10"
+        );
 
+        int k = 1;
+
+        Solve task = new Solve();
+        System.out.println(task.solution(number, k));
+    }
+
+    /*
+        Wrong solve : #10 - time out
+
+     */
+    private static class Solve {
+        private String ans;
+
+        public String solution(String number, int k) {
+            init_setting(number);
+
+            make_big_number(number,k);
+
+            return ans;
+        }
+
+        private void make_big_number(String number, int k) {
+            int remove = 0, j = 0;
+            boolean do_remove;
+            StringBuilder sb = new StringBuilder(number);
+
+            while(remove < k) {
+                do_remove = false;
+
+                for(int i = j; i < sb.length() - 1; i++) {
+                    if(sb.charAt(i) < sb.charAt(i + 1)) {
+                        sb.replace(i, i + 1, "");
+                        remove++;
+                        do_remove = true;
+                        j = Math.max(0, i - 1);
+                        break;
+                    }
+                }
+
+                if(!do_remove) {
+                    sb.replace(number.length() - (k - remove), number.length(), "");
+                    break;
+                }
+            }
+            ans = sb.toString();
+        }
+
+        /*
+            Wrong Solve : TestCase #10 - time out
+         */
+        private void Timeout_make_big_number(String number, int k) {
+            int remove = 0, j = 0;
+            boolean do_remove;
+
+            while(remove < k) {
+                do_remove = false;
+
+                for(int i = j; i < number.length() - 1; i++) {
+                    int res = Character.compare(number.charAt(i), number.charAt(i + 1));
+                    if(res < 0) {
+                        number = number.substring(0, i) + number.substring(i + 1);
+                        remove++;
+                        do_remove = true;
+                        j = Math.max(0, i - 1);
+                        break;
+                    }
+                }
+
+                if(!do_remove) {
+                    number = number.substring(0, number.length() - (k - remove));
+                    break;
+                }
+            }
+            ans = number;
+        }
+
+        private void init_setting(String number) {
+            ans = "";
+        }
     }
 }
