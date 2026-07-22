@@ -46,10 +46,6 @@ public class 큰_수_만들기 {
         System.out.println(task.solution(number, k));
     }
 
-    /*
-        Wrong solve : #10 - time out
-
-     */
     private static class Solve {
         private String ans;
 
