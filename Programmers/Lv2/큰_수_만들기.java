@@ -26,7 +26,7 @@ number	        k	return
 2. 앞의 자리부터 다음 수와 비교하여 현재 수가 작다면 해당 수를 제거한다.
 3. 2번 과정을 반복하여 k개 만큼 제외하면 큰 수를 만들 수 있다.
 
-이때, String 타입의 변수를 다루게 될 경우, 시간초과 발생 가능성이 있기때문에 StringBuidler를 사용하여 number를 다룬다.
+이때, String 타입의 변수를 다루게 될 경우, 시간초과 발생 가능성이 있기때문에 StringBuilder를 사용하여 number를 다룬다.
  */
 public class 큰_수_만들기 {
     static void main() {
