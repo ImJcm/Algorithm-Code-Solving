@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.ArrayList;
+
 /*
 전력망을 둘로 나누기
 제출 내역
@@ -37,8 +39,83 @@ ex2.png
 ex3.png
 3번과 7번을 연결하는 전선을 끊으면 두 전력망이 각각 4개와 3개의 송전탑을 가지게 되며, 이 방법이 최선입니다.
  */
+/*
+알고리즘 핵심
+완전탐색
+1. 네트워크가 간의 방향성이 없는 그래프이기 때문에 특정 방향으로 자식 노드의 개수를 미리 구하여 두 네트워크 간의 최소 네트워크 구간을 찾는 방법은 불가능했다.
+2. 연결된 모든 연결망을 자른 상태에서 나누어진 네트워크망에서 네트워크의 개수를 구하여 차이의 최소값을 구한다.
+ */
 public class 전력망을_둘로_나누기 {
     static void main() {
+        int n = 9;
+        int[][] wires = new int[][] {
+                {1,3},{2,3},{3,4},{4,5},{4,6},{4,7},{7,8},{7,9}
+        };
 
+        Solve task = new Solve();
+        System.out.println(task.solution(n,wires));
+    }
+
+    private static class Solve {
+        private class Network {
+            int num;
+            ArrayList<Network> adj_net;
+
+            public Network(int num) {
+                this.num = num;
+                adj_net = new ArrayList<>();
+            }
+
+            public void addAdjacency(Network to_net) {
+                adj_net.add(to_net);
+            }
+        }
+        private int ans;
+        private Network[] nets;
+
+        public int solution(int n, int[][] wires) {
+            init_setting(n, wires);
+
+            divide_network(nets, wires);
+
+            return ans;
+        }
+
+        private void divide_network(Network[] nets, int[][] wires) {
+            for(int[] w : wires) {
+                int cnt_1 = count_adj_network(nets[w[0]], nets[w[1]]);
+                int cnt_2 = count_adj_network(nets[w[1]], nets[w[0]]);
+
+                ans = Math.min(ans, Math.abs(cnt_1 - cnt_2));
+            }
+        }
+
+        private int count_adj_network(Network n, Network prev_n) {
+            int res = 0;
+
+            for(Network adj_n : n.adj_net) {
+                if(adj_n == prev_n) continue;
+                res += count_adj_network(adj_n, n);
+            }
+
+            return res + 1;
+        }
+
+        private void init_setting(int n, int[][] wires) {
+            ans = Integer.MAX_VALUE;
+            nets = new Network[n + 1];
+
+            for(int i = 1; i < n + 1; i++) {
+                nets[i] = new Network(i);
+            }
+
+            for(int i = 0; i < wires.length; i++) {
+                int from = wires[i][0];
+                int to = wires[i][1];
+
+                nets[from].addAdjacency(nets[to]);
+                nets[to].addAdjacency(nets[from]);
+            }
+        }
     }
 }
