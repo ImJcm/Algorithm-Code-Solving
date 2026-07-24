@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 마법의 엘리베이터
 제출 내역
@@ -24,9 +27,24 @@ storey	result
 
 -1, +100이 적힌 버튼을 4번, +10이 적힌 버튼을 5번, -1000이 적힌 버튼을 3번 누르면 0층에 도착 할 수 있습니다. 그러므로 16을 return 합니다.
  */
+/*
+알고리즘 핵심
+재귀 + 구현
+1. storey의 자릿수마다 올림과 내림의 카운트를 통해 엘리베이터 이동 횟수를 업데이트한다.
+2. 올림 또는 내림을 통해 만들어진 수가 9자리를 넘어가거나, 0이 되는 경우 기저사례로 종료하고, 이때 이동한 횟수를 ans로 업데이트한다.
+
+첫 접근을 bfs로 엘리베이터가 갈 수 있는 층수를 방문여부로 검사하여 최소 횟수를 구하려고 했으나, 엘리베이터를 통해 만들어지는 층수가
+1개의 층수에서 +-로 1,10,100,...,100_000_000만큼 늘어나기 때문에 시간초과가 발생할 가능성이 보였다.
+
+그래서, 자릿수마다 수를 통해 횟수를 만들어 낼 수 있고, 자릿수의 올림을 통해 다음 자릿수에 영향이 있으므로 해당 값을 업데이트하여
+최소 횟수를 구하려고 하였다.
+ */
 public class 마법의_엘리베이터 {
     static void main() {
-        int storey = 2554;
+        int storey =
+                //100_000_000;
+                //16;
+                2554;
 
         Solve task = new Solve();
         System.out.println(task.solution(storey));
@@ -36,13 +54,95 @@ public class 마법의_엘리베이터 {
         private int ans;
 
         public int solution(int storey) {
-            init_setting(storey);
+            init_setting();
+
+            magic_elevator(0, 0, storey);
 
             return ans;
         }
 
-        private void init_setting(int storey) {
+        private void magic_elevator(int idx, int cnt, int storey) {
+            if(idx > 8 || idx >= Integer.toString(storey).length()) {
+                ans = Math.min(ans, cnt);
+                return;
+            }
 
+            int w = (int) Math.pow(10, idx);
+
+            int num = (storey % (w * 10)) / w;
+
+            int up = 10 - num;
+            int down = num;
+
+            magic_elevator(idx + 1, cnt + up, storey + w * 10);
+            magic_elevator(idx + 1, cnt + down, storey);
+        }
+
+        private void init_setting() {
+            ans = Integer.MAX_VALUE;
+        }
+    }
+
+    /*
+        시간초과 발생 예상 : bfs
+        10^n까지 늘어나기 때문에 시간초과가 발생할 가능성이 높다.
+     */
+    private static class WrongSolve {
+        private class Floor {
+            int f;
+            int cnt;
+
+            public Floor(int f, int cnt) {
+                this.f = f;
+                this.cnt = cnt;
+            }
+        }
+        private int ans;
+        private final int MAX_FLOOR = 100_000_000;
+
+        public int solution(int storey) {
+            init_setting(storey);
+
+            magic_elevator(storey);
+
+            return ans;
+        }
+
+
+        private void magic_elevator(int storey) {
+            Queue<Floor> q = new LinkedList<>();
+            q.add(new Floor(storey, 0));
+            boolean[] visited = new boolean[MAX_FLOOR + 1];
+            visited[storey] = true;
+
+            while(!q.isEmpty()) {
+                Floor nfloor = q.poll();
+
+                if(nfloor.f == 0) {
+                    ans = nfloor.cnt;
+                    return;
+                }
+
+                for(int i = 0; i < 9; i++) {
+                    int n = (int) Math.pow(10,i);
+
+                    int nf_up = nfloor.f + n;
+                    int nf_down = nfloor.f - n;
+
+                    if(nf_up > 0 && nf_up <= MAX_FLOOR && !visited[nf_up]) {
+                        visited[nf_up] = true;
+                        q.add(new Floor(nf_up, nfloor.cnt + 1));
+                    }
+                    if(nf_down > 0 && nf_down <= MAX_FLOOR && !visited[nf_down]) {
+                        visited[nf_down] = true;
+                        q.add(new Floor(nf_down, nfloor.cnt + 1));
+                    }
+                }
+            }
+        }
+
+        private void init_setting(int storey) {
+            ans = Integer.MAX_VALUE;
         }
     }
 }
