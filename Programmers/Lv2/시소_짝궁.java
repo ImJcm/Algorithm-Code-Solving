@@ -25,19 +25,42 @@ weights	result
 public class 시소_짝궁 {
     static void main() {
         int[] weights = new int[] {
-                100,180,360,100,270
+                //100,180,360,100,270
+                100,50,100,150
         };
 
         Solve task = new Solve();
         System.out.println(task.solution(weights));
     }
 
-    private static class Solve {
+    /*
+        Failure Solve : #7~ 부터 시간초과 나머지도 TC도 시간초과가 발생할 것이라고 예상
+        O(n2)
+     */
+    private static class WrongSolve {
         private long ans;
 
         public long solution(int[] weights) {
+            init_setting(weights);
+
+            for(int i = 0; i < weights.length - 1; i++) {
+                for(int j = i + 1; j < weights.length; j++) {
+                    for(int k = 2; k <= 4; k++) {
+                        int res = weights[i] * k;
+                        int meter = res / weights[j];
+                        if(2 <= meter && meter <= 4 && res % weights[j] == 0) {
+                            ans++;
+                            break;
+                        }
+                    }
+                }
+            }
 
             return ans;
+        }
+
+        private void init_setting(int[] weights) {
+            ans = 0;
         }
     }
 }
