@@ -22,10 +22,25 @@ weights	result
 {180, 270} 은 각각 3(m), 2(m) 거리에 마주보고 앉으면 균형을 이룹니다.
 {270, 360} 은 각각 4(m), 3(m) 거리에 마주보고 앉으면 균형을 이룹니다.
  */
+/*
+알고리즘 핵심
+구현
+1. weights로 주어진 무게들의 중복 갯수를 구하고, 2,3,4배 일때 가능한 무게의 중복 갯수를 구한다.
+2. 같은 무게를 지닌 경우의 쌍의 갯수는 n*(n-1)/2이고, 200 ~ 4000의 무게중 중복이 되는 무게에서
+만들 수 있는 무게들의 중복 갯수를 곱하여 ans에 누적하여 더한다.
+-> ans += (w2 * w3 + w2 * w4 + w3 * w4)
+
+처음 접근으로 모든 경우의 수를 구하는 방법으로 각 무게들로 쌍을 만들 수 있는지 확인한 방법은 시간초과가 발생하여
+직관적으로 현재 무게로 만들 수 있는 경우의 중복 갯수를 이용하여 쌍의 갯수를 예측하는 방법을 생각하였다.
+ */
 public class 시소_짝궁 {
     static void main() {
         int[] weights = new int[] {
-                100,180,360,100,270
+                //100,180,360,100,270
+                100,100,100,150,150
+                //200,300,300
+                //101,202
+                //100, 100, 100, 150, 150, 200, 300
         };
 
         Solve task = new Solve();
@@ -34,11 +49,11 @@ public class 시소_짝궁 {
 
     private static class Solve {
         private long ans;
-        private int[] duplicate_weights,avail_weights;
+        private long[] duplicate_weights,avail_weights;
 
         /*
-            Failure Solve : TestCase #4 ~ #11
-            Logic error
+            Failure Solve : TestCase #4 ~ #11 => Logic error
+            Solve => w2, w3, w4의 결과값이 소수점이 없는 경우만 고려할 수 있도록 한다.
          */
         public long solution(int[] weights) {
             init_setting(weights);
@@ -48,18 +63,18 @@ public class 시소_짝궁 {
             return ans;
         }
 
-        private void check_pair(int[] duplicate_weights, int[] avail_weights) {
+        private void check_pair(long[] duplicate_weights, long[] avail_weights) {
             for(int i = 0; i < duplicate_weights.length; i++) {
                 if(duplicate_weights[i] > 1) {
-                    ans += ((long) duplicate_weights[i] * (duplicate_weights[i] - 1)) / 2;
+                    ans += (duplicate_weights[i] * (duplicate_weights[i] - 1)) / 2;
                 }
             }
 
             for(int i = 200; i < avail_weights.length; i++) {
                 if(avail_weights[i] > 1) {
-                    int w2 = i / 2;
-                    int w3 = i / 3;
-                    int w4 = i / 4;
+                    int w2 = i % 2 == 0 ? i / 2 : 0;
+                    int w3 = i % 3 == 0 ? i / 3 : 0;
+                    int w4 = i % 4 == 0 ? i / 4 : 0;
 
                     long d2,d3,d4;
                     d2 = d3 = d4 = 0;
@@ -68,15 +83,15 @@ public class 시소_짝궁 {
                     if(100 <= w3 && w3 <= 1000) d3 = duplicate_weights[w3];
                     if(100 <= w4 && w4 <= 1000) d4 = duplicate_weights[w4];
 
-                    ans += (((long) d2 * d3) + ((long) d2 * d4) + ((long) d3 * d4));
+                    ans += ((d2 * d3) + (d2 * d4) + (d3 * d4));
                 }
             }
         }
 
         private void init_setting(int[] weights) {
             ans = 0;
-            duplicate_weights = new int[1001]; // 100 <= w <= 1000
-            avail_weights = new int[4001]; // 200 <= w <= 4000
+            duplicate_weights = new long[1001]; // 100 <= w <= 1000
+            avail_weights = new long[4001]; // 200 <= w <= 4000
 
             for(int i = 0; i < weights.length; i++) {
                 int x1 = weights[i];
