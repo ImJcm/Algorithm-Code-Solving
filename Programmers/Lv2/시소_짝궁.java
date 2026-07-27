@@ -25,12 +25,71 @@ weights	result
 public class 시소_짝궁 {
     static void main() {
         int[] weights = new int[] {
-                //100,180,360,100,270
-                100,50,100,150
+                100,180,360,100,270
         };
 
         Solve task = new Solve();
         System.out.println(task.solution(weights));
+    }
+
+    private static class Solve {
+        private long ans;
+        private int[] duplicate_weights,avail_weights;
+
+        /*
+            Failure Solve : TestCase #4 ~ #11
+            Logic error
+         */
+        public long solution(int[] weights) {
+            init_setting(weights);
+
+            check_pair(duplicate_weights, avail_weights);
+
+            return ans;
+        }
+
+        private void check_pair(int[] duplicate_weights, int[] avail_weights) {
+            for(int i = 0; i < duplicate_weights.length; i++) {
+                if(duplicate_weights[i] > 1) {
+                    ans += ((long) duplicate_weights[i] * (duplicate_weights[i] - 1)) / 2;
+                }
+            }
+
+            for(int i = 200; i < avail_weights.length; i++) {
+                if(avail_weights[i] > 1) {
+                    int w2 = i / 2;
+                    int w3 = i / 3;
+                    int w4 = i / 4;
+
+                    long d2,d3,d4;
+                    d2 = d3 = d4 = 0;
+
+                    if(100 <= w2 && w2 <= 1000) d2 = duplicate_weights[w2];
+                    if(100 <= w3 && w3 <= 1000) d3 = duplicate_weights[w3];
+                    if(100 <= w4 && w4 <= 1000) d4 = duplicate_weights[w4];
+
+                    ans += (((long) d2 * d3) + ((long) d2 * d4) + ((long) d3 * d4));
+                }
+            }
+        }
+
+        private void init_setting(int[] weights) {
+            ans = 0;
+            duplicate_weights = new int[1001]; // 100 <= w <= 1000
+            avail_weights = new int[4001]; // 200 <= w <= 4000
+
+            for(int i = 0; i < weights.length; i++) {
+                int x1 = weights[i];
+                int x2 = weights[i] * 2;
+                int x3 = weights[i] * 3;
+                int x4 = weights[i] * 4;
+
+                duplicate_weights[x1]++;
+                avail_weights[x2]++;
+                avail_weights[x3]++;
+                avail_weights[x4]++;
+            }
+        }
     }
 
     /*
