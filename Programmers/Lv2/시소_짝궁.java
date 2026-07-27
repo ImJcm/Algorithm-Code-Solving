@@ -32,6 +32,9 @@ weights	result
 
 처음 접근으로 모든 경우의 수를 구하는 방법으로 각 무게들로 쌍을 만들 수 있는지 확인한 방법은 시간초과가 발생하여
 직관적으로 현재 무게로 만들 수 있는 경우의 중복 갯수를 이용하여 쌍의 갯수를 예측하는 방법을 생각하였다.
+
+최적화 : https://school.programmers.co.kr/questions/76730 참고
+중복되는 갯수만을 구하고 중복된 무게로 구성할 수 있는 쌍의 갯수의 무게를 구하여 중복 갯수를 곱하여 ans를 업데이트한다.
  */
 public class 시소_짝궁 {
     static void main() {
@@ -45,6 +48,39 @@ public class 시소_짝궁 {
 
         Solve task = new Solve();
         System.out.println(task.solution(weights));
+    }
+
+    private static class Optimization_Solve {
+        private long ans;
+        private long[] dup_cnt;
+
+        public long solution(int[] weights) {
+            init_setting(weights);
+
+            for(int i = 100; i <= 1000; i++) {
+                if(dup_cnt[i] > 0) {
+                    ans += dup_cnt[i] - (dup_cnt[i] - 1) / 2;
+
+                    int _4_and_3 = i * 4 % 3 == 0 ? i * 4 / 3 : 0;
+                    int _4_and_2 = i * 4 % 2 == 0 ? i * 4 / 2 : 0;
+                    int _3_and_2 = i * 3 % 2 == 0 ? i * 3 / 2 : 0;
+
+                    ans += dup_cnt[i] * dup_cnt[_4_and_3]; // 4m & 3m일 때
+                    ans += dup_cnt[i] * dup_cnt[_4_and_2]; // 4m & 2m일 때
+                    ans += dup_cnt[i] * dup_cnt[_3_and_2]; // 3m & 2m일 때
+                }
+            }
+
+            return ans;
+        }
+
+        private void init_setting(int[] weights) {
+            dup_cnt = new long[1001];
+
+            for(int i = 0; i < weights.length; i++) {
+                dup_cnt[weights[i]]++;
+            }
+        }
     }
 
     private static class Solve {
