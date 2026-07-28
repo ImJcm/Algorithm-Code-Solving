@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.Arrays;
+
 /*
 연속된 부분 수열의 합
 제출 내역
@@ -38,6 +40,64 @@ sequence	k	result
  */
 public class 연속된_부분_수열의_합 {
     static void main() {
+        int[] sequence = new int[] {
+                //1, 2, 3, 4, 5
+                //1, 1, 1, 2, 3, 4, 5
+                2, 2, 2, 2, 2
+        };
 
+        int[] k = new int[] {
+                7,5,6
+        };
+
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(sequence,k[2])));
+    }
+
+    private static class Solve {
+        private int[] ans;
+        private int[] sub_sum;
+
+        public int[] solution(int[] seq, int k) {
+            init_setting(seq);
+
+            finding_the_sum_of_consecutive_subsequences(sub_sum,k);
+
+            return ans;
+        }
+
+        private void finding_the_sum_of_consecutive_subsequences(int[] subSum, int k) {
+            int l,h;
+            l = h = 0;
+
+            while(h < subSum.length && l <= h) {
+                int ss = subSum[h] - (l - 1 < 0 ? 0 : subSum[l - 1]);
+
+                if(ss <= k) {
+                    if(ss == k) {
+                        if(ans[1] - ans[0] > h - l || (ans[1] - ans[0] == h - l && ans[0] > l)) {
+                            ans[0] = l;
+                            ans[1] = h;
+                        }
+                    }
+                    h++;
+                } else l++;
+            }
+        }
+
+        private void init_setting(int[] seq) {
+            ans = new int[2];
+
+            ans[0] = 0;
+            ans[1] = seq.length;
+
+            sub_sum = new int[seq.length];
+
+            sub_sum[0] = seq[0];
+
+            for(int i = 1; i < seq.length; i++) {
+                sub_sum[i] = seq[i] + sub_sum[i-1];
+            }
+        }
     }
 }
