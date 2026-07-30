@@ -38,6 +38,16 @@ sequence	k	result
 
 [2, 2, 2, 2, 2]에서 합이 6인 연속된 부분 수열은 [2, 2, 2]로 3가지 경우가 있는데, 길이가 짧은 수열이 여러 개인 경우 앞쪽에 나온 수열을 찾으므로 [0, 2]를 반환합니다.
  */
+/*
+알고리즘 핵심
+부분합 + 투 포인터
+1. 오름차순 정렬된 수열이 주어지므로, 각 인덱스의 위치에 맞는 부분합을 구한다.
+=> sum[i] = sum[i - 1] + value[i]
+2. low, high의 인덱스를 두어 sum[high] - sum[low - 1]를 통해 [low,high] 구간의 합을 통해 k와 비교한다.
+3. k보다 부분합이 크다면, low를 증가시키고, 작거나 같다면, high를 증가시킨다.
+이때, 부분합이 k와 같을 때 low, high의 구간 차이가 작은 것을 ans에 업데이트한다.
+구간의 차이가 같은 경우, low가 작은 것을 우선한다.
+ */
 public class 연속된_부분_수열의_합 {
     static void main() {
         int[] sequence = new int[] {
@@ -54,6 +64,9 @@ public class 연속된_부분_수열의_합 {
         System.out.println(Arrays.toString(task.solution(sequence,k[2])));
     }
 
+    /*
+        검증 필요
+     */
     private static class Solve {
         private int[] ans;
         private int[] sub_sum;
