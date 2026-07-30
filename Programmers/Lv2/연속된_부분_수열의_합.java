@@ -64,9 +64,6 @@ public class 연속된_부분_수열의_합 {
         System.out.println(Arrays.toString(task.solution(sequence,k[2])));
     }
 
-    /*
-        검증 필요
-     */
     private static class Solve {
         private int[] ans;
         private int[] sub_sum;
