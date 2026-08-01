@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 미로 탈출
 제출 내역
@@ -44,9 +47,103 @@ image3
 
 시작 지점에서 이동할 수 있는 공간이 없어서 탈출할 수 없습니다. 따라서 -1을 반환합니다.
  */
+/*
+알고리즘 핵심
+BFS
+1. 시작 지점에서 출구 까지의 최소 시간을 만족하려면 BFS를 사용하여 경로의 걸린 시간을 구한다.
+2. 시작 지점과 레버까지의 BFS에서 걸린 최소 시간 + 레버 지점에서 출구까지의 BFS에서 걸린 최소 시간을 계산한다.
+ */
 public class 미로_탈출 {
     static void main() {
+        String[] maps = new String[] {
+                //"SOOOL","XXXXO","OOOOO","OXXXX","OOOOE"
+                "LOOXS","OOOOX","OOOOO","OOOOO","EOOOO"
+        };
 
+        Solve task = new Solve();
+        System.out.println(task.solution(maps));
     }
 
+    private static class Solve {
+        private class Route {
+            int r,c,t;
+
+            public Route(int r, int c, int t) {
+                this.r = r;
+                this.c = c;
+                this.t = t;
+            }
+        }
+        private int ans;
+        private int[] ts;
+        private int[][] direction = new int[][] {
+                {0,1},{0,-1},{1,0},{-1,0}
+        };
+        private Route S,E,L;
+
+        public int solution(String[] maps) {
+            init_setting(maps);
+
+            maze_escape(maps,S,L,0);
+            maze_escape(maps,L,E,1);
+
+            if(ts[0] == -1 || ts[1] == -1) ans = -1;
+            else ans = ts[0] + ts[1];
+
+            return ans;
+        }
+
+        private void maze_escape(String[] maps, Route s, Route e, int t) {
+            Queue<Route> q = new LinkedList<>();
+            q.add(s);
+            boolean[][] visited = new boolean[maps.length][maps[0].length()];
+            visited[s.r][s.c] = true;
+
+            while(!q.isEmpty()) {
+                Route r = q.poll();
+
+                if(r.r == e.r && r.c == e.c) {
+                    ts[t] = r.t;
+                    return;
+                }
+
+                for(int[] d : direction) {
+                    int nr = r.r + d[0];
+                    int nc = r.c + d[1];
+
+                    if(nr < 0 || nr >= maps.length || nc < 0 || nc >= maps[0].length()) continue;
+                    if(maps[nr].charAt(nc) == 'X' || visited[nr][nc]) continue;
+
+                    q.add(new Route(nr,nc,r.t + 1));
+                    visited[nr][nc] = true;
+                }
+            }
+
+        }
+
+        private void init_setting(String[] maps) {
+            ans = 0;
+
+            ts = new int[2];
+            ts[0] = ts[1] = -1;
+
+            for(int i = 0; i < maps.length; i++) {
+                String[] m = maps[i].split("");
+
+                for(int j = 0; j < m.length; j++) {
+                    switch (m[j]) {
+                        case "S":
+                            S = new Route(i,j,0);
+                            break;
+                        case "E":
+                            E = new Route(i,j,0);
+                            break;
+                        case "L":
+                            L = new Route(i,j,0);
+                            break;
+                    }
+                }
+            }
+        }
+    }
 }
