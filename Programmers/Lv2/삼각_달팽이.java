@@ -41,6 +41,56 @@ public class 삼각_달팽이 {
         System.out.println(Arrays.toString(task.solution(n[7])));
     }
 
+    private static class Another_Solve {
+        private int[] ans;
+        private int[][] snail;
+        private int[][] d = new int[][] {
+                {1,0}, {0,1}, {-1,-1}
+        };
+
+        public int[] solution(int n) {
+            init_setting(n);
+
+            make_triangle_snail(n);
+
+            return ans;
+        }
+
+        private void make_triangle_snail(int n) {
+            if(n == 1) ans = new int[] {1};
+            else {
+                int x = 0, y = 0, dir = 0, num = 1;
+
+                while(snail[x][y] == 0) {
+                    snail[x][y] = num++;
+
+                    int nx = x + d[dir][0];
+                    int ny = y + d[dir][1];
+
+                    if(nx < 0 || nx > n || ny < 0 || ny > n || snail[nx][ny] != 0) {
+                        dir = (dir + 1) % 3;
+                        x += d[dir][0];
+                        y += d[dir][1];
+                    } else {
+                        x += nx;
+                        y += ny;
+                    }
+                }
+
+                ans = Arrays.stream(snail)              // int[][] -> Stream<int[]>
+                        .flatMapToInt(Arrays::stream)   // int[] -> IntStream 평탄화
+                        .filter(i -> i != 0)        // filter : element중 0이 아닌 것만 고르기
+                        .toArray();                     // Array -> return int[]
+            }
+        }
+
+        private void init_setting(int n) {
+            ans = new int[n * (n + 1) / 2];
+            snail = new int[n][n];
+        }
+    }
+
+
     private static class Solve {
         private int L;
         private int[] ans;
