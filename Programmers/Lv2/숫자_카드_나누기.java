@@ -1,5 +1,9 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
 /*
 숫자 카드 나누기
 제출 내역
@@ -34,8 +38,96 @@ arrayA	arrayB	result
 
 철수가 가진 카드에 적힌 숫자들은 모두 3으로 나눌 수 없고, 영희가 가진 카드에 적힌 숫자는 모두 3으로 나눌 수 있습니다. 따라서 3은 조건에 해당하는 양의 정수입니다. 하지만, 철수가 가진 카드들에 적힌 숫자들은 모두 7로 나눌 수 있고, 영희가 가진 카드들에 적힌 숫자는 모두 7로 나눌 수 없습니다. 따라서 최대값인 7을 return 합니다.
  */
+/*
+알고리즘 핵심
+백트랙킹 + 구현 + (feat. prime factorization:소인수 분해)
+1. A,B의 배열에서 문제의 조건을 만족하기 위해서는 한쪽 배열에서의 모든 수가 나누어져야 하므로 하나의 수를 기준으로 잡는다.
+2. 1번에서 잡은 기준의 수는 각 배열을 오름차순으로 정렬하여 가장 작은 값을 소인수분해하여 가능한 수를 구한다.
+3. 해당 수를 A,B배열에서 조건이 만족되는 수중 큰 값을 ans에 갱신한다.
+ */
 public class 숫자_카드_나누기 {
     static void main() {
+        int[] arrayA = new int[] {
+                14,35,119
+        };
 
+        int[] arrayB = new int[] {
+                18,30,102
+                //100000000,100000000,100000000
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(arrayA, arrayB));
+    }
+
+    private static class Solve {
+        private int ans;
+        private ArrayList<Integer> prime_listA, prime_listB;
+        private HashSet<Integer> AA, AB;
+        private int[] sorted_arrayA, sorted_arrayB;
+
+        public int solution(int[] arrayA, int[] arrayB) {
+            init_setting(arrayA, arrayB);
+
+            prime_factorization(prime_listA, sorted_arrayA[0]);
+            prime_factorization(prime_listB, sorted_arrayB[0]);
+
+            make_possible_number(0,1,prime_listA,AA);
+            make_possible_number(0,1,prime_listB,AB);
+
+            verification(AA, sorted_arrayA, sorted_arrayB);
+            verification(AB, sorted_arrayB, sorted_arrayA);
+
+            return ans;
+        }
+
+        private void verification(HashSet<Integer> array, int[] origin, int[] target) {
+            boolean flag;
+
+            for(Integer i : array) {
+                flag = true;
+
+                for(int j = 0; j < origin.length && flag; j++) {
+                    if(origin[j] % i != 0) flag = false;
+                    if(target[j] % i == 0) flag = false;
+                }
+
+                if(flag) ans = Math.max(ans, i);
+            }
+        }
+
+        private void make_possible_number(int idx, int r, ArrayList<Integer> list, HashSet<Integer> Alist) {
+            if(idx == list.size()) {
+                if(r != 1) Alist.add(r);
+                return;
+            }
+
+            make_possible_number(idx+1, r * list.get(idx), list, Alist);
+            make_possible_number(idx+1, r, list, Alist);
+        }
+
+        private void prime_factorization(ArrayList<Integer> arr, int n) {
+            int num = 2;
+
+            while(n != 1 && num <= n) {
+                if(n % num == 0) {
+                    arr.add(num);
+                    n /= num;
+                } else num++;
+            }
+        }
+
+        private void init_setting(int[] arrayA, int[] arrayB) {
+            ans = 0;
+
+            prime_listA = new ArrayList<>();
+            prime_listB = new ArrayList<>();
+
+            AA = new HashSet<>();
+            AB = new HashSet<>();
+
+            sorted_arrayA = Arrays.stream(arrayA).sorted().toArray();
+            sorted_arrayB = Arrays.stream(arrayB).sorted().toArray();
+        }
     }
 }
