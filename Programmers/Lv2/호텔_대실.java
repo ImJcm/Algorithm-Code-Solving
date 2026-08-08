@@ -1,5 +1,9 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+
 /*
 호텔 대실
 제출 내역
@@ -35,6 +39,85 @@ example1
  */
 public class 호텔_대실 {
     static void main() {
+        String[][] book_time = new String[][] {
+                //{"15:00", "17:00"}, {"16:40", "18:20"}, {"14:20", "15:20"}, {"14:10", "19:20"}, {"18:20", "21:20"}
+                {"10:20", "12:30"}, {"10:20", "12:30"}, {"10:20", "12:30"}
+        };
 
+        Solve task = new Solve();
+        System.out.println(task.solution(book_time));
+    }
+
+    private static class Solve {
+        private int ans;
+
+        public int solution(String[][] book_time) {
+            init_setting(book_time);
+
+            return ans;
+        }
+
+        private void init_setting(String[][] book_time) {
+
+        }
+    }
+
+    /*
+        Failure Solve : logic error
+        TC #2,3,4,6,8,9,10,11,13,14,15,17,18
+     */
+    private static class WrongSolve {
+        private int ans;
+        private String[][] sorted_book_time;
+        private ArrayList<String> rooms;
+
+        public int solution(String[][] book_time) {
+            init_setting(book_time);
+
+            assign_room(sorted_book_time, rooms);
+
+            return ans;
+        }
+
+        private void assign_room(String[][] sorted_book_time, ArrayList<String> rooms) {
+            for(int i = 1; i < sorted_book_time.length; i++) {
+                boolean flag = false;
+
+                for(int j = 0; j < rooms.size(); j++) {
+                    if(cal_time(rooms.get(j),10).compareTo(sorted_book_time[i][0]) <= 0) {
+                        rooms.set(j,sorted_book_time[i][1]);
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag) rooms.add(sorted_book_time[i][1]);
+            }
+
+            ans = rooms.size();
+        }
+
+        private String cal_time(String s, int minute) {
+            String[] split = s.split(":");
+            Integer h = Integer.parseInt(split[0]);
+            Integer m = Integer.parseInt(split[1]);
+
+            m = (m + minute) % 60;
+            h += (m + minute) / 60;
+
+            return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+
+        private void init_setting(String[][] book_time) {
+            sorted_book_time = Arrays.stream(book_time)
+                    //.sorted((a,b) -> a[0].compareTo(b[0]))
+                    .sorted(Comparator.comparing(a -> a[0]))
+                    .toArray(String[][]::new);
+
+            rooms = new ArrayList<>();
+
+            ans = 1;
+            rooms.add(sorted_book_time[0][1]);
+        }
     }
 }
