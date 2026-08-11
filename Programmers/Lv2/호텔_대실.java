@@ -3,6 +3,7 @@ package Lv2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /*
 호텔 대실
@@ -40,8 +41,8 @@ example1
 public class 호텔_대실 {
     static void main() {
         String[][] book_time = new String[][] {
-                //{"15:00", "17:00"}, {"16:40", "18:20"}, {"14:20", "15:20"}, {"14:10", "19:20"}, {"18:20", "21:20"}
-                {"10:20", "12:30"}, {"10:20", "12:30"}, {"10:20", "12:30"}
+                {"15:00", "17:00"}, {"16:40", "18:20"}, {"14:20", "15:20"}, {"14:10", "19:20"}, {"18:20", "21:20"}
+                //{"10:20", "12:30"}, {"10:20", "12:30"}, {"10:20", "12:30"}
         };
 
         Solve task = new Solve();
@@ -50,15 +51,55 @@ public class 호텔_대실 {
 
     private static class Solve {
         private int ans;
+        private String[][] sorted_book_time;
+        private PriorityQueue<String> rooms;
 
         public int solution(String[][] book_time) {
             init_setting(book_time);
 
+            assign_room(sorted_book_time, rooms);
+
             return ans;
         }
 
-        private void init_setting(String[][] book_time) {
+        private void assign_room(String[][] sorted_book_time, PriorityQueue<String> rooms) {
+            for(int i = 0; i < sorted_book_time.length; i++) {
+                String l_t_r = rooms.isEmpty() ? "00:00" : rooms.peek();
+                l_t_r = cal_time(l_t_r,10);
 
+                if(sorted_book_time[i][0].compareTo(l_t_r) >= 0) {
+                    rooms.poll();
+                }
+                rooms.add(sorted_book_time[i][1]);
+            }
+
+            ans = rooms.size();
+        }
+
+        private String cal_time(String s, int minute) {
+            String[] split = s.split(":");
+            Integer h = Integer.parseInt(split[0]);
+            Integer m = Integer.parseInt(split[1]);
+
+            m = (m + minute) % 60;
+            h += (m + minute) / 60;
+
+            return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+
+        private void init_setting(String[][] book_time) {
+            ans = 0;
+
+            sorted_book_time = Arrays.stream(book_time)
+                    .sorted(Comparator.comparing(a -> a[0]))
+                    .toArray(String[][]::new);
+
+            rooms = new PriorityQueue<>(new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return o1.compareTo(o2);
+                }
+            });
         }
     }
 
