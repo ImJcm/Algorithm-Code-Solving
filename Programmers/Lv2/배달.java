@@ -2,6 +2,7 @@ package Lv2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 /*
 배달
@@ -41,18 +42,103 @@ N	road	K	result
 /*
 알고리즘 핵심
 Dijkstra (Shortest Path Algorithm)
+1. 1번 노드에서 다른 노드로의 최단 경로를 계산하기 위해 dijkstra 알고리즘을 이용한다.
+2. 1번 과정을 통해 dijkstra[index]의 값으로 index에 도달하는 최단 경로의 값으로 K값 이하의 node 개수를 구하고, ans에 업데이트한다.
  */
 public class 배달 {
     static void main() {
-        int N = 5;
+        /*int N = 5;
         int[][] road = new int[][] {
                 {1,2,1},{2,3,3},{5,2,2},{1,4,2},{5,3,1},{5,4,2}
         };
-        int K = 3;
+        int K = 3;*/
+        int N = 6;
+        int[][] road = new int[][] {
+                {1,2,1},{1,3,2},{2,3,2},{3,4,3},{3,5,2},{3,5,3},{5,6,1}
+        };
+        int K = 4;
 
         Solve task = new Solve();
         System.out.println(task.solution(N,road,K));
     }
 
+    private static class Solve {
+        private class Node implements Comparable<Node> {
+            int idx;
+            int dist;
 
+            public Node(int idx, int dist) {
+                this.idx = idx;
+                this.dist = dist;
+            }
+
+            @Override
+            public int compareTo(Node o) {
+                return this.dist - o.dist;
+            }
+        }
+
+        private int ans;
+        private int[] dijkstra;
+        private List<List<Node>> map;
+
+        public int solution(int N, int[][] road, int K) {
+            init_setting(N, road);
+
+            delivery(N, map, dijkstra);
+
+            verify_K_delivery(K, dijkstra);
+
+            return ans;
+        }
+
+        private void delivery(int N, List<List<Node>> map, int[] dijkstra) {
+            PriorityQueue<Node> pq = new PriorityQueue<>();
+            pq.add(new Node(1, 0));
+            dijkstra[1] = 0;
+
+            while (!pq.isEmpty()) {
+                Node node = pq.poll();
+
+                if (node.dist > dijkstra[node.idx]) continue;
+
+                for (Node adj : map.get(node.idx)) {
+                    if (node.dist + adj.dist < dijkstra[adj.idx]) {
+                        dijkstra[adj.idx] = node.dist + adj.dist;
+                        pq.add(new Node(adj.idx, node.dist + adj.dist));
+                    }
+                }
+            }
+        }
+
+        private void verify_K_delivery(int K, int[] dijkstra) {
+            for (int i = 1; i < dijkstra.length; i++) {
+                if (dijkstra[i] <= K) {
+                    ans++;
+                }
+            }
+        }
+
+        private void init_setting(int N, int[][] road) {
+            ans = 0;
+
+            map = new ArrayList<>();
+
+            dijkstra = new int[N + 1];
+
+            for (int i = 0; i <= N; i++) {
+                map.add(new ArrayList<>());
+                dijkstra[i] = Integer.MAX_VALUE;
+            }
+
+            for (int[] i : road) {
+                int s = i[0];
+                int e = i[1];
+                int d = i[2];
+
+                map.get(s).add(new Node(e, d));
+                map.get(e).add(new Node(s, d));
+            }
+        }
+    }
 }
