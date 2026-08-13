@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 배달
 제출 내역
@@ -45,7 +48,11 @@ public class 배달 {
         int[][] road = new int[][] {
                 {1,2,1},{2,3,3},{5,2,2},{1,4,2},{5,3,1},{5,4,2}
         };
+        int K = 3;
 
-
+        Solve task = new Solve();
+        System.out.println(task.solution(N,road,K));
     }
+
+
 }
