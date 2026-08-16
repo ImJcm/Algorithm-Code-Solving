@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 서버 증설 횟수
 제출 내역
@@ -80,6 +83,14 @@ players	m	k	result
 15 ~ 16시: 1번
 23 ~ 24시: 1번
  */
+/*
+알고리즘 핵심
+Queue
+1. 서버의 증설은 시간대 별로 사용자 수와 현재 상태의 가용 서버의 수에 의해 정해진다.
+2. 서버를 추가한 후, 일정 시간 후에 제거해야 하므로, 시간대별로 추가와 삭제가 들어온 시간대에 결정되므로 queue를 사용하여 서버를 증설한다.
+3. 현재 시간대의 이용자 수와 현재 가용중인 서버의 개수를 이용하여 추가할 서버를 결정하고 추가한다.
+(서버를 각 단일 객체로 보고 queue에 추가할 수 있지만, 같은 시간대에 추가되는 서버를 하나의 정보로 보고 클래스로 작성하여 정보를 업데이트하였다.)
+ */
 public class 서버_증설_횟수 {
     static void main() {
         int[] players = new int[] {
@@ -92,5 +103,63 @@ public class 서버_증설_횟수 {
         System.out.println(task.solution(players,m,k));
     }
 
-    
+    private static class Solve {
+        private class Server {
+            int opening_time;
+            int cnt;
+
+            public Server(int opening_time, int cnt) {
+                this.opening_time = opening_time;
+                this.cnt = cnt;
+            }
+        }
+        private int ans;
+        private Queue<Server> q;
+
+        public int solution(int[] players, int m, int k) {
+            init_setting();
+
+            server_expansion(players,m,k,q);
+
+            return ans;
+        }
+
+        private void server_expansion(int[] players, int m, int k, Queue<Server> q) {
+            int cur_server_cnt = 0;
+
+            for(int i = 0; i < 24; i++) {
+                cur_server_cnt -= update(i,k,q);
+
+                int must_available_server = Math.max(players[i] / m - cur_server_cnt, 0);
+
+                if(must_available_server > 0) {
+                    q.add(new Server(i, must_available_server));
+                }
+
+                ans += must_available_server;
+                cur_server_cnt += must_available_server;
+            }
+        }
+
+        private int update(int i, int k,Queue<Server> q) {
+            int cnt = 0;
+
+            while(!q.isEmpty()) {
+                Server s = q.peek();
+
+                if(s.opening_time + k <= i) {
+                    cnt += q.poll().cnt;
+                } else {
+                    break;
+                }
+            }
+            return cnt;
+        }
+
+        private void init_setting() {
+            ans = 0;
+
+            q = new LinkedList<>();
+        }
+    }
 }
