@@ -1,5 +1,10 @@
 package Lv3;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 /*
 불량 사용자
 제출 내역
@@ -82,6 +87,75 @@ frodoc
  */
 public class 불량_사용자 {
     static void main() {
-        
+        String[] user_id = new String[] {
+                //"frodo", "fradi", "crodo", "abc123", "frodoc"
+                "frodo", "fradi", "crodo", "abc123", "frodoc"
+
+        };
+
+        String[] banned_id = new String[] {
+                //"fr*d*", "abc1**"
+                "fr*d*", "*rodo", "******", "******"
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(user_id, banned_id));
+    }
+
+    private static class Solve {
+        private int ans;
+        private HashSet<String> visited;
+        private HashSet<String[]> bans;
+        private List<List<String>> ban_l;
+
+        public int solution(String[] user_id, String[] banned_id) {
+            init_setting(banned_id);
+
+            identify_banner_id(user_id, banned_id, ban_l);
+
+            combine_banner_id(0, new String[banned_id.length], ban_l, bans, visited);
+
+            return ans;
+        }
+
+        private void combine_banner_id(int idx, String[] s, List<List<String>> bans, HashSet<String[]> bans_l, HashSet<String> visited) {
+            if(idx == bans.size()) {
+                String[] ns = Arrays.copyOf(s, s.length);
+                if(bans_l.add(ns)) {
+                    ans++;
+                }
+                return;
+            }
+
+            for(int i = 0; i < bans.get(idx).size(); i++) {
+                visited.add(bans.get(idx).get(i));
+                if(visited.size() != idx + 1) continue;
+                s[idx] = bans.get(idx).get(i);
+                combine_banner_id(idx + 1, s, bans, bans_l, visited);
+                visited.remove(bans.get(idx).get(i));
+            }
+        }
+
+        private void identify_banner_id(String[] user_id, String[] banned_id, List<List<String>> ban_l) {
+            for(int i = 0; i < banned_id.length; i++) {
+                for(int j = 0; j < user_id.length; j++) {
+                    if(user_id[j].matches(banned_id[i].replaceAll("[*]","."))) {
+                        ban_l.get(i).add(user_id[j]);
+                    }
+                }
+            }
+        }
+
+        private void init_setting(String[] banned_id) {
+            ans = 0;
+
+            bans = new HashSet<>();
+            ban_l = new ArrayList<>();
+            visited = new HashSet<>();
+
+            for(int i = 0; i < banned_id.length; i++) {
+                ban_l.add(new ArrayList<>());
+            }
+        }
     }
 }
