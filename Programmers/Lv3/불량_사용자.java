@@ -85,6 +85,13 @@ frodo
 abc123
 frodoc
  */
+/*
+알고리즘 핵심
+Set
+1. banner_id에 해당하는 user_id를 각각 구하고, ban_l에 저장한다.
+2. ban_l에 해당하는 user_id로 불량 사용자의 경우를 DFS로 구한다. 이때, 제제 아이디는 중복 아이디가 없으므로, visited를 통해 중복 경우를 제외한다.
+3. 제제 아아디를 모두 구한 경우, 순서와 상관없이 중복을 제외해야 하므로, HashSet을 통해 중복을 제거하여 경우의 수를 업데이트한다.
+ */
 public class 불량_사용자 {
     static void main() {
         String[] user_id = new String[] {
@@ -105,7 +112,7 @@ public class 불량_사용자 {
     private static class Solve {
         private int ans;
         private HashSet<String> visited;
-        private HashSet<String[]> bans;
+        private HashSet<String> bans;
         private List<List<String>> ban_l;
 
         public int solution(String[] user_id, String[] banned_id) {
@@ -118,21 +125,23 @@ public class 불량_사용자 {
             return ans;
         }
 
-        private void combine_banner_id(int idx, String[] s, List<List<String>> bans, HashSet<String[]> bans_l, HashSet<String> visited) {
-            if(idx == bans.size()) {
+        private void combine_banner_id(int idx, String[] s, List<List<String>> bans_l, HashSet<String> bans, HashSet<String> visited) {
+            if(idx == bans_l.size()) {
                 String[] ns = Arrays.copyOf(s, s.length);
-                if(bans_l.add(ns)) {
+                Arrays.sort(ns);
+
+                if(bans.add(Arrays.toString(ns))) {
                     ans++;
                 }
                 return;
             }
 
-            for(int i = 0; i < bans.get(idx).size(); i++) {
-                visited.add(bans.get(idx).get(i));
+            for(int i = 0; i < bans_l.get(idx).size(); i++) {
+                visited.add(bans_l.get(idx).get(i));
                 if(visited.size() != idx + 1) continue;
-                s[idx] = bans.get(idx).get(i);
-                combine_banner_id(idx + 1, s, bans, bans_l, visited);
-                visited.remove(bans.get(idx).get(i));
+                s[idx] = bans_l.get(idx).get(i);
+                combine_banner_id(idx + 1, s, bans_l, bans, visited);
+                visited.remove(bans_l.get(idx).get(i));
             }
         }
 
