@@ -53,6 +53,34 @@ gems	result
  */
 public class 보석_쇼핑 {
     static void main() {
+        String[] gems = new String[] {
+                "DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
+        };
 
+        Solve task = new Solve();
+        System.out.println(task.solution(gems));
+    }
+
+    private static class Solve {
+        private int[] ans;
+
+        public int[] solution(String[] gems) {
+            init_setting(gems);
+
+            /*
+                low, high 포인트를 0부터 시작하여 서로 교차하거나, high가 끝지점에 도달했을 때, 불가능한 경우 종료
+                1. low,high = 0으로 둔 상태로, init_setting에서 보석의 모든 종류의 개수만큼 [low,high]에 존재하는지 검사
+                2. [low,high]에 모든 보석이 존재하는 경우, low를 증가시키고, 모든 보석이 존재하지 않는 경우, high를 증가시킨다.
+                3. 2번과정을 반복하여 high - low의 최소값을 구한다.
+
+             */
+
+            return ans;
+        }
+
+        private void init_setting(String[] gems) {
+            ans = new int[2];
+
+        }
     }
 }
