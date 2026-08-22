@@ -1,5 +1,8 @@
 package Lv3;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 /*
 [카카오 인턴] 보석 쇼핑
 제출 내역
@@ -54,33 +57,67 @@ gems	result
 public class 보석_쇼핑 {
     static void main() {
         String[] gems = new String[] {
-                "DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
+                //"DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
+                "AA", "AB", "AC", "AA", "AC"
         };
 
         Solve task = new Solve();
-        System.out.println(task.solution(gems));
+        System.out.println(Arrays.toString(task.solution(gems)));
     }
 
     private static class Solve {
         private int[] ans;
+        private int gems_kind;
 
         public int[] solution(String[] gems) {
             init_setting(gems);
 
-            /*
-                low, high 포인트를 0부터 시작하여 서로 교차하거나, high가 끝지점에 도달했을 때, 불가능한 경우 종료
-                1. low,high = 0으로 둔 상태로, init_setting에서 보석의 모든 종류의 개수만큼 [low,high]에 존재하는지 검사
-                2. [low,high]에 모든 보석이 존재하는 경우, low를 증가시키고, 모든 보석이 존재하지 않는 경우, high를 증가시킨다.
-                3. 2번과정을 반복하여 high - low의 최소값을 구한다.
-
-             */
+            shopping_gems(gems, gems_kind);
 
             return ans;
+        }
+
+        private void shopping_gems(String[] gems, int gems_kind) {
+            int low = 0, high = 0, mlow = 0, mhigh = Integer.MAX_VALUE;
+            HashMap<String, Integer> gems_maps = new HashMap<>();
+
+            while(low <= high && high < gems.length) {
+                if(gems_maps.containsKey(gems[high])) {
+                    gems_maps.put(gems[high], gems_maps.get(gems[high]) + 1);
+                } else {
+                    gems_maps.put(gems[high], 1);
+                }
+
+                if(gems_maps.size() == gems_kind) {
+                    if(high - low < mhigh - mlow || (high - low == mhigh - mlow) && low < mlow) {
+                        mlow = low;
+                        mhigh = high;
+                    }
+
+                    if(gems_maps.get(gems[low]) == 1) {
+                        gems_maps.remove(gems[low]);
+                    } else {
+                        gems_maps.put(gems[low],gems_maps.get(gems[low]) - 1);
+                    }
+
+                    low++;
+                } else {
+                    high++;
+                }
+            }
+
+            ans[0] = mlow + 1;
+            ans[1] = mhigh + 1;
         }
 
         private void init_setting(String[] gems) {
             ans = new int[2];
 
+            ans[0] = 0;
+            ans[1] = Integer.MAX_VALUE;
+
+            gems_kind = Math.toIntExact(Arrays.stream(gems)
+                    .distinct().count());
         }
     }
 }
