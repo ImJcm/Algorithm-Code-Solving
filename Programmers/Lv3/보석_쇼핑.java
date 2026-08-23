@@ -89,7 +89,7 @@ public class 보석_쇼핑 {
                 }
 
                 if(gems_maps.size() == gems_kind) {
-                    if(high - low < mhigh - mlow || (high - low == mhigh - mlow) && low < mlow) {
+                    if(high - low < mhigh - mlow || ((high - low == mhigh - mlow) && low < mlow)) {
                         mlow = low;
                         mhigh = high;
                     }
