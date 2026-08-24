@@ -54,6 +54,14 @@ gems	result
 
 ※ 공지 - 2020년 7월 21일 테스트케이스가 추가되었습니다.
  */
+/*
+알고리즘 핵심
+Two-Point
+1. Set을 이용하여 입력으로 주어지는 보석의 종류의 수를 구한다.
+2. low, high 두개의 포인트를 두어 [low, high]구간에 모든 보석의 포함하는지를 검사한다.
+3. [low, high]구간의 모든 보석이 포함되지 않았다면, high를 증가시키고, 모든 보석이 포함되어 있으면 구간의 최소화를 위해
+low를 증가시켜 구간을 좁히는 것을 반복한다.
+ */
 public class 보석_쇼핑 {
     static void main() {
         String[] gems = new String[] {
@@ -88,7 +96,7 @@ public class 보석_쇼핑 {
                     gems_maps.put(gems[high], 1);
                 }
 
-                if(gems_maps.size() == gems_kind) {
+                while(gems_maps.size() == gems_kind) {
                     if(high - low < mhigh - mlow || ((high - low == mhigh - mlow) && low < mlow)) {
                         mlow = low;
                         mhigh = high;
@@ -101,9 +109,9 @@ public class 보석_쇼핑 {
                     }
 
                     low++;
-                } else {
-                    high++;
                 }
+
+                high++;
             }
 
             ans[0] = mlow + 1;
