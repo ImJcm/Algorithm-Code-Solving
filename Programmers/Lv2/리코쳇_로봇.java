@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 리코쳇 로봇
 제출 내역
@@ -47,11 +50,19 @@ board	result
 따라서 -1을 return 합니다.
 ※ 공지 - 2024년 9월 19일 문제 지문이 리뉴얼되었습니다.
  */
+/*
+알고리즘 핵심
+BFS
+1. 한번의 이동이 아닌 이동방향으로 가능한만큼 움직이기 때문에 일반적인 BFS의 위치의 도달여부를 검사하는 것이 아닌 해당 위치에서
+이동방향의 차원을 추가하여 방문 여부를 검사한다. (visited[r][c][d])
+2. R을 시작으로 해당 위치에서 각 방향으로의 움직임을 중복 검사하고 이동한 만큼의 횟수를 BFS에 추가하여 G에 도달할 때의 최소 움직임을
+저장한다.
+ */
 public class 리코쳇_로봇 {
     static void main() {
         String[] board = new String[] {
-                "...D..R", ".D.G...", "....D.D", "D....D.", "..D...."
-                //".D.R", "....", ".G..", "...D"
+                //"...D..R", ".D.G...", "....D.D", "D....D.", "..D...."
+                ".D.R", "....", ".G..", "...D"
         };
 
         Solve task = new Solve();
@@ -59,12 +70,97 @@ public class 리코쳇_로봇 {
     }
 
     private static class Solve {
+        private class Pos {
+            int r,c,d,cnt;
+            
+            public Pos(int r, int c, int d, int cnt) {
+                this.r = r;
+                this.c = c;
+                this.d = d;
+                this.cnt = cnt;
+            }
+        }
         private int ans;
+        private int[][] direction;
+        private Pos R,G;
+        private boolean[][][] visited;
         
         public int solution(String[] board) {
-            //init_setting(board);
+            init_setting(board);
 
-            return ans;
+            ricochet_robot(board,R,G,visited);
+
+            return ans == Integer.MAX_VALUE ? -1 : ans;
+        }
+
+        private void ricochet_robot(String[] board, Pos R, Pos G, boolean[][][] visited) {
+            Queue<Pos> q = new LinkedList<Pos>();
+            for(int i = 0; i < 4; i++) {
+                q.add(new Pos(R.r, R.c, i,0));
+                visited[R.r][R.c][i] = true;
+            }
+
+            while(!q.isEmpty()) {
+                Pos p = q.poll();
+
+                if(p.r == G.r && p.c == G.c) {
+                    ans = p.cnt;
+                    return;
+                }
+
+                int nr = p.r;
+                int nc = p.c;
+
+                int w = 1;
+                while(true) {
+                    nr = p.r + direction[p.d][0] * w;
+                    nc = p.c + direction[p.d][1] * w;
+
+                    if(nr < 0 || nr >= board.length || nc < 0 || nc >= board[0].length() || board[nr].charAt(nc) == 'D') {
+                        nr -= direction[p.d][0];
+                        nc -= direction[p.d][1];
+                        break;
+                    }
+                    w++;
+                }
+
+                for(int i = 0; i < 4; i++) {
+                    if(visited[nr][nc][i]) continue;
+
+                    visited[nr][nc][i] = true;
+                    q.add(new Pos(nr, nc, i,p.cnt + 1));
+                }
+            }
+        }
+        
+        private void init_setting(String[] board) {
+            ans = Integer.MAX_VALUE;
+            
+            visited = new boolean[board.length][board[0].length()][4];
+            
+            direction = new int[][] {
+                    {0,-1}, {0, 1}, {-1, 0}, {1, 0}
+            };
+
+            for(int i = 0; i < board.length; i++) {
+                for(int j = 0; j < board[i].length(); j++) {
+                    char ch = board[i].charAt(j);
+
+                    switch (ch) {
+                        case 'R':
+                            R = new Pos(i, j, -1,0);
+                            break;
+                        case 'G':
+                            G = new Pos(i, j, -1,0);
+                            break;
+                        case 'D':
+                            for(int k = 0; k < 4; k++) {
+                                visited[i][j][k] = true;
+                            }
+                            break;
+                    }
+                }
+            }
         }
     }
 }
