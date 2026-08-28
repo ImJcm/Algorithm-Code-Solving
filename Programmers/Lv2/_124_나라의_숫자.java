@@ -30,23 +30,55 @@ n	result
  */
 public class _124_나라의_숫자 {
     static void main() {
-        int n = 4;
+        int n = 2;
 
         Solve task = new Solve();
         System.out.println(task.solution(n));
     }
 
     private static class Solve {
-        private String ans;
+        private String ans,trinary_str;
 
         public String solution(int n) {
             init_setting(n);
 
+            _124_country_digit(trinary_str);
+
             return ans;
         }
 
-        private void init_setting(int n) {
+        private void _124_country_digit(String tri_str) {
+            StringBuilder sb = new StringBuilder();
+            boolean down = false;
 
+            for(int i = tri_str.length() - 1; i >= 0; i--) {
+                int num = Integer.parseInt(String.valueOf(tri_str.charAt(i)));
+                num = down ? num - 1 : num;
+                down = false;
+
+                if(i == 0) {
+                    if(num > 0) sb.append(num);
+                    break;
+                }
+
+                if(num == 0) {
+                    sb.append("4");
+                    down = true;
+                } else if(num < 0) {
+                    sb.append("2");
+                    down = true;
+                } else {
+                    sb.append(num);
+                }
+            }
+
+            ans = sb.reverse().toString();
+        }
+
+        private void init_setting(int n) {
+            ans = "";
+
+            trinary_str = Integer.toString(n,3);
         }
     }
 }
