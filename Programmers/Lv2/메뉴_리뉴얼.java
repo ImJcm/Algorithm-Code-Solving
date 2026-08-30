@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.*;
+
 /*
 메뉴 리뉴얼
 제출 내역
@@ -59,10 +61,96 @@ WX가 두 번, XY가 두 번 주문됐습니다.
 또, 단품메뉴를 4개 이상 주문한 손님은 없으므로, 요리 4개로 구성된 코스요리 또한 새로 추가하지 않습니다.
  */
 /*
-
+알고리즘 핵심
+문자열 + 정렬 + Map
+1. 입력으로 주어진 고객이 주문한 각각의 메뉴들을 course의 개수에 맞게 중복을 허용하지 않으면서 가능한 경우의 수를 구하여 Map에 저장한다.
+2. 개수를 기준으로 내림차순 정렬하여 코스의 개수별로 최대 갯수의 제공가능한 코스를 저장한다.
+이때, 코스의 개수가 2개 이하거나, 이미 존재하는 코스의 갯수보다 작은 경우 가지치기)
+3. 마지막으로 저장한 코스들을 사전순으로 오름차순 정렬하여 출력한다.
  */
 public class 메뉴_리뉴얼 {
     static void main() {
+        String[] orders = new String[] {
+                //"ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"
+                "ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"
+        };
 
+        int[] course = new int[] {
+                2,3,5
+        };
+
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(orders, course)));
+    }
+
+    private static class Solve {
+        private ArrayList<String> ans;
+        private HashMap<String, Integer> acm; // available course menu
+
+        public String[] solution(String[] orders, int[] course) {
+            init_setting();
+
+            menu_renewal(orders, course);
+
+            return ans.toArray(new String[0]);
+        }
+
+        private void menu_renewal(String[] orders, int[] course) {
+            for(int i = 0; i < orders.length; i++) {
+                for(int j = 0; j < course.length; j++) {
+                    if(orders[i].length() < course[j]) continue;
+                    String[] sorted_order = orders[i].split("");
+                    Arrays.sort(sorted_order);
+                    available_course(0, 0, new StringBuilder(), sorted_order, course[j], acm);
+                }
+            }
+
+            List<Map.Entry<String, Integer>> acm_list = acm.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .toList();
+
+            Iterator it = acm_list.iterator();
+            int[] max_course_cnt = new int[11];
+            Arrays.fill(max_course_cnt, Integer.MAX_VALUE);
+
+            while(it.hasNext()) {
+                Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>)it.next();
+                String key = entry.getKey();
+                Integer value = entry.getValue();
+
+                if(value < 2 || (max_course_cnt[key.length()] != Integer.MAX_VALUE && max_course_cnt[key.length()] > value)) continue;
+
+                if(max_course_cnt[key.length()] == value) ans.add(key);
+                else if(max_course_cnt[key.length()] == Integer.MAX_VALUE) {
+                    max_course_cnt[key.length()] = value;
+                    ans.add(key);
+                }
+            }
+
+            ans.sort(String::compareTo);
+        }
+
+        private void available_course(int index, int nidx, StringBuilder new_order, String[] order, int course, HashMap<String, Integer> acm) {
+            if(index == course) {
+                int cnt = 0;
+                String str = new_order.toString();
+                if(acm.containsKey(str)) {
+                    cnt = acm.get(str);
+                }
+                acm.put(str, cnt + 1);
+                return;
+            }
+
+            for(int i = nidx; i < order.length; i++) {
+                new_order.append(order[i]);
+                available_course(index + 1, i + 1, new_order, order, course, acm);
+                new_order.delete(new_order.length()-1, new_order.length());
+            }
+        }
+
+        private void init_setting() {
+             ans = new ArrayList<>();
+             acm = new HashMap<>();
+        }
     }
 }
