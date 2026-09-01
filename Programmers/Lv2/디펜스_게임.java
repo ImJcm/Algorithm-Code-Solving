@@ -1,5 +1,10 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+
 /*
 디펜스 게임
 제출 내역
@@ -38,6 +43,64 @@ n	k	enemy	result
  */
 public class 디펜스_게임 {
     static void main() {
+        int n = 7;
+        int k = 3;
+        int[] enemy = new int[] {
+                4, 2, 4, 5, 3, 3, 1
+        };
 
+        Solve task = new Solve();
+        System.out.println(task.solution(n,k,enemy));
+    }
+
+    private static class Solve {
+        private int ans;
+        private long[] prefix_sum;
+
+        public int solution(int n, int k, int[] enemy) {
+            init_setting(n,k,enemy);
+
+            defense_game(n,k,enemy,prefix_sum);
+
+            return ans;
+        }
+
+        private void defense_game(int n, int k, int[] enemy, long[] prefix_sum) {
+            boolean flag = true;
+            int idx = prefix_sum.length;
+
+            while(flag) {
+                ArrayList<Integer> sorted_enemy = Arrays.stream(enemy)
+                        .limit(idx)
+                        .boxed()
+                        .sorted(Comparator.reverseOrder())
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                long sum = 0;
+
+                for(int i = 0; i < k; i++) {
+                    sum += sorted_enemy.get(i);
+                }
+
+                if(prefix_sum[idx - 1] - sum <= n) {
+                    ans = idx;
+                    flag = false;
+                }
+
+                idx--;
+            }
+        }
+
+        private void init_setting(int n, int k, int[] enemy) {
+            ans = 0;
+
+            prefix_sum = new long[enemy.length];
+
+            prefix_sum[0] = enemy[0];
+
+            for(int i = 1; i < enemy.length; i++) {
+                prefix_sum[i] = prefix_sum[i - 1] + enemy[i];
+            }
+        }
     }
 }
