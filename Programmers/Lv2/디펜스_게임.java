@@ -43,6 +43,24 @@ n	k	enemy	result
 
 준호는 모든 공격에 무적권을 사용하여 4라운드까지 막을 수 있습니다.
  */
+/*
+알고리즘 핵심
+우선순위 큐
+1. 앞쪽부터 순차적으로 적을 제거하기 때문에 k개 만큼 우선순위 큐를 채운다.
+2. k개를 채운 후, enemy[i]와 가장 적은 수의 적을 비교하여 소탕권을 사용할 라운드를 결정한다.
+3. 소탕권을 모두 사용하고, 남은 병사의 수와 현재 소탕가능한 적의 수를 비교하여 소탕 가능한 라운드 수를 갱신한다.
+
+첫 접근으로 구간을 구하는 문제로 누적합을 통해 뒷 라운드부터 [0,i]구간의 내림차순의 k개를 prefix[i]에서 뺀 값을 n과 비교하여
+소탕 가능한 라운드를 구하려고 하였지만, 시간초과 및 틀린 로직이였다.
+
+고민하는 과정에서 문득 앞에서 순차적으로 진행하기 때문에 결국 현재 라운드의 적의 수와 현재까지 사용했던 가장 적은 적의 수를 가진
+라운드를 찾는 것이기 때문에 소탕권을 사용한 적의 수를 저장해두면 된다고 생각이 들었다.
+
+저장해둔 적의 수와 현재 라운드의 적 수를 비교하여 교체하는 것이 핵심이였다.
+
+따라서, 우선순위 큐를 사용하여 적의 수를 저장해두고, k개의 소탕권을 다 사용하였다면 가장 적은 라운드의 적수와 현재 적수를 비교하여
+교체작업을 하여 현재까지 소탕할 수 있는 적의 수를 누적한 값과 n을 비교하여 소탕가능한 라운드를 결정한다.
+ */
 public class 디펜스_게임 {
     static void main() {
         /*int n = 7;
@@ -50,10 +68,10 @@ public class 디펜스_게임 {
         int[] enemy = new int[] {
                 4, 2, 4, 5, 3, 3, 1
         };*/
-        int n = 2;
-        int k = 4;
+        int n = 10;
+        int k = 1;
         int[] enemy = new int[] {
-                3,3,3,3
+                10,1,2,11,12
         };
 
         Solve task = new Solve();
@@ -75,29 +93,27 @@ public class 디펜스_게임 {
         private void defense_game(int n, int k, int[] enemy, PriorityQueue<Integer> pq) {
             int cur_n = 0;
 
-            for(int i = 0; i < enemy.length; i++) {
-                if(pq.size() == k) {
-                    int e = pq.peek();
-
-                    if(enemy[i] > e) {
-                        cur_n += pq.poll();
-                        pq.add(enemy[i]);
-                    } else {
-                        cur_n += enemy[i];
-                        int remain = n - cur_n;
-
-                        if(remain <= 0) {
-                            ans = i;
-                            break;
-                        }
-                    }
-                } else  {
+            for (int i = 0; i < enemy.length; i++) {
+                if (pq.size() < k) {
                     pq.add(enemy[i]);
+                    continue;
+                }
+
+                int weakest = pq.peek();
+                if (enemy[i] > weakest) {
+                    cur_n += pq.poll();
+                    pq.add(enemy[i]);
+                } else {
+                    cur_n += enemy[i];
+                }
+
+                if (cur_n > n) {
+                    ans = i;
+                    break;
                 }
             }
 
-            // 모든 라운드를 막을 수 있는 경우
-            if(ans == 0) {
+            if (ans == 0) {
                 ans = enemy.length;
             }
         }
