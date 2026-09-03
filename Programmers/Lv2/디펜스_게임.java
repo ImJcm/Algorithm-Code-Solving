@@ -3,6 +3,7 @@ package Lv2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,14 +45,75 @@ n	k	enemy	result
  */
 public class 디펜스_게임 {
     static void main() {
-        int n = 7;
+        /*int n = 7;
         int k = 3;
         int[] enemy = new int[] {
                 4, 2, 4, 5, 3, 3, 1
+        };*/
+        int n = 2;
+        int k = 4;
+        int[] enemy = new int[] {
+                3,3,3,3
         };
 
         Solve task = new Solve();
         System.out.println(task.solution(n,k,enemy));
+    }
+
+    private static class Solve {
+        private int ans;
+        private PriorityQueue<Integer> pq;
+
+        public int solution(int n, int k, int[] enemy) {
+            init_setting();
+
+            defense_game(n,k,enemy,pq);
+
+            return ans;
+        }
+
+        private void defense_game(int n, int k, int[] enemy, PriorityQueue<Integer> pq) {
+            int cur_n = 0;
+
+            for(int i = 0; i < enemy.length; i++) {
+                if(pq.size() == k) {
+                    int e = pq.peek();
+
+                    if(enemy[i] > e) {
+                        cur_n += pq.poll();
+                        pq.add(enemy[i]);
+                    } else {
+                        cur_n += enemy[i];
+                        int remain = n - cur_n;
+
+                        if(remain <= 0) {
+                            ans = i;
+                            break;
+                        }
+                    }
+                } else  {
+                    pq.add(enemy[i]);
+                }
+            }
+
+            // 모든 라운드를 막을 수 있는 경우
+            if(ans == 0) {
+                ans = enemy.length;
+            }
+        }
+
+        private void init_setting() {
+            ans = 0;
+
+            pq = new PriorityQueue<>();
+
+            /*pq = new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o1 - o2;
+                }
+            });*/
+        }
     }
 
     /*
