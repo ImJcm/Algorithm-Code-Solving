@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /*
 디펜스 게임
@@ -53,7 +54,77 @@ public class 디펜스_게임 {
         System.out.println(task.solution(n,k,enemy));
     }
 
-    private static class Solve {
+    /*
+        Failure Solve : time out + logic error
+     */
+    private static class WrongSolve_timeout2 {
+        private class Enemy_Node {
+            int enemy,idx;
+
+            public Enemy_Node(int enemy, int idx) {
+                this.enemy = enemy;
+                this.idx = idx;
+            }
+        }
+        private int ans;
+        private long[] prefix_sum;
+        private ArrayList<Enemy_Node> sorted_enemies;
+
+        public int solution(int n, int k, int[] enemy) {
+            init_setting(n,k,enemy);
+
+            defense_game(n,k,enemy,prefix_sum);
+
+            return ans;
+        }
+
+        private void defense_game(int n, int k, int[] enemy, long[] prefix_sum) {
+            boolean flag = true;
+            int idx = prefix_sum.length;
+            sorted_enemies = IntStream.range(0, enemy.length)
+                    .mapToObj(i -> new Enemy_Node(enemy[i],i))
+                    .sorted((o1, o2) -> o2.enemy - o1.enemy)
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            while(flag) {
+                long sum = 0;
+
+                int i = 0;
+                while(i < sorted_enemies.size() && i < k) {
+                    if(idx < sorted_enemies.get(i).idx) {
+                        sorted_enemies.remove(i);
+                        continue;
+                    }
+                    sum += sorted_enemies.get(i).enemy;
+                    i++;
+                }
+
+                if(prefix_sum[idx - 1] - sum <= n) {
+                    ans = idx;
+                    flag = false;
+                }
+
+                idx--;
+            }
+        }
+
+        private void init_setting(int n, int k, int[] enemy) {
+            ans = 0;
+
+            prefix_sum = new long[enemy.length];
+
+            prefix_sum[0] = enemy[0];
+
+            for(int i = 1; i < enemy.length; i++) {
+                prefix_sum[i] = prefix_sum[i - 1] + enemy[i];
+            }
+        }
+    }
+
+    /*
+        Failure Solve : timeout
+     */
+    private static class WrongSolve_timeout {
         private int ans;
         private long[] prefix_sum;
 
