@@ -1,5 +1,10 @@
 package Lv3;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 부대복귀
 제출 내역
@@ -37,8 +42,108 @@ n	roads	sources	destination	result
 지역 5에서 지역 5는 이동할 필요가 없기 때문에, 최단거리는 0입니다.
 따라서 [2, -1, 0]을 return합니다.
  */
+/*
+알고리즘 핵심
+BFS
+1. BFS를 수행하여 목적지를 출발하여 각 지역으로의 최단 시간을 저장한다.
+2. 이때 한번 방문하여도 최단 시간으로 도달이 가능하면 경로 탐색을 재수행하고, 이미 도달한 지역의 최소 도달 시간보다 크다면 넘어간다.
+3. 각 sources의 최단 경로를 ans에 저장한 후 출력한다.
+ */
 public class 부대복귀 {
     static void main() {
+        int n = 5; // 3
+        int[][] roads = new int[][] {
+                //{1, 2}, {2, 3}
+                {1, 2}, {1, 4}, {2, 4}, {2, 5}, {4, 5}
+        };
+        int[] sources = new int[] {
+                //2, 3
+                1,3,5
+        };
+        int destination = 5;
 
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(n,roads,sources, destination)));
+    }
+
+    private static class Solve {
+        private class Move {
+            Node node;
+            int time;
+
+            public Move(Node node, int time) {
+                this.node = node;
+                this.time = time;
+            }
+        }
+        private class Node {
+            int s;
+            ArrayList<Node> adj = new ArrayList<>();
+
+            public Node(int s) {
+                this.s = s;
+                this.adj = new ArrayList<>();
+            }
+
+            public void addNode(Node node) {
+                this.adj.add(node);
+            }
+        }
+        private int[] ans;
+        private Node[] nodes;
+        private int[] visited;
+
+        public int[] solution(int n, int[][] roads, int[] sources, int destination) {
+            init_setting(n, roads, sources);
+
+            return_to_base(nodes, sources, destination);
+
+            return ans;
+        }
+
+        private void return_to_base(Node[] nodes, int[] sources, int destination) {
+            Queue<Move> q = new LinkedList<>();
+            q.add(new Move(nodes[destination - 1], 0));
+            visited[destination - 1] = 0;
+
+            while(!q.isEmpty()) {
+                Move move = q.poll();
+
+                for(Node adj : move.node.adj) {
+                    if(visited[adj.s] <= move.time + 1) continue;
+
+                    visited[adj.s] = move.time + 1;
+                    q.add(new Move(adj, move.time + 1));
+                }
+            }
+
+            for(int i = 0; i < sources.length; i++) {
+                int s = sources[i] - 1;
+                ans[i] = visited[s] == Integer.MAX_VALUE ? -1 : visited[s];
+            }
+        }
+
+        private void init_setting(int n, int[][] roads, int[] sources) {
+            ans = new int[sources.length];
+            nodes = new Node[n];
+            visited = new int[n];
+
+            for(int i = 0; i < n; i++) {
+                nodes[i] = new Node(i);
+                visited[i] = Integer.MAX_VALUE;
+            }
+
+            for(int i = 0; i < sources.length; i++) {
+                ans[i] = -1;
+            }
+
+            for(int i = 0; i < roads.length; i++) {
+                int s = roads[i][0] - 1;
+                int d = roads[i][1] - 1;
+
+                nodes[s].addNode(nodes[d]);
+                nodes[d].addNode(nodes[s]);
+            }
+        }
     }
 }
