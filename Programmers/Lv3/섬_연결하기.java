@@ -1,5 +1,9 @@
 package Lv3;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+
 /*
 섬 연결하기
 제출 내역
@@ -25,25 +29,122 @@ n	costs	return
 costs를 그림으로 표현하면 다음과 같으며, 이때 초록색 경로로 연결하는 것이 가장 적은 비용으로 모두를 통행할 수 있도록 만드는 방법입니다.
 
 image.png
-
-Solution.java
-
-1
-class Solution {
-2
-    public int solution(int n, int[][] costs) {
-3
-        int answer = 0;
-4
-        return answer;
-5
-    }
-6
-}
-실행 결과
-실행 결과가 여기에 표시됩니다.
-
+ */
+/*
 
  */
 public class 섬_연결하기 {
+    static void main() {
+        int n = 4;
+        int[][] costs = new int[][] {
+                {0,1,1},{0,2,2},{1,2,5},{1,3,1},{2,3,8}
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(n, costs));
+    }
+
+    private static class Solve {
+        private class Island {
+            int island;
+            ArrayList<Island> adj = new ArrayList<>();
+
+            public Island(int island) {
+                this.island = island;
+            }
+
+            public void addIsland(int island) {
+                this.adj.add(new Island(island));
+            }
+        }
+        private class Bridge implements Comparable<Bridge> {
+            Island from, to;
+            int cost;
+
+            public Bridge(Island from, Island to, int cost) {
+                this.from = from;
+                this.to = to;
+                this.cost = cost;
+            }
+            @Override
+            public int compareTo(Bridge o) {
+                if(this.cost == o.cost) {
+                    int adj_size1 = this.from.adj.size() + this.to.adj.size();
+                    int adj_size2 = o.from.adj.size() + o.to.adj.size();
+
+                    return adj_size2 - adj_size1;
+                } else {
+                    return this.cost - o.cost;
+                }
+
+            }
+        }
+        private int ans;
+        private boolean[] visited;
+        private Island[] islands;
+        private Bridge[] bridges;
+
+        public int solution(int n, int[][] costs) {
+            init_setting(n, costs);
+
+            connect_island(n, bridges, visited);
+
+            return ans;
+        }
+
+        private void connect_island(int n, Bridge[] bridges, boolean[] visited) {
+            PriorityQueue<Bridge> pq = new PriorityQueue<>();
+            pq.addAll(Arrays.asList(bridges));
+
+            int c = 0;
+            int cost = 0;
+
+            while(!pq.isEmpty()) {
+                Bridge bridge = pq.poll();
+
+                int fi = bridge.from.island;
+                int ti = bridge.to.island;
+
+                if(visited[fi] && visited[ti]) continue;
+
+                if(!visited[fi]) {
+                    visited[fi] = true;
+                    c++;
+                }
+                if(!visited[ti]) {
+                    visited[ti] = true;
+                    c++;
+                }
+
+                cost += bridge.cost;
+
+                if(c == n) {
+                    ans = cost;
+                    return;
+                }
+            }
+        }
+
+        private void init_setting(int n, int[][] costs) {
+            ans = 0;
+
+            visited = new boolean[n];
+            islands = new Island[n];
+            bridges = new Bridge[costs.length];
+
+            for(int i = 0; i < n; i++) {
+                islands[i] = new Island(i);
+            }
+
+            for(int i = 0; i < costs.length; i++) {
+                int f = costs[i][0];
+                int t = costs[i][1];
+                int c = costs[i][2];
+
+                islands[f].addIsland(t);
+                islands[t].addIsland(f);
+                bridges[i] = new Bridge(islands[f], islands[t], c);
+            }
+        }
+    }
 }
