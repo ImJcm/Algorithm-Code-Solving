@@ -44,6 +44,12 @@ public class 섬_연결하기 {
         System.out.println(task.solution(n, costs));
     }
 
+    private static class Solve {
+        private int ans;
+        public boolean solution(int n, int[][] costs) {
+        }
+    }
+
     private static class WrongSolve {
         private class Island {
             int island;
