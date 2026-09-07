@@ -44,7 +44,7 @@ public class 섬_연결하기 {
         System.out.println(task.solution(n, costs));
     }
 
-    private static class Solve {
+    private static class WrongSolve {
         private class Island {
             int island;
             ArrayList<Island> adj = new ArrayList<>();
