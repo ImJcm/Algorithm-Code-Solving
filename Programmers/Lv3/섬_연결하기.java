@@ -104,7 +104,7 @@ public class 섬_연결하기 {
             while(!pq.isEmpty()) {
                 Bridge current = pq.poll();
 
-
+                // continue...
             }
         }
 
