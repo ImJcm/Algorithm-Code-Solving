@@ -47,9 +47,14 @@ public class 섬_연결하기 {
     private static class Solve {
         private int ans;
         public boolean solution(int n, int[][] costs) {
+
         }
     }
 
+    /*
+        failure solve
+        => 최소 비용의 경로를 선택하지만, 모든 섬이 연결되었다고 보장할 수 없다.
+     */
     private static class WrongSolve {
         private class Island {
             int island;
