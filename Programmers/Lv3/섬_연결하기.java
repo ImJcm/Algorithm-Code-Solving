@@ -44,10 +44,87 @@ public class 섬_연결하기 {
         System.out.println(task.solution(n, costs));
     }
 
+    /*
+        design : 최소 비용을 갖는 경로를 시작으로 섬에서 연결된 다리들을 우선순위 큐에 올려 그때마다 최소 경로를
+        선택하고, 섬들간의 인접 여부를 만족시킨다.
+     */
     private static class Solve {
-        private int ans;
-        public boolean solution(int n, int[][] costs) {
+        private class Island {
+            int island;
+            ArrayList<Bridge> bridges = new ArrayList<>();
 
+            public Island(int island) {
+                this.island = island;
+            }
+
+            public void addBridge(Bridge bridge) {
+                this.adj.add(bridge));
+            }
+        }
+        private class Bridge implements Comparable<Bridge> {
+            int from, to;
+            int cost;
+
+            public Bridge(int from, int to, int cost) {
+                this.from = from;
+                this.to = to;
+                this.cost = cost;
+            }
+
+            @Override
+            public int compareTo(Bridge o) {
+                return this.cost - o.cost;
+                /*if (this.cost == o.cost) {
+                    int adj_size1 = this.from.adj.size() + this.to.adj.size();
+                    int adj_size2 = o.from.adj.size() + o.to.adj.size();
+
+                    return adj_size2 - adj_size1;
+                } else {
+                    return this.cost - o.cost;
+                }*/
+            }
+        }
+        private int ans;
+        private Island[] islands;
+
+        public int solution(int n, int[][] costs) {
+            init_setting(n, costs);
+
+            connect_island(n, islands);
+
+            return ans;
+        }
+
+        private void connect_island(int n, Island[] islands) {
+            PriorityQueue<Bridge> pq = new PriorityQueue<>();
+            pq.addAll(islands[0].bridges);
+            boolean[] visited = new boolean[n];
+            visited[islands[0].island] = true;
+
+            while(!pq.isEmpty()) {
+                Bridge current = pq.poll();
+
+
+            }
+        }
+
+        private void init_setting(int n, int[][] costs) {
+            ans = 0;
+
+            islands = new Island[n];
+
+            for(int i = 0; i < n; i++) {
+                islands[i] = new Island(i);
+            }
+
+            for(int i = 0; i < costs.length; i++) {
+                int fi = costs[i][0];
+                int ti = costs[i][1];
+                int c = costs[i][2];
+
+                islands[fi].bridges.add(new Bridge(fi, ti, c));
+                islands[ti].bridges.add(new Bridge(ti, fi, c));
+            }
         }
     }
 
