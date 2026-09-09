@@ -31,7 +31,9 @@ costs를 그림으로 표현하면 다음과 같으며, 이때 초록색 경로�
 image.png
  */
 /*
-
+알고리즘 핵심
+Greedy(탐욕) + PriorityQueue(우선순위 큐)
+1.
  */
 public class 섬_연결하기 {
     static void main() {
@@ -58,7 +60,7 @@ public class 섬_연결하기 {
             }
 
             public void addBridge(Bridge bridge) {
-                this.adj.add(bridge));
+                this.bridges.add(bridge);
             }
         }
         private class Bridge implements Comparable<Bridge> {
@@ -101,10 +103,25 @@ public class 섬_연결하기 {
             boolean[] visited = new boolean[n];
             visited[islands[0].island] = true;
 
+            int cost = 0;
+            int island_cnt = 1;
+
             while(!pq.isEmpty()) {
                 Bridge current = pq.poll();
 
-                // continue...
+                if(island_cnt == n) {
+                    ans = cost;
+                    return;
+                }
+
+                int fi = current.from;
+                int ti = current.to;
+
+                if(visited[ti]) continue;
+                cost += current.cost;
+                island_cnt++;
+                visited[ti] = true;
+                pq.addAll(islands[ti].bridges);
             }
         }
 
