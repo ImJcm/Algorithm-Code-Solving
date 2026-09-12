@@ -1,5 +1,9 @@
 package Lv3;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.PriorityQueue;
+
 /*
 여행경로
 제출 내역
@@ -34,6 +38,87 @@ tickets	return
  */
 public class 여행경로 {
     static void main() {
+        String[][] tickets = new String[][] {
+                {"ICN", "SFO"}, {"ICN", "ATL"}, {"SFO", "ATL"}, {"ATL", "ICN"}, {"ATL","SFO"}
+        };
 
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(tickets)));
+    }
+
+    private static class Solve {
+        private class AirPort implements Comparable<AirPort> {
+            String name;
+            PriorityQueue<String> tickets;
+
+            public AirPort(String name) {
+                this.name = name;
+                tickets = new PriorityQueue<>();
+            }
+
+            public void addTicket(String ticket) {
+                this.tickets.add(ticket);
+            }
+
+            @Override
+            public int compareTo(AirPort o) {
+                return this.name.compareTo(o.name);
+            }
+        }
+        private final String START = "ICN";
+        private int ticket_cnt;
+        private boolean flag = true;
+        private String[] ans;
+        private HashMap<String, AirPort> airports;
+
+        public String[] solution(String[][] tickets) {
+            init_setting(tickets);
+
+            travel_route(0, ticket_cnt, START, airports);
+
+            return ans;
+        }
+
+        private void travel_route(int idx, int end, String start, HashMap<String, AirPort> airports) {
+            if(!flag) return;
+
+            ans[idx] = start;
+
+            if(idx == end) {
+                flag = false;
+                return;
+            }
+
+
+
+            while(!airports.get(start).tickets.isEmpty()) {
+                String dest = airports.get(start).tickets.poll();
+
+                travel_route(idx + 1, end, dest, airports);
+            }
+        }
+
+        private void init_setting(String[][] tickets) {
+            airports = new HashMap<>();
+
+            ticket_cnt = tickets.length;
+
+            for(String[] ticket : tickets) {
+                String f = ticket[0];
+                String t = ticket[1];
+
+                if(!airports.containsKey(f)) {
+                    airports.put(f, new AirPort(f));
+                }
+
+                if(!airports.containsKey(t)) {
+                    airports.put(t, new AirPort(t));
+                }
+
+                airports.get(f).addTicket(t);
+            }
+
+            ans = new String[ticket_cnt + 1];
+        }
     }
 }
