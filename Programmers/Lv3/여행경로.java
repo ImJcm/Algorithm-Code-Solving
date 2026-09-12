@@ -46,7 +46,7 @@ public class 여행경로 {
         System.out.println(Arrays.toString(task.solution(tickets)));
     }
 
-    private static class Solve {
+    private static class WrongSolve {
         private class AirPort implements Comparable<AirPort> {
             String name;
             PriorityQueue<String> tickets;
