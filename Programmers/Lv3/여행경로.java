@@ -38,7 +38,10 @@ public class 여행경로 {
     static void main() {
         String[][] tickets = new String[][] {
                 //{"ICN", "SFO"}, {"ICN", "ATL"}, {"SFO", "ATL"}, {"ATL", "ICN"}, {"ATL","SFO"}
-                {"ICN", "JFK"}, {"ICN", "JFK"}, {"JFK", "HND"}, {"HND", "ICN"}, {"JFK", "ATL"}
+                //{"ICN", "JFK"}, {"ICN", "JFK"}, {"JFK", "HND"}, {"HND", "ICN"}, {"JFK", "ATL"}
+                //{"ICN", "BBB"}, {"BBB", "ICN"}, {"ICN", "AAA"}
+                //{"ICN", "AAA"}, {"AAA", "ICN"}, {"ICN", "CCC"}, {"CCC", "ICN"}, {"ICN", "DDD"}, {"DDD", "AAA"}
+                {"EZE","TIA"},{"EZE","HBA"},{"AXA","TIA"},{"ICN","AXA"},{"ANU","ICN"},{"ADL","ANU"},{"TIA","AUA"},{"ANU","AUA"},{"ADL","EZE"},{"ADL","EZE"},{"EZE","ADL"},{"AXA","EZE"},{"AUA","AXA"},{"ICN","AXA"},{"AXA","AUA"},{"AUA","ADL"},{"ANU","EZE"},{"TIA","ADL"},{"EZE","ANU"},{"AUA","ANU"}
         };
 
         Solve task = new Solve();
@@ -47,6 +50,7 @@ public class 여행경로 {
 
     /*
         Wrong Solve : timeout TestCase#1
+        TimeOut Case : {"EZE","TIA"},{"EZE","HBA"},{"AXA","TIA"},{"ICN","AXA"},{"ANU","ICN"},{"ADL","ANU"},{"TIA","AUA"},{"ANU","AUA"},{"ADL","EZE"},{"ADL","EZE"},{"EZE","ADL"},{"AXA","EZE"},{"AUA","AXA"},{"ICN","AXA"},{"AXA","AUA"},{"AUA","ADL"},{"ANU","EZE"},{"TIA","ADL"},{"EZE","ANU"},{"AUA","ANU"}
      */
     private static class Solve {
         private class AirPort {
