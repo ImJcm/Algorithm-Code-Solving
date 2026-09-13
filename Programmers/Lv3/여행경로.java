@@ -48,11 +48,99 @@ public class 여행경로 {
         System.out.println(Arrays.toString(task.solution(tickets)));
     }
 
+    private static class Solve {
+        private class AirPort {
+            String name;
+            ArrayList<String> tickets;
+            ArrayList<Boolean> visited;
+
+            public AirPort(String name) {
+                this.name = name;
+                tickets = new ArrayList<>();
+                visited = new ArrayList<>();
+            }
+
+            public void addTicket(String ticket) {
+                this.tickets.add(ticket);
+                this.visited.add(false);
+            }
+            public void visitTickets(int idx) {
+                this.visited.set(idx, true);
+            }
+
+            public void unVisitTickets(int idx) {
+                this.visited.set(idx, false);
+            }
+
+        }
+        private final String start_airport = "ICN";
+        private String[] ans;
+        private int route_cnt;
+        private boolean flag;
+        private String[][] sorted_tickets;
+        private HashMap<String, AirPort> airports;
+
+        public String[] solution(String[][] tickets) {
+            init_setting(tickets);
+
+            travel_route(0, route_cnt - 1, start_airport, airports);
+
+            return ans;
+        }
+
+        private void travel_route(int idx, int route_cnt, String pos, HashMap<String, AirPort> airports) {
+            ans[idx] = pos;
+
+            if(!flag) return;
+            if(idx == route_cnt) {
+                flag = false;
+                return;
+            }
+
+            for(int i = 0; i < airports.get(pos).tickets.size() && flag; i++) {
+                if(airports.get(pos).visited.get(i)) continue;
+
+                airports.get(pos).visitTickets(i);
+                travel_route(++idx, route_cnt, airports.get(pos).tickets.get(i), airports);
+                airports.get(pos).unVisitTickets(i);
+            }
+        }
+
+        private void init_setting(String[][] tickets) {
+            route_cnt = tickets.length + 1;
+            flag = true;
+            ans = new String[route_cnt];
+
+            airports = new HashMap<>();
+
+            sorted_tickets = Arrays.stream(tickets)
+                    .sorted(Comparator.comparing(f -> f[1]))
+                    .toArray(String[][]::new);
+
+            for(String[] ticket : sorted_tickets) {
+                String f = ticket[0];
+                String t = ticket[1];
+
+                if(!airports.containsKey(f)) {
+                    airports.put(f, new AirPort(f));
+                }
+
+                if(!airports.containsKey(t)) {
+                    airports.put(t, new AirPort(t));
+                }
+
+                airports.get(f).addTicket(t);
+            }
+        }
+    }
+
+
+
     /*
         Wrong Solve : timeout TestCase#1
         TimeOut Case : {"EZE","TIA"},{"EZE","HBA"},{"AXA","TIA"},{"ICN","AXA"},{"ANU","ICN"},{"ADL","ANU"},{"TIA","AUA"},{"ANU","AUA"},{"ADL","EZE"},{"ADL","EZE"},{"EZE","ADL"},{"AXA","EZE"},{"AUA","AXA"},{"ICN","AXA"},{"AXA","AUA"},{"AUA","ADL"},{"ANU","EZE"},{"TIA","ADL"},{"EZE","ANU"},{"AUA","ANU"}
      */
-    private static class Solve {
+    private static class WrongSolve2 {
         private class AirPort {
             String name;
             Queue<String> tickets;
