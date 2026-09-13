@@ -1,8 +1,6 @@
 package Lv3;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /*
 여행경로
@@ -39,13 +37,98 @@ tickets	return
 public class 여행경로 {
     static void main() {
         String[][] tickets = new String[][] {
-                {"ICN", "SFO"}, {"ICN", "ATL"}, {"SFO", "ATL"}, {"ATL", "ICN"}, {"ATL","SFO"}
+                //{"ICN", "SFO"}, {"ICN", "ATL"}, {"SFO", "ATL"}, {"ATL", "ICN"}, {"ATL","SFO"}
+                {"ICN", "JFK"}, {"ICN", "JFK"}, {"JFK", "HND"}, {"HND", "ICN"}, {"JFK", "ATL"}
         };
 
         Solve task = new Solve();
         System.out.println(Arrays.toString(task.solution(tickets)));
     }
 
+    /*
+        Wrong Solve : timeout TestCase#1
+     */
+    private static class Solve {
+        private class AirPort {
+            String name;
+            Queue<String> tickets;
+
+            public AirPort(String name) {
+                this.name = name;
+                tickets = new LinkedList<>();
+            }
+
+            public void addTicket(String ticket) {
+                this.tickets.add(ticket);
+            }
+        }
+        private final String start_airport = "ICN";
+        private String[] ans;
+        private int route_cnt;
+        private boolean flag;
+        private String[][] sorted_tickets;
+        private HashMap<String, AirPort> airports;
+
+        public String[] solution(String[][] tickets) {
+            init_setting(tickets);
+
+            travel_route(0, route_cnt - 1, start_airport, airports);
+
+            return ans;
+        }
+
+        private void travel_route(int i, int route_cnt, String pos, HashMap<String, AirPort> airports) {
+            ans[i] = pos;
+
+            if(!flag) return;
+            if(i == route_cnt) {
+                flag = false;
+                return;
+            }
+
+            while(!airports.get(pos).tickets.isEmpty() && flag) {
+                String ticket = airports.get(pos).tickets.poll();
+
+                travel_route(i + 1, route_cnt, ticket, airports);
+
+                airports.get(pos).addTicket(ticket);
+            }
+        }
+
+        private void init_setting(String[][] tickets) {
+            route_cnt = tickets.length + 1;
+            flag = true;
+            ans = new String[route_cnt];
+
+            airports = new HashMap<>();
+
+            sorted_tickets = Arrays.stream(tickets)
+                    .sorted(Comparator.comparing(f -> f[1]))
+                    .toArray(String[][]::new);
+
+            for(String[] ticket : sorted_tickets) {
+                String f = ticket[0];
+                String t = ticket[1];
+
+                if(!airports.containsKey(f)) {
+                    airports.put(f, new AirPort(f));
+                }
+
+                if(!airports.containsKey(t)) {
+                    airports.put(t, new AirPort(t));
+                }
+
+                airports.get(f).addTicket(t);
+            }
+        }
+    }
+
+    /*
+        WrongSolve : logic error
+        => 단순하게 공항에서 이동가능한 공항으로의 이동을 결정하는 것은 알파벳이 순서상 오름차순으로 결정하는 것과
+        모든 티켓을 사용하여 이동이 가능한 경우이어야 한다.
+        즉, 알파벳 순서상 빠른 이동만 선택하는 경우, 전체 티켓을 사용할 수 없다.
+     */
     private static class WrongSolve {
         private class AirPort implements Comparable<AirPort> {
             String name;
