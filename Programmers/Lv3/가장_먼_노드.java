@@ -21,4 +21,27 @@ n	vertex	return
 image.png
  */
 public class 가장_먼_노드 {
+    static void main() {
+        int n = 6;
+        int[][] vertex = new int[][] {
+                {3, 6}, {4, 3}, {3, 2}, {1, 3}, {1, 2}, {2, 4}, {5, 2}
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(n, vertex));
+    }
+
+    private static class Solve {
+        private int ans;
+
+        public int solution(int n, int[][] vertex) {
+            init_setting(n,vertex);
+
+            return ans;
+        }
+
+        private void init_setting(int n, int[][] vertex) {
+
+        }
+    }
 }
