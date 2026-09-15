@@ -1,5 +1,9 @@
 package Lv3;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 가장 먼 노드
 제출 내역
@@ -20,6 +24,12 @@ n	vertex	return
 
 image.png
  */
+/*
+알고리즘 핵심
+BFS + 그래프
+1. 노드의 번호와 인접한 노드, 1번 노드로부터 떨어진 거리를 저장한 구조체를 생성하여 BFS를 수행하여 최단 거리를 각각 갱신한다.
+2. BFS 수행과정에서 1번 노드로부터 가장 먼거리를 찾고, 노드들 중 가장 먼 거리에 해당하는 노드의 개수를 구한다.
+ */
 public class 가장_먼_노드 {
     static void main() {
         int n = 6;
@@ -32,16 +42,88 @@ public class 가장_먼_노드 {
     }
 
     private static class Solve {
+        private class Node {
+            int node;
+            int dist_from_node_1;
+            ArrayList<Integer> adj;
+
+            public Node(int node) {
+                this.node = node;
+                this.dist_from_node_1 = -1;
+                this.adj = new ArrayList<>();
+            }
+
+            public void addEdge(int v) {
+                this.adj.add(v);
+            }
+        }
         private int ans;
+        private int max_dist_from_node_1;
+        private Node[] nodes;
+
 
         public int solution(int n, int[][] vertex) {
             init_setting(n,vertex);
 
+            move_nodes(n,nodes);
+
+            search_faraway_nodes(max_dist_from_node_1, nodes);
+
             return ans;
         }
 
-        private void init_setting(int n, int[][] vertex) {
+        private void move_nodes(int n, Node[] nodes) {
+            Queue<Node> q = new LinkedList<>();
+            boolean[] visited = new boolean[n + 1];
 
+            q.add(nodes[1]);
+            visited[nodes[1].node] = true;
+
+            while(!q.isEmpty()) {
+                Node cur = q.poll();
+
+                max_dist_from_node_1 = Math.max(max_dist_from_node_1, cur.dist_from_node_1);
+
+                for (Integer v : cur.adj) {
+                    if (!visited[v]) {
+                        visited[v] = true;
+                        nodes[v].dist_from_node_1 = cur.dist_from_node_1 + 1;
+                        q.add(nodes[v]);
+                    }
+                }
+            }
+        }
+
+        private void search_faraway_nodes(int max_dist, Node[] nodes) {
+            int cnt = 0;
+
+            for(int i = 1; i < nodes.length; i++) {
+                if(nodes[i].dist_from_node_1 == max_dist) {
+                    cnt++;
+                }
+            }
+
+            ans = cnt;
+        }
+
+        private void init_setting(int n, int[][] vertex) {
+            ans = 0;
+            max_dist_from_node_1 = -1;
+            nodes = new Node[n + 1];
+
+            for(int i = 1; i <= n; i++) {
+                nodes[i] = new Node(i);
+            }
+
+            for(int[] v : vertex) {
+                int f = v[0];
+                int t = v[1];
+
+                nodes[f].adj.add(t);
+                nodes[t].adj.add(f);
+            }
+
+            nodes[1].dist_from_node_1 = 0;
         }
     }
 }
