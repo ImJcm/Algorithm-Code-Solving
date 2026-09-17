@@ -1,5 +1,7 @@
 package Lv3;
 
+import java.util.stream.IntStream;
+
 /*
 징검다리 건너기
 제출 내역
@@ -45,4 +47,45 @@ step_stones_103.png
 따라서 최대 3명이 디딤돌을 모두 건널 수 있습니다.
  */
 public class 징검다리_건너기 {
+    static void main() {
+        int[] stones = new int[] {
+                2, 4, 5, 3, 2, 1, 4, 2, 5, 1
+        };
+
+        int k = 3;
+
+        Solve task = new Solve();
+        System.out.println(task.solution(stones, k));
+    }
+
+    private static class Solve {
+        private int ans;
+
+        public int solution(int[] stones, int k) {
+            init_setting(stones, k);
+
+            crossing_stepping_stones(stones, k);
+
+            return ans;
+        }
+
+        private void crossing_stepping_stones(int[] stones, int k) {
+            int i = 0, max_crossing = 200_000_001;
+            while(i + k < stones.length) {
+                int maxIndex = IntStream.range(i, i + k)
+                        .boxed()
+                        .max((a,b) -> Integer.compare(stones[a], stones[b]))
+                        .orElse(-1);
+
+                i = maxIndex + 1;
+                max_crossing = Math.min(max_crossing, stones[maxIndex]);
+            }
+
+            ans = max_crossing;
+        }
+
+        private void init_setting(int[] stones, int k) {
+            ans = 0;
+        }
+    }
 }
