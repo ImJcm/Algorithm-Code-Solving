@@ -49,10 +49,12 @@ step_stones_103.png
 public class 징검다리_건너기 {
     static void main() {
         int[] stones = new int[] {
-                2, 4, 5, 3, 2, 1, 4, 2, 5, 1
+                //2, 4, 5, 3, 2, 1, 4, 2, 5, 1
+                //7,2,8,7,2,5,9
+                1
         };
 
-        int k = 3;
+        int k = 1;
 
         Solve task = new Solve();
         System.out.println(task.solution(stones, k));
@@ -69,8 +71,35 @@ public class 징검다리_건너기 {
             return ans;
         }
 
+        /*
+            Efficiency Test : ETC#1~14 - timeout
+         */
         private void crossing_stepping_stones(int[] stones, int k) {
+            int max_crossing = 200_000_001;
+
+            for(int i = 0;; i++) {
+                int e = Math.min(i + k, stones.length);
+                int maxIndex = IntStream.range(i, e)
+                        .boxed()
+                        .max((a,b) -> Integer.compare(stones[a], stones[b]))
+                        .orElse(-1);
+
+                max_crossing = Math.min(max_crossing, stones[maxIndex]);
+
+                if(i + k >= stones.length) break;
+            }
+
+            ans = max_crossing;
+        }
+
+
+
+        /*
+            Wrong Solve : TC#1,3 - logic error, Efficiency#3 - time out
+         */
+        private void wrong_logic_crossing_stepping_stones(int[] stones, int k) {
             int i = 0, max_crossing = 200_000_001;
+
             while(i + k < stones.length) {
                 int maxIndex = IntStream.range(i, i + k)
                         .boxed()
