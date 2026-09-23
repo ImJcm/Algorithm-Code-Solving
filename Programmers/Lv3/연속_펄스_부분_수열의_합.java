@@ -20,6 +20,64 @@ sequence	result
  */
 public class 연속_펄스_부분_수열의_합 {
     static void main() {
+        int[] sequence = new int[] {
+                2, 3, -6, 1, 3, -1, 2, 4
+        };
 
+        Solve task = new Solve();
+        System.out.println(task.solution(sequence));
+    }
+
+    private static class Solve {
+        private long ans;
+        private int[] plus_pulse_sequence, minus_pulse_sequence;
+
+        public long solution(int[] sequence) {
+            init_setting(sequence);
+
+            partial_sum_of_consecutive_pulses(plus_pulse_sequence);
+            partial_sum_of_consecutive_pulses(minus_pulse_sequence);
+
+            return ans;
+        }
+
+        private void partial_sum_of_consecutive_pulses(int[] Sequence) {
+            int left = 0, right = 1;
+            int max_sum = Sequence[left];
+
+            while(right < Sequence.length) {
+                int a1 = Sequence[right] - Sequence[left];
+                int a2 = Sequence[right] - Sequence[right - 1];
+
+                if(a1 >= a2) {
+                    max_sum = Math.max(max_sum, a1);
+                } else {
+                    left = right;
+                    max_sum = Math.max(max_sum, a2);
+                }
+
+                right++;
+            }
+
+            ans = Math.max(ans, max_sum);
+        }
+
+        private void init_setting(int[] sequence) {
+            ans = 0;
+
+            plus_pulse_sequence = new int[sequence.length];
+            minus_pulse_sequence = new int[sequence.length];
+
+            int pulse = -1;
+
+            plus_pulse_sequence[0] = sequence[0];
+            minus_pulse_sequence[0] = sequence[0] * pulse;
+
+            for(int i = 1; i < sequence.length; i++) {
+                plus_pulse_sequence[i] = plus_pulse_sequence[i - 1] + sequence[i] * pulse;
+                pulse *= -1;
+                minus_pulse_sequence[i] = minus_pulse_sequence[i - 1] + sequence[i] * pulse;
+            }
+        }
     }
 }
