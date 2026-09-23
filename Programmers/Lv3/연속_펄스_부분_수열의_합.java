@@ -18,10 +18,20 @@ sequence	result
 입출력 예 설명
 주어진 수열의 연속 부분 수열 [3, -6, 1]에 펄스 수열 [1, -1, 1]을 곱하여 연속 펄스 부분 수열 [3, 6, 1]을 얻을 수 있고 그 합은 10으로서 가장 큽니다.
  */
+/*
+알고리즘 핵심
+Prefix_Sum(누적합)
+1. [1,-1,...], [-1,1,...]의 각 펄스로 sequence를 곱한 값으로 각각의 누적합 배열을 만들다.
+2. 각 누적합 배열을 기준으로 구간에서의 최대값을 구한다.
+이때, 초반 최대값은 seq의 배열의 길이가 1인 경우를 고려하여 seq[0]으로 설정하고, 최대값이 처음 요소를 구성하는 경우를
+고려하여 이전까지의 최소구간을 min(seq[0], 0)로 구성한다.
+ */
 public class 연속_펄스_부분_수열의_합 {
     static void main() {
         int[] sequence = new int[] {
                 2, 3, -6, 1, 3, -1, 2, 4
+                //1
+                //6, -7, 16, 3, -4
         };
 
         Solve task = new Solve();
@@ -30,7 +40,7 @@ public class 연속_펄스_부분_수열의_합 {
 
     private static class Solve {
         private long ans;
-        private int[] plus_pulse_sequence, minus_pulse_sequence;
+        private long[] plus_pulse_sequence, minus_pulse_sequence;
 
         public long solution(int[] sequence) {
             init_setting(sequence);
@@ -41,22 +51,14 @@ public class 연속_펄스_부분_수열의_합 {
             return ans;
         }
 
-        private void partial_sum_of_consecutive_pulses(int[] Sequence) {
-            int left = 0, right = 1;
-            int max_sum = Sequence[left];
+        private void partial_sum_of_consecutive_pulses(long[] Sequence) {
+            long max_sum = Sequence[0];
+            long min_prefix = Math.min(Sequence[0], 0);
 
-            while(right < Sequence.length) {
-                int a1 = Sequence[right] - Sequence[left];
-                int a2 = Sequence[right] - Sequence[right - 1];
+            for(int i = 1; i < Sequence.length; i++) {
+                max_sum = Math.max(max_sum, Sequence[i] - min_prefix);
 
-                if(a1 >= a2) {
-                    max_sum = Math.max(max_sum, a1);
-                } else {
-                    left = right;
-                    max_sum = Math.max(max_sum, a2);
-                }
-
-                right++;
+                min_prefix = Math.min(min_prefix, Sequence[i]);
             }
 
             ans = Math.max(ans, max_sum);
@@ -65,8 +67,8 @@ public class 연속_펄스_부분_수열의_합 {
         private void init_setting(int[] sequence) {
             ans = 0;
 
-            plus_pulse_sequence = new int[sequence.length];
-            minus_pulse_sequence = new int[sequence.length];
+            plus_pulse_sequence = new long[sequence.length];
+            minus_pulse_sequence = new long[sequence.length];
 
             int pulse = -1;
 
@@ -74,9 +76,9 @@ public class 연속_펄스_부분_수열의_합 {
             minus_pulse_sequence[0] = sequence[0] * pulse;
 
             for(int i = 1; i < sequence.length; i++) {
-                plus_pulse_sequence[i] = plus_pulse_sequence[i - 1] + sequence[i] * pulse;
+                plus_pulse_sequence[i] = plus_pulse_sequence[i - 1] + (long) sequence[i] * pulse;
                 pulse *= -1;
-                minus_pulse_sequence[i] = minus_pulse_sequence[i - 1] + sequence[i] * pulse;
+                minus_pulse_sequence[i] = minus_pulse_sequence[i - 1] + (long) sequence[i] * pulse;
             }
         }
     }
