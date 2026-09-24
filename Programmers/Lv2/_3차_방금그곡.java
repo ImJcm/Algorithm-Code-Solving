@@ -1,5 +1,11 @@
 package Lv2;
 
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+
 /*
 [3차] 방금그곡
 제출 내역
@@ -7,7 +13,8 @@ package Lv2;
 방금그곡
 라디오를 자주 듣는 네오는 라디오에서 방금 나왔던 음악이 무슨 음악인지 궁금해질 때가 많다. 그럴 때 네오는 다음 포털의 '방금그곡' 서비스를 이용하곤 한다. 방금그곡에서는 TV, 라디오 등에서 나온 음악에 관해 제목 등의 정보를 제공하는 서비스이다.
 
-네오는 자신이 기억한 멜로디를 가지고 방금그곡을 이용해 음악을 찾는다. 그런데 라디오 방송에서는 한 음악을 반복해서 재생할 때도 있어서 네오가 기억하고 있는 멜로디는 음악 끝부분과 처음 부분이 이어서 재생된 멜로디일 수도 있다. 반대로, 한 음악을 중간에 끊을 경우 원본 음악에는 네오가 기억한 멜로디가 들어있다 해도 그 곡이 네오가 들은 곡이 아닐 수도 있다. 그렇기 때문에 네오는 기억한 멜로디를 재생 시간과 제공된 악보를 직접 보면서 비교하려고 한다. 다음과 같은 가정을 할 때 네오가 찾으려는 음악의 제목을 구하여라.
+네오는 자신이 기억한 멜로디를 가지고 방금그곡을 이용해 음악을 찾는다. 그런데 라디오 방송에서는 한 음악을 반복해서 재생할 때도 있어서 네오가 기억하고 있는 멜로디는 음악 끝부분과 처음 부분이 이어서 재생된 멜로디일 수도 있다.
+반대로, 한 음악을 중간에 끊을 경우 원본 음악에는 네오가 기억한 멜로디가 들어있다 해도 그 곡이 네오가 들은 곡이 아닐 수도 있다. 그렇기 때문에 네오는 기억한 멜로디를 재생 시간과 제공된 악보를 직접 보면서 비교하려고 한다. 다음과 같은 가정을 할 때 네오가 찾으려는 음악의 제목을 구하여라.
 
 방금그곡 서비스에서는 음악 제목, 재생이 시작되고 끝난 시각, 악보를 제공한다.
 네오가 기억한 멜로디와 악보에 사용되는 음은 C, C#, D, D#, E, F, F#, G, G#, A, A#, B 12개이다.
@@ -43,26 +50,80 @@ m	musicinfos	answer
  */
 public class _3차_방금그곡 {
     static void main() {
-        String m = "ABCDEFG";
+        String[] m = new String[] {
+                //"ABCDEFG"
+                //"CC#BCC#BCC#BCC#B"
+                "ABC"
+
+        };
         String[] musicinfos = new String[] {
-                "12:00,12:14,HELLO,CDEFGAB", "13:00,13:05,WORLD,ABCDEF"
+                //"12:00,12:14,HELLO,CDEFGAB", "13:00,13:05,WORLD,ABCDEF"
+                //"03:00,03:30,FOO,CC#B", "04:00,04:08,BAR,CC#BCC#BCC#B"
+                "12:00,12:14,HELLO,C#DEFGAB", "13:00,13:05,WORLD,ABCDEF"
         };
 
         Solve task = new Solve();
-        System.out.println(task.solution(m, musicinfos));
+        System.out.println(task.solution(m[0], musicinfos));
     }
 
     private static class Solve {
         private String ans;
+        private String[] sorted_musicinfos;
 
         public String solution(String m, String[] musicinfos) {
             init_setting(m, musicinfos);
 
+            that_song_just_now(m, sorted_musicinfos);
+
             return ans;
         }
 
+        private void that_song_just_now(String m, String[] sorted_musicinfos) {
+            for(int i = 0; i < sorted_musicinfos.length; i++) {
+                String[] info = sorted_musicinfos[i].split(",");
+
+                long diff_minute = getDiffMinute(info[0], info[1]);
+
+                int sheet_music_length = info[3].replaceAll("#","").length();
+
+                String play = info[3].repeat((int) (diff_minute / sheet_music_length)) + info[3].substring((int) (diff_minute % sheet_music_length));
+
+                if(play.contains(m)) {
+                    ans = new String(info[2]);
+                    break;
+                }
+            }
+        }
+
+        private long getDiffMinute(String t1, String t2) {
+            LocalTime t1_time = LocalTime.parse(t1);
+            LocalTime t2_time = LocalTime.parse(t2);
+            return Duration.between(t1_time, t2_time).toMinutes();
+        }
+
         private void init_setting(String m, String[] musicinfos) {
-            
+            ans = new String("(None)");
+
+            sorted_musicinfos = Arrays.stream(musicinfos)
+                    .sorted(new Comparator<String>() {
+                        @Override
+                        public int compare(String o1, String o2) {
+                            String[] split_o1 = o1.split(",");
+                            String[] split_o2 = o2.split(",");
+
+                            LocalTime o1_s_time = LocalTime.parse(split_o1[0]);
+                            LocalTime o1_e_time = LocalTime.parse(split_o1[1]);
+
+                            LocalTime o2_s_time = LocalTime.parse(split_o2[0]);
+                            LocalTime o2_e_time = LocalTime.parse(split_o2[1]);
+
+                            long diff_o1_minute = Duration.between(o1_s_time, o1_e_time).toMinutes();
+                            long diff_o2_minute = Duration.between(o2_s_time, o2_e_time).toMinutes();
+
+                            return (int) (diff_o2_minute - diff_o1_minute);
+                        }
+                    })
+                    .toArray(String[]::new);
         }
     }
 }
