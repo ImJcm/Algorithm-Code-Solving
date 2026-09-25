@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 
 /*
 [3차] 방금그곡
@@ -78,6 +77,9 @@ public class _3차_방금그곡 {
             return ans;
         }
 
+        /*
+            #이 포함된 음을 어떻게 처리할지 고민필요
+         */
         private void that_song_just_now(String m, String[] sorted_musicinfos) {
             for(int i = 0; i < sorted_musicinfos.length; i++) {
                 String[] info = sorted_musicinfos[i].split(",");
@@ -86,9 +88,15 @@ public class _3차_방금그곡 {
 
                 int sheet_music_length = info[3].replaceAll("#","").length();
 
-                String play = info[3].repeat((int) (diff_minute / sheet_music_length)) + info[3].substring((int) (diff_minute % sheet_music_length));
+                StringBuilder play = new StringBuilder(info[3].repeat((int) (diff_minute / sheet_music_length)));
 
-                if(play.contains(m)) {
+                for(int j = 0; j < diff_minute % sheet_music_length;) {
+                    char ch = info[3].charAt(j);
+                    play.append(ch);
+                    if(ch != '#') j++;
+                }
+
+                if(play.toString().contains(m)) {
                     ans = new String(info[2]);
                     break;
                 }
