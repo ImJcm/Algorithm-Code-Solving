@@ -3,7 +3,7 @@ package Lv2;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.HashMap;
 
 /*
 [3차] 방금그곡
@@ -47,18 +47,27 @@ m	musicinfos	answer
 
 ※ 공지 - 2024년 2월 21일 테스트 케이스가 추가되었습니다. 기존에 제출한 코드가 통과하지 못할 수도 있습니다.
  */
+/*
+알고리즘 핵심
+구현 (정렬 + Map)
+1. 입력으로 주어진 곡의 정보를 시작시간, 끝나는시간, 곡명, 악보를 재구성하여 새로운 객체를 만든다.
+악보를 재구성 : C# -> c 와 같이 C#, D#, ... 과 같음 음계를 새롭게 표현한다.
+2. 재생시간이 긴 순서로 정렬하여 재생시간만큼 재생할 수 있는 악보를 만들어 입력으로 주어진 m을 포함하는지 확인한다.
+
+이 문제는 입력으로 주어진 문제의 양식을 변경하여 구현하는 것이 중요한 점같다.
+ */
 public class _3차_방금그곡 {
     static void main() {
         String[] m = new String[] {
                 //"ABCDEFG"
-                //"CC#BCC#BCC#BCC#B"
-                "ABC"
+                "CC#BCC#BCC#BCC#B"
+                //"ABC"
 
         };
         String[] musicinfos = new String[] {
                 //"12:00,12:14,HELLO,CDEFGAB", "13:00,13:05,WORLD,ABCDEF"
-                //"03:00,03:30,FOO,CC#B", "04:00,04:08,BAR,CC#BCC#BCC#B"
-                "12:00,12:14,HELLO,C#DEFGAB", "13:00,13:05,WORLD,ABCDEF"
+                "03:00,03:30,FOO,CC#B", "04:00,04:08,BAR,CC#BCC#BCC#B"
+                //"12:00,12:14,HELLO,C#DEFGAB", "13:00,13:05,WORLD,ABCDEF"
         };
 
         Solve task = new Solve();
@@ -66,72 +75,127 @@ public class _3차_방금그곡 {
     }
 
     private static class Solve {
+        private class MusicInfo implements Comparable<MusicInfo> {
+            String stime,etime,song_name,sheet_music;
+
+            public MusicInfo(String stime, String etime, String song_name, String sheet_music) {
+                this.stime = stime;
+                this.etime = etime;
+                this.song_name = song_name;
+                this.sheet_music = sheet_music;
+            }
+
+            @Override
+            public int compareTo(MusicInfo o) {
+                return (int) (getDiffMinute(o.stime, o.etime) - getDiffMinute(this.stime, this.etime));
+            }
+
+            public long getDiffMinute(String t1, String t2) {
+                LocalTime t1_time = LocalTime.parse(t1);
+                LocalTime t2_time = LocalTime.parse(t2);
+                return Duration.between(t1_time, t2_time).toMinutes();
+            }
+        }
         private String ans;
-        private String[] sorted_musicinfos;
+        private MusicInfo[] musicInfos;
+        private HashMap<String, String> music_scales; //,de_music_scales;
 
         public String solution(String m, String[] musicinfos) {
             init_setting(m, musicinfos);
 
-            that_song_just_now(m, sorted_musicinfos);
+            that_song_just_now(m, musicInfos);
 
             return ans;
         }
 
-        /*
-            #이 포함된 음을 어떻게 처리할지 고민필요
-         */
-        private void that_song_just_now(String m, String[] sorted_musicinfos) {
-            for(int i = 0; i < sorted_musicinfos.length; i++) {
-                String[] info = sorted_musicinfos[i].split(",");
+        private void that_song_just_now(String m, MusicInfo[] musicInfos) {
+            String tm = transform_sheet_music(m);
 
-                long diff_minute = getDiffMinute(info[0], info[1]);
+            for(int i = 0; i < musicInfos.length; i++) {
+                MusicInfo mi = musicInfos[i];
+                int diff_time = (int) mi.getDiffMinute(mi.stime, mi.etime);
 
-                int sheet_music_length = info[3].replaceAll("#","").length();
+                String play_music = mi.sheet_music.repeat(diff_time / mi.sheet_music.length()) + mi.sheet_music.substring(0, diff_time % mi.sheet_music.length());
 
-                StringBuilder play = new StringBuilder(info[3].repeat((int) (diff_minute / sheet_music_length)));
-
-                for(int j = 0; j < diff_minute % sheet_music_length;) {
-                    char ch = info[3].charAt(j);
-                    play.append(ch);
-                    if(ch != '#') j++;
-                }
-
-                if(play.toString().contains(m)) {
-                    ans = new String(info[2]);
+                if(play_music.contains(tm)) {
+                    ans = new String(mi.song_name);
                     break;
                 }
             }
         }
 
-        private long getDiffMinute(String t1, String t2) {
-            LocalTime t1_time = LocalTime.parse(t1);
-            LocalTime t2_time = LocalTime.parse(t2);
-            return Duration.between(t1_time, t2_time).toMinutes();
-        }
-
         private void init_setting(String m, String[] musicinfos) {
             ans = new String("(None)");
 
-            sorted_musicinfos = Arrays.stream(musicinfos)
-                    .sorted(new Comparator<String>() {
-                        @Override
-                        public int compare(String o1, String o2) {
-                            String[] split_o1 = o1.split(",");
-                            String[] split_o2 = o2.split(",");
+            song_setting();
 
-                            LocalTime o1_s_time = LocalTime.parse(split_o1[0]);
-                            LocalTime o1_e_time = LocalTime.parse(split_o1[1]);
+            musicInfos = new MusicInfo[musicinfos.length];
 
-                            LocalTime o2_s_time = LocalTime.parse(split_o2[0]);
-                            LocalTime o2_e_time = LocalTime.parse(split_o2[1]);
+            for(int i = 0; i < musicinfos.length; i++) {
+                String[] mi = musicinfos[i].split(",");
 
-                            long diff_o1_minute = Duration.between(o1_s_time, o1_e_time).toMinutes();
-                            long diff_o2_minute = Duration.between(o2_s_time, o2_e_time).toMinutes();
+                String st = mi[0];
+                String et = mi[1];
+                String sn = mi[2];
+                String ss = mi[3];
 
-                            return (int) (diff_o2_minute - diff_o1_minute);
-                        }
-                    })
-                    .toArray(String[]::new);
+                ss = transform_sheet_music(ss);
+
+                musicInfos[i] = new MusicInfo(st,et,sn,ss);
+            }
+
+            Arrays.sort(musicInfos);
+        }
+
+        private String transform_sheet_music(String ss) {
+            StringBuilder sb = new StringBuilder();
+
+            int i = 0;
+            while(i < ss.length()) {
+                char c1 = ss.charAt(i);
+                char c2 = i + 1 >= ss.length() ? ' ' : ss.charAt(i + 1);
+
+                if(c2 == '#') {
+                    String s = music_scales.get(c1 + String.valueOf(c2));
+                    sb.append(s);
+                    i++;
+                } else {
+                    sb.append(c1);
+                }
+                i++;
+            }
+            return sb.toString();
+        }
+
+        /*private String retransform_sheet_music(String ss) {
+            StringBuilder sb = new StringBuilder();
+
+            int i = 0;
+            while(i < ss.length()) {
+                char c1 = ss.charAt(i);
+
+                sb.append(de_music_scales.get(String.valueOf(c1)));
+                i++;
+            }
+            return sb.toString();
+        }*/
+
+        private void song_setting() {
+            music_scales = new HashMap<>();
+            //de_music_scales = new HashMap<>();
+
+            music_scales.put("A", "A");     //de_music_scales.put("A", "A");
+            music_scales.put("A#", "a");    //de_music_scales.put("a", "A#");
+            music_scales.put("B", "B");     //de_music_scales.put("B", "B");
+            music_scales.put("C", "C");     //de_music_scales.put("C", "C");
+            music_scales.put("C#", "c");    //de_music_scales.put("c", "C#");
+            music_scales.put("D", "D");     //de_music_scales.put("D", "D");
+            music_scales.put("D#", "d");    //de_music_scales.put("d", "D#");
+            music_scales.put("E", "E");     //de_music_scales.put("E", "E");
+            music_scales.put("F", "F");     //de_music_scales.put("F", "F");
+            music_scales.put("F#", "f");    //de_music_scales.put("f", "F#");
+            music_scales.put("G", "G");     //de_music_scales.put("G", "G");
+            music_scales.put("G#", "g");    //de_music_scales.put("g", "G#");
         }
     }
 }
