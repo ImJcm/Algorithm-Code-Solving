@@ -1,6 +1,8 @@
 package Lv2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /*
@@ -29,11 +31,52 @@ n	k	result
  */
 public class 줄_서는_방법 {
     static void main() {
-        int n = 3;
-        int k = 5;
+        int n = 4;
+        long k = 11;
 
         Solve task = new Solve();
         System.out.println(Arrays.toString(task.solution(n,k)));
+    }
+
+
+    private static class Solve {
+        private int[] ans;
+        private ArrayList<Integer> person;
+
+        public int[] solution(int n, long k) {
+            init_setting(n, k);
+
+            waiting_in_line(n,k,person);
+
+            return ans;
+        }
+
+        private void waiting_in_line(int n, long k, ArrayList<Integer> person) {
+            k -= 1;
+
+            for(int i = 0; i < n; i++) {
+                long f = factorial(n - (i + 1));
+
+                int l = (int) (k / f);
+                ans[i] = person.get(l);
+                k %= f;
+
+                person.remove(l);
+            }
+        }
+
+        private long factorial(int n) {
+            if(n <= 1) return 1;
+            return n * factorial(n - 1);
+        }
+
+        private void init_setting(int n, long k) {
+            ans = new int[n];
+
+            person = IntStream.range(1, n + 1)
+                    .boxed()
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
     }
 
     /*
