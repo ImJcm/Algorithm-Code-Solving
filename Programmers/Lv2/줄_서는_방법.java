@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 /*
 줄 서는 방법
 제출 내역
@@ -25,4 +28,64 @@ n	k	result
 문제의 예시와 같습니다.
  */
 public class 줄_서는_방법 {
+    static void main() {
+        int n = 3;
+        int k = 5;
+
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(n,k)));
+    }
+
+    /*
+        Accuracy_TestCase : 100%
+        Efficiency_TestCase : time out
+     */
+    private static class WrongSolve_Timeout {
+        private int[] ans;
+        private int[] person,line;
+        private long cnt;
+        private boolean[] visited;
+        private boolean flag;
+
+        public int[] solution(int n, long k) {
+            init_setting(n,k);
+
+            waiting_in_line(0,n,k, person);
+
+            return ans;
+        }
+
+        private void waiting_in_line(int i, int n, long k, int[] p) {
+            if(flag) return;
+            if(i == n) {
+                cnt++;
+                if(cnt == k) {
+                    flag = true;
+                    ans = line.clone();
+                }
+                return;
+            }
+
+            for(int l = 0; l < n; l++) {
+                if(visited[l]) continue;
+                visited[l] = true;
+                line[i] = p[l];
+                waiting_in_line(i + 1, n, k, p);
+                visited[l] = false;
+            }
+        }
+
+        private void init_setting(int n, long k) {
+            ans = new int[n];
+
+            person = IntStream.range(1, n + 1).toArray();
+            line = new int[n];
+
+            cnt = 0;
+
+            visited = new boolean[n];
+
+            flag = false;
+        }
+    }
 }
