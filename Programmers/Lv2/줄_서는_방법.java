@@ -29,6 +29,18 @@ n	k	result
 입출력 예 #1
 문제의 예시와 같습니다.
  */
+/*
+알고리즘 핵심
+구현
+1. k번째 줄에서 앞줄에서부터 오는 사람이 결정되는 요인은 다음과 같다.
+k = k - 1
+첫번째 사람 = k / !(n - 1)번째 순서인 사람 => person[k / !(n - 1)]
+두번째 사람 = (k % !(n - 1) / !(n - 2)번째 순서인 사람 => person[(k % !(n - 1) / !(n - 2)]
+...
+위와 같은 공식이 나오는 이유 : i번째 순서의 사람은 1 ~ (i - 1)번째 순서에서 만들어지는 줄의 경우의 수가 반복되기 때문이다.
+반복되는 횟수를 통해 i번째 줄에 오는 사람을 정할 수 있다.
+이후, 다음 줄또는 위 과정을 반복하여 이미 줄에 배치된 사람을 제외하고 순서를 결정한다.
+ */
 public class 줄_서는_방법 {
     static void main() {
         int n = 4;
@@ -38,8 +50,50 @@ public class 줄_서는_방법 {
         System.out.println(Arrays.toString(task.solution(n,k)));
     }
 
-
     private static class Solve {
+        private int[] ans;
+        private ArrayList<Integer> person;
+
+        public int[] solution(int n, long k) {
+            init_setting(n, k);
+
+            waiting_in_line(n,k,person);
+
+            return ans;
+        }
+
+        private void waiting_in_line(int n, long k, ArrayList<Integer> person) {
+            k -= 1;
+
+            for(int i = 0; i < n; i++) {
+                long f = factorial(n - (i + 1));
+
+                int l = (int) (k / f);
+                ans[i] = person.get(l);
+                k %= f;
+
+                person.remove(l);
+            }
+        }
+
+        private long factorial(int n) {
+            if(n <= 1) return 1;
+            return n * factorial(n - 1);
+        }
+
+        private void init_setting(int n, long k) {
+            ans = new int[n];
+
+            person = new ArrayList<>();
+
+            for(int i = 1; i <= n; i++) {
+                person.add(i);
+            }
+        }
+    }
+
+
+    private static class WrongSolve_timeout2 {
         private int[] ans;
         private ArrayList<Integer> person;
 
