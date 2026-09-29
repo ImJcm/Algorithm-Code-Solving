@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.Arrays;
+
 /*
 행렬 테두리 회전하기
 제출 내역
@@ -46,5 +48,112 @@ example2.png
 
 이 예시에서는 행렬의 테두리에 위치한 모든 칸들이 움직입니다. 따라서, 행렬의 테두리에 있는 수 중 가장 작은 숫자인 1이 바로 답이 됩니다.
  */
+/*
+알고리즘 핵심
+구현
+1. [rows,columns] 만큼의 행과 열을 갖는 행렬을 만들고, 상단, 오른쪽, 하단, 왼쪽 순으로 행렬의 값을 시계방향으로 옮긴다.
+2. 이 과정에서 최소값을 업데이트한다.
+ */
 public class 행렬_테두리_회전하기 {
+    static void main() {
+        /*int rows = 3;
+        int columns = 3;
+        int[][] queries = new int[][] {
+                {1,1,2,2},{1,2,2,3},{2,1,3,2},{2,2,3,3}
+        };*/
+
+        /*int rows = 6;
+        int columns = 6;
+        int[][] queries = new int[][] {
+                {2,2,5,4},{3,3,6,6},{5,1,6,3}
+        };*/
+
+        /*int rows = 100;
+        int columns = 97;
+        int[][] queries = new int[][] {
+                {1,1,100,97}
+        };*/
+
+        int rows = 2;
+        int columns = 3;
+        int[][] queries = new int[][] {
+                {1,1,3,3}
+        };
+
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(rows, columns, queries)));
+    }
+
+    private static class Solve {
+        private int[] ans;
+        private int[][] matrix;
+
+        public int[] solution(int rows, int columns, int[][] queries) {
+            init_setting(rows, columns, queries);
+
+            run_queries(queries, matrix);
+
+            return ans;
+        }
+
+        private void run_queries(int[][] queries, int[][] matrix) {
+            int cnt = 0;
+
+            for(int[] q : queries) {
+                int lr = q[0];
+                int lc = q[1];
+                int rr = q[2];
+                int rc = q[3];
+
+                int i = 0;
+
+                int next_up= matrix[lr][rc];
+                int next_right = matrix[rr][rc];
+                int next_bottom = matrix[rr][lc];
+
+                int min_value = Math.min(next_up, Math.min(next_right, next_bottom));
+
+                // up side
+                for(i = rc; i > lc; i--) {
+                    matrix[lr][i] = matrix[lr][i - 1];
+                    min_value = Math.min(min_value, matrix[lr][i]);
+                }
+
+                // right side
+                for(i = rr; i > lr + 1; i--) {
+                    matrix[i][rc] = matrix[i - 1][rc];
+                    min_value = Math.min(min_value, matrix[i][rc]);
+                }
+                matrix[i][rc] = next_up;
+
+                // bottom side
+                for(i = lc; i < rc - 1; i++) {
+                    matrix[rr][i] = matrix[rr][i + 1];
+                    min_value = Math.min(min_value, matrix[rr][i]);
+                }
+                matrix[rr][i] = next_right;
+
+                // left side
+                for(i = lr; i < rr - 1; i++) {
+                    matrix[i][lc] = matrix[i + 1][lc];
+                    min_value = Math.min(min_value, matrix[i][lc]);
+                }
+                matrix[i][lc] = next_bottom;
+
+                ans[cnt++] = min_value;
+            }
+        }
+
+        private void init_setting(int rows, int columns, int[][] queries) {
+            ans = new int[queries.length];
+
+            matrix = new int[rows + 1][columns + 1];
+
+            for(int i = 1; i <= rows; i++) {
+                for(int j = 1; j <= columns; j++) {
+                    matrix[i][j] = (i - 1)  * columns + j;
+                }
+            }
+        }
+    }
 }
