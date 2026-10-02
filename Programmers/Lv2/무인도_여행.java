@@ -1,5 +1,10 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 무인도 여행
 제출 내역
@@ -38,6 +43,104 @@ image3
 
 섬이 존재하지 않기 때문에 -1을 배열에 담아 반환합니다.
  */
+/*
+알고리즘 핵심
+BFS
+1. [r][c]인 2차원 배열로 섬을 구성하고, 모든 섬을 하나씩 출발지로 설정하여 BFS를 수행한다.
+2. BFS수행 시, 방문한 섬의 방문처리는 이후 과정에서도 사용하고 섬마다 머무를 수 있는 기간을 누적하여, 도달할 수 있는 모든 섬의 기간을 저장한다.
+3. 저장한 기간들을 오름차순 정렬하여 ans에 저장한다.
+ */
 public class 무인도_여행 {
+    static void main() {
+        String[] maps = new String[] {
+                "X591X","X1X5X","X231X", "1XXX1"
+        };
 
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(maps)));
+    }
+
+    private static class Solve {
+        private class Island {
+            int r,c;
+
+            public Island(int r, int c) {
+                this.r = r;
+                this.c = c;
+            }
+        }
+        private ArrayList<Integer> ans;
+        private int[][] direction = {
+                {-1,0},{1,0},{0,-1},{0,1}
+        };
+        private char[][] maps_2_dimension;
+        private boolean[][] visited;
+
+
+        public int[] solution(String[] maps) {
+            init_setting(maps);
+
+            int id = 0;
+
+            for(int i = 0; i < maps.length; i++) {
+                for(int j = 0; j < maps[i].length(); j++) {
+                    if(visited[i][j]) continue;
+                    travel_uninhabited_island(new Island(i,j), maps_2_dimension,visited, id++);
+                }
+            }
+
+            if(ans.isEmpty()) {
+                return new int[] {-1};
+            } else {
+                return ans.stream()
+                    .sorted()
+                    .mapToInt(i->i)
+                    .toArray();
+            }
+        }
+
+        private void travel_uninhabited_island(Island st, char[][] maps, boolean[][] v, int id) {
+            Queue<Island> q = new LinkedList<>();
+            q.add(st);
+            v[st.r][st.c] = true;
+
+            int cnt = 0;
+
+            while(!q.isEmpty()) {
+                Island curr = q.poll();
+                cnt += maps[curr.r][curr.c] - '0';
+
+                for(int[] d : direction) {
+                    int nr = curr.r + d[0];
+                    int nc = curr.c + d[1];
+
+                    if(nr < 0 || nr >= maps.length || nc < 0 || nc >= maps[0].length || visited[nr][nc]) continue;
+
+                    visited[nr][nc] = true;
+                    q.add(new Island(nr, nc));
+                }
+            }
+
+            if(cnt != 0) ans.add(cnt);
+        }
+
+        private void init_setting(String[] maps) {
+            ans = new ArrayList<>();
+
+            maps_2_dimension = new char[maps.length][];
+            visited = new boolean[maps.length][];
+
+            for(int i = 0; i < maps.length; i++) {
+                String[] sp = maps[i].split("");
+
+                maps_2_dimension[i] = new char[sp.length];
+                visited[i] = new boolean[sp.length];
+
+                for(int j = 0; j < sp.length; j++) {
+                    maps_2_dimension[i][j] = sp[j].charAt(0);
+                    if(maps_2_dimension[i][j] == 'X') visited[i][j] = true;
+                }
+            }
+        }
+    }
 }
