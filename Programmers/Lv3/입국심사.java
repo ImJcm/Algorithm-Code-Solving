@@ -58,10 +58,11 @@ public class 입국심사 {
         }
 
         private void immigration_screening(int n, int[] times) {
-            long lt = 0, rt = 1000000000;
+            long lt = 0;
+            long rt = (long) Math.pow(10,18); // n = 1000000000(10^9), time[0] = 1000000000, times.size = 1;
 
             while(lt <= rt) {
-                long mid = (lt + rt) / 2;
+                long mid = lt + (rt - lt) / 2; //long mid = (lt + rt) / 2; : overflow
 
                 long p = immigration(mid, times);
 
