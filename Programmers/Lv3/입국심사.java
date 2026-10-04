@@ -36,4 +36,56 @@ n	times	return
 ※ 공지 - 2019년 9월 4일 문제에 새로운 테스트 케이스를 추가하였습니다. 도움을 주신 weaver9651 님께 감사드립니다.
  */
 public class 입국심사 {
+    static void main() {
+        int n = 6;
+        int[] times = new int[] {
+                7, 10
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(n, times));
+    }
+
+    private static class Solve {
+        private long ans;
+
+        public long solution(int n, int[] times) {
+            init_setting(n, times);
+
+            immigration_screening(n, times);
+
+            return ans;
+        }
+
+        private void immigration_screening(int n, int[] times) {
+            long lt = 1, rt = 1000000000;
+
+            while(lt <= rt) {
+                long mid = (lt + rt) / 2;
+
+                int p = immigration(mid, times);
+
+                if(p < n) {
+                    lt = mid + 1;
+                } else {
+                    rt = mid - 1;
+                    ans = mid;
+                }
+            }
+        }
+
+        private int immigration(long mid, int[] times) {
+            int person = 0;
+
+            for(int i = 0; i < times.length; i++) {
+                person += (int) (mid / times[i]);
+            }
+
+            return person;
+        }
+
+        private void init_setting(int n, int[] times) {
+            ans = 0;
+        }
+    }
 }
