@@ -40,6 +40,8 @@ n	times	return
 이분탐색 (binary search)
 1. 최대 10^9 인원, 심사원 1명, 심사 시간이 10^9일때, 최대로 걸리는 시간은 10^18이므로, 최소 시간을 찾으려면 이분 탐색을 이용해야 한다.
 2. [1 - 10^18]을 시작과 끝 시간으로 이분탐색을 진행하여 n명의 인원이 해당 시간에 모두 검사를 받을 수 있는지 검사하여 범위를 좁힌다.
+
+중요한 점 : 최대 끝 범위를 결정 (입력값의 범위를 계산하여 최대 걸릴 수 있는 시간을 측정해야 함)
  */
 public class 입국심사 {
     static void main() {
@@ -68,7 +70,7 @@ public class 입국심사 {
             long rt = (long) Math.pow(10,18); // n = 1000000000(10^9), time[0] = 1000000000, times.size = 1;
 
             while(lt <= rt) {
-                long mid = lt + (rt - lt) / 2; //long mid = (lt + rt) / 2; : overflow
+                long mid = (lt + rt) / 2;
 
                 long p = immigration(mid, times);
 
