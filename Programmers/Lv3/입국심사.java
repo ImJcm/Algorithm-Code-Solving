@@ -50,7 +50,7 @@ public class 입국심사 {
         private long ans;
 
         public long solution(int n, int[] times) {
-            init_setting(n, times);
+            init_setting();
 
             immigration_screening(n, times);
 
@@ -58,12 +58,12 @@ public class 입국심사 {
         }
 
         private void immigration_screening(int n, int[] times) {
-            long lt = 1, rt = 1000000000;
+            long lt = 0, rt = 1000000000;
 
             while(lt <= rt) {
                 long mid = (lt + rt) / 2;
 
-                int p = immigration(mid, times);
+                long p = immigration(mid, times);
 
                 if(p < n) {
                     lt = mid + 1;
@@ -74,17 +74,17 @@ public class 입국심사 {
             }
         }
 
-        private int immigration(long mid, int[] times) {
-            int person = 0;
+        private long immigration(long mid, int[] times) {
+            long person = 0;
 
             for(int i = 0; i < times.length; i++) {
-                person += (int) (mid / times[i]);
+                person += (mid / times[i]);
             }
 
             return person;
         }
 
-        private void init_setting(int n, int[] times) {
+        private void init_setting() {
             ans = 0;
         }
     }
