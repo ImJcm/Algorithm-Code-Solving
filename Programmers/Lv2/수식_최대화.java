@@ -1,5 +1,9 @@
 package Lv2;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 [카카오 인턴] 수식 최대화
 제출 내역
@@ -56,6 +60,159 @@ expression	result
 = 150*2
 = 300
 따라서, 우승 시 받을 수 있는 상금은 300 입니다.
+*/
+/*
+알고리즘 핵심
+구현
+1. 연산식에 존재하는 기호를 기준으로 가능한 모든 순서를 순열을 통해 구한다.
+2. 연산식에 우선순위가 정해진 기호를 적용하여 연산을 계산하고 절댓값 중 최대값을 갱신한다.
+
+반복문을 통해 연산순위가 우선인 기호부터 계산하여 모든 기호를 차례대로 적용하는 방법을 사용하였다.
+
+다른 풀이를 보면, 연산식에서 비슷하게 숫자인 부분과 연산기호 부분을 잘게 나누어 적용한 것으로 비슷하다.
+참고할만한 풀이 : https://school.programmers.co.kr/questions/92575
  */
 public class 수식_최대화 {
+    static void main() {
+        String expression = new String(
+                //"100-200*300-500+20"
+                "50*6-3*2"
+        );
+
+        Solve task = new Solve();
+        System.out.println(task.solution(expression));
+    }
+
+    private static class Solve {
+        private int cnt;
+        private long ans;
+        private Queue<Long> opd;
+        private Queue<String> opt;
+        private String[] opt_strs;
+        private String[][] expression_orders;
+
+        public long solution(String expression) {
+            init_setting(expression);
+
+            make_expression_order(0, new String[opt_strs.length], opt_strs, expression_orders, new boolean[expression_orders.length]);
+
+            for(int i = 0; i < expression_orders.length; i++) {
+                Queue<Long> temp_opd = new LinkedList<>(opd);
+                Queue<String> temp_opt = new LinkedList<>(opt);
+
+                maximize_expression(temp_opd, temp_opt, expression_orders[i]);
+            }
+
+            return ans;
+        }
+
+        private void make_expression_order(int idx, String[] str, String[] opts, String[][] eos, boolean[] visited) {
+            if(idx == opts.length) {
+                for(int i = 0; i < str.length; i++) {
+                    eos[cnt][i] = str[i];
+                }
+                cnt++;
+                return;
+            }
+
+            for(int i = 0; i < opts.length; i++) {
+                if(visited[i]) continue;
+
+                visited[i] = true;
+                str[idx] = opts[i];
+                make_expression_order(idx + 1, str, opts, eos, visited);
+                visited[i] = false;
+            }
+        }
+
+        private void maximize_expression(Queue<Long> t_opd, Queue<String> t_opt, String[] eos) {
+            Queue<Long> tt_opd = new LinkedList<>();
+            Queue<String> tt_opt = new LinkedList<>();
+
+            Long tmp = Long.MAX_VALUE;
+
+            for(int i = 0; i < eos.length; i++) {
+                while(!t_opt.isEmpty()) {
+                    String op = t_opt.poll();
+
+                    if(op.equals(eos[i])) {
+                        long l1 = tmp == Long.MAX_VALUE ? t_opd.poll() : tmp;
+                        long l2 = t_opd.poll();
+                        long res = 0;
+
+                        switch (op) {
+                            case "+":
+                                res = l1 + l2;
+                                break;
+                            case "-":
+                                res = l1 - l2;
+                                break;
+                            case "*":
+                                res = l1 * l2;
+                                break;
+                        }
+                        tmp = res;
+                    } else {
+                        if(tmp != Long.MAX_VALUE) {
+                            tt_opd.add(tmp);
+                        } else {
+                          tt_opd.add(t_opd.poll());
+                        }
+                        tmp = Long.MAX_VALUE;
+
+                        tt_opt.add(op);
+                    }
+                }
+                if(!t_opd.isEmpty()) tt_opd.add(t_opd.poll());
+                if(tmp != Long.MAX_VALUE) {
+                    tt_opd.add(tmp);
+                    tmp = Long.MAX_VALUE;
+                }
+
+                t_opd = tt_opd;
+                t_opt = tt_opt;
+
+                tt_opd = new LinkedList<>();
+                tt_opt = new LinkedList<>();
+            }
+
+            ans = Math.max(ans, Math.abs(t_opd.poll()));
+        }
+
+        private void init_setting(String expression) {
+            ans = 0;
+            cnt = 0;
+
+            opd = new LinkedList<>();
+            opt = new LinkedList<>();
+
+            String ex = new String();
+
+            HashSet<String> opt_kind = new HashSet<>();
+
+            for(int i = 0; i < expression.length(); i++) {
+                char c = expression.charAt(i);
+
+                if(c == '-' || c == '*' || c == '+') {
+                    opt.add(String.valueOf(c));
+                    opd.add(Long.parseLong(ex));
+                    opt_kind.add(String.valueOf(c));
+                    ex = new String();
+                } else {
+                    ex += String.valueOf(c);
+                }
+            }
+            opd.add(Long.parseLong(ex));
+
+            opt_strs = opt_kind.toArray(new String[0]);
+
+            int s = 1;
+
+            for(int i = opt_kind.size(); i > 0; i--) {
+                s *= i;
+            }
+
+            expression_orders = new String[s][opt_kind.size()];
+        }
+    }
 }
