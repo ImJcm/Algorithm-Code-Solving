@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.Stack;
+
 /*
 괄호 변환
 제출 내역
@@ -64,5 +66,104 @@ u의 앞뒤 문자를 제거하고, 나머지 문자의 괄호 방향을 뒤집�
 따라서 생성되는 문자열은 "(" + "()" + ")" + "()"이며, 최종적으로 "(())()"를 반환합니다.
 처음에 그대로 둔 문자열에 반환된 문자열을 이어 붙이면 "()" + "(())()" = "()(())()"가 됩니다.
  */
+/*
+알고리즘 핵심
+구현 + recursive + stack
+1. 입력에서 주어지는 알고리즘을 로직으로 구현하여 문자열을 만들어낸다.
+2. 균형잡힌 괄호 문자열은 앞부분에서 시작하여 열림과 닫힘을 부호가 다른 값으로 설정하여 0일 때, 균형잡힌 문자열을 나누는 구간의 인덱스를 구한다.
+3. 문자열에서 올바른 괄호 문자열을 판정하기 위해 stack을 통해 열고 닫힘을 스택을 통해 여부를 확인한다.
+ */
 public class 괄호_변환 {
+    static void main() {
+        String p = new String(
+                //"(()())()"
+                "()))((()"
+        );
+
+        Solve task = new Solve();
+        System.out.println(task.solution(p));
+    }
+
+    private static class Solve {
+        private String ans;
+
+        public String solution(String p) {
+            init_setting();
+
+            ans = parenthesis_conversion(p);
+
+            return ans;
+        }
+
+        private String parenthesis_conversion(String p) {
+            if(p.isEmpty()) return "";
+
+            String[] balanced_str = split_balanced_string(p);
+
+            if(is_correct_parenthesis_string(balanced_str[0])) {
+                return balanced_str[0] + parenthesis_conversion(balanced_str[1]);
+            } else {
+                 String tmp = "(";
+                 tmp += parenthesis_conversion(balanced_str[1]);
+                 tmp += ")";
+
+                 String new_bal_str_0 = balanced_str[0].substring(1, balanced_str[0].length() - 1);
+                 tmp += reverse_parenthesis(new_bal_str_0);
+                 return tmp;
+            }
+        }
+
+        private String reverse_parenthesis(String p) {
+            String new_str = new String();
+
+            for(int i = 0; i < p.length(); i++) {
+                if(p.charAt(i) == '(') new_str += ')';
+                else new_str += '(';    // ")"-> "("
+            }
+
+            return new_str;
+        }
+
+        private boolean is_correct_parenthesis_string(String balanced_str) {
+            Stack<Character> stack = new Stack<>();
+
+            for(int i = 0; i < balanced_str.length(); i++) {
+                char ch = balanced_str.charAt(i);
+
+                if(ch == ')' && !stack.isEmpty() && stack.peek() == '(') stack.pop();
+                else stack.push(ch);
+            }
+
+            if(stack.isEmpty()) return true;
+            else return false;
+        }
+
+        private String[] split_balanced_string(String p) {
+            String[] bal_str = new String[2];
+
+            int idx = 0;
+            int weight = p.charAt(0) == '(' ? 1 : -1;
+
+            for(int i = 1; i < p.length(); i++) {
+                char ch = p.charAt(i);
+
+                if(ch == '(') weight += 1;
+                else if(ch == ')') weight -= 1;
+
+                if(weight == 0) {
+                    idx = i;
+                    break;
+                }
+            }
+
+            bal_str[0] = p.substring(0,idx + 1);
+            bal_str[1] = p.substring(idx + 1);
+
+            return bal_str;
+        }
+
+        private void init_setting() {
+            ans = new String();
+        }
+    }
 }
