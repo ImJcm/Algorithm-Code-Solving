@@ -1,5 +1,9 @@
 package Lv3;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /*
 [카카오 인턴] 경주로 건설
 제출 내역
@@ -65,5 +69,120 @@ kakao_road6.png
 
 ※ 공지 - 2021년 8월 30일 테스트케이스가 추가되었습니다.
  */
+/*
+알고리즘 핵심
+BFS + 구현
+1. 경로 탐색을 위해 BFS를 사용하고, 방문 여부는 해당 위치에 도달 시, 도로 건설 비용의 누적 비용으로 구분한다.
+2. 이때, 방향에 따라 (r,c) 위치에서 건설 비용이 달라질 수 있으므로, 방문 여부의 배열을 2차원이 아닌 3차원으로 설정한다.
+ */
 public class 경주로_건설 {
+    static void main() {
+        int[][] board = new int[][] {
+                /*{0,0,0,0,0,0,0,1},
+                {0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,1,0,0},
+                {0,0,0,0,1,0,0,0},
+                {0,0,0,1,0,0,0,1},
+                {0,0,1,0,0,0,1,0},
+                {0,1,0,0,0,1,0,0},
+                {1,0,0,0,0,0,0,0}*/
+                //{0,0,0},{0,0,0},{0,0,0}
+
+                // TC#25 - 방향을 고려하여 비용을 계산하지 않는 경우, (4,4)에서 최소비용의 경로가 막힌다.
+                {0, 0, 0, 0, 0},
+                {0, 1, 1, 1, 0},
+                {0, 0, 1, 0, 0},
+                {1, 0, 0, 0, 1},
+                {1, 1, 1, 0, 0}
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(board));
+    }
+
+    private static class Solve {
+        private class Road {
+            int r,c,d;
+            int cost;
+
+            public Road(int r, int c, int d, int cost) {
+                this.r = r;
+                this.c = c;
+                this.d = d;
+                this.cost = cost;
+            }
+        }
+        private int ans;
+        private int[][] direction = new int[][] {
+                {-1,0}, {0,1}, {1,0}, {0,-1}
+        };
+        private Road[] init;
+        private static final int STRAIGHT = 100, CURVE = 500;
+
+        public int solution(int[][] board) {
+            init_setting(board);
+
+            build_track(init, board);
+
+            return ans;
+        }
+
+        private void build_track(Road[] roads, int[][] board) {
+            Queue<Road> q = new LinkedList<Road>();
+            int[][][] min_costed = new int[board.length][board[0].length][4];
+
+            for(int i = 0; i < min_costed.length; i++) {
+                for(int j = 0; j < min_costed[i].length; j++) {
+                    Arrays.fill(min_costed[i][j],Integer.MAX_VALUE);
+                }
+            }
+
+            Arrays.fill(min_costed[0][0], 0);
+            for(int i = 0; i < roads.length; i++) {
+                if(roads[i] == null) continue;
+                q.add(roads[i]);
+                min_costed[roads[i].r][roads[i].c][(roads[i].d + 2) % 4] = roads[i].cost;
+            }
+
+            while(!q.isEmpty()) {
+                Road road = q.poll();
+
+                if(road.r == board.length - 1 && road.c == board[0].length - 1) {
+                    ans = Math.min(ans, road.cost);
+                    continue;
+                }
+
+                for(int i = 0; i < 4; i++) {
+                    int nr = road.r + direction[i][0];
+                    int nc = road.c + direction[i][1];
+
+                    if(nr < 0 || nr >= board.length || nc < 0 || nc >= board[0].length || board[nr][nc] == 1) continue;
+
+                    int ncost = road.cost + ((i == road.d || i == (road.d + 2) % 4) ? STRAIGHT : CURVE + STRAIGHT);
+
+                    if(min_costed[nr][nc][(road.d + 2) % 4] < ncost) continue;
+
+                    min_costed[nr][nc][(road.d + 2) % 4] = ncost;
+                    q.add(new Road(nr,nc,i,ncost));
+                }
+            }
+        }
+
+        private void init_setting(int[][] board) {
+            ans = Integer.MAX_VALUE;
+
+            init = new Road[2];
+
+            init[0] = new Road(0,0,1,0);
+            init[1] = new Road(0,0,2,0);
+
+            for(int i = 0; i < init.length; i++) {
+                int nr = init[i].r + direction[init[i].d][0];
+                int nc = init[i].c + direction[init[i].d][1];
+
+                if(board[nr][nc] == 1) init[i] = null;
+                else init[i] = new Road(nr,nc,init[i].d,STRAIGHT);
+            }
+        }
+    }
 }
