@@ -97,6 +97,13 @@ No.	0	1	2	3	4
 
 두 테이블 T1, T2가 행렬 (r1, c1), (r2, c2)에 각각 위치하고 있다면, T1, T2 사이의 맨해튼 거리는 |r1 - r2| + |c1 - c2| 입니다. ↩
  */
+/*
+알고리즘 핵심
+구현
+1. [x,y] 지점을 기준으로 상하좌우의 1칸씩에 파티션이 존재하는지 여부에 따라 거리두기 여부가 결정된다.
+2. 상단 1칸이 파티션이라면 상단으로 맨해튼 거리 2인 지점이 P여도 거리두기가 만족하고, 파티션이 아니라면 맨해튼 거리가 2인 저점에 P이면 거리두기 불가능하다.
+3. 2번 과정을 [x,y]가 P일때 상하좌우 4방향을 검사하고 최종적으로 거리두기 가능여부에 따라 각 휴게실이 거리두기를 만족하는지 결정한다.
+ */
 public class 거리두기_확인하기 {
     static void main() {
         String[][] places = new String[][] {
@@ -113,16 +120,63 @@ public class 거리두기_확인하기 {
 
     private static class Solve {
         private int[] ans;
+        private int[][][] directions = new int[][][] {
+                {{0, 1}, {-1, 1}, {0, 2}, {1, 1}},
+                {{0, -1}, {-1, -1}, {0, -2}, {1, -1}},
+                {{1, 0}, {1, -1}, {2, 0}, {1, 1}},
+                {{-1, 0}, {-1, -1}, {-2, 0}, {-1, 1}}
+        };
 
-        public int[] solution(String[] places) {
+        public int[] solution(String[][] places) {
             init_setting(places);
+
+            check_social_distancing(places);
 
             return ans;
         }
 
-        private void init_setting(String[] places) {
+        private void check_social_distancing(String[][] places) {
+            for(int i = 0; i < places.length; i++) {
+                char[][] rooms = new char[places[i].length][];
 
+                for(int j = 0; j < places[i].length; j++) {
+                    rooms[j] = places[i][j].toCharArray();
+                }
+
+                boolean flag = false;
+
+                for(int x = 0; x < rooms.length; x++) {
+                    for(int y = 0; y < rooms[x].length; y++) {
+                        if(rooms[x][y] != 'P') continue;
+
+                        for(int[][] ds : directions) {
+                            boolean partition = false;
+                            int nx, ny;
+
+                            for(int k = 0; k < ds.length; k++) {
+                                nx = x + ds[k][0];
+                                ny = y + ds[k][1];
+
+                                if(k == 0) {
+                                    if(nx < 0 || nx >= rooms.length || ny < 0 || ny >= rooms[nx].length) break;
+                                    if(rooms[nx][ny] == 'P') flag = true;
+                                    if(rooms[nx][ny] == 'X') partition = true;
+                                } else {
+                                    if(nx < 0 || nx >= rooms.length || ny < 0 || ny >= rooms[nx].length) continue;
+                                    if(!partition && rooms[nx][ny] == 'P') flag = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(flag) ans[i] = 0;
+                else ans[i] = 1;
+            }
+        }
+
+        private void init_setting(String[][] places) {
+            ans = new int[places.length];
         }
     }
-
 }
