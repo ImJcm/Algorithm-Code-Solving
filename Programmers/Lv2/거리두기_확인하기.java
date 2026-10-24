@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.Arrays;
+
 /*
 거리두기 확인하기
 제출 내역
@@ -96,4 +98,31 @@ No.	0	1	2	3	4
 두 테이블 T1, T2가 행렬 (r1, c1), (r2, c2)에 각각 위치하고 있다면, T1, T2 사이의 맨해튼 거리는 |r1 - r2| + |c1 - c2| 입니다. ↩
  */
 public class 거리두기_확인하기 {
+    static void main() {
+        String[][] places = new String[][] {
+                {"POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"},
+                {"POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"},
+                {"PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"},
+                {"OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"},
+                {"PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"}
+        };
+
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(places)));
+    }
+
+    private static class Solve {
+        private int[] ans;
+
+        public int[] solution(String[] places) {
+            init_setting(places);
+
+            return ans;
+        }
+
+        private void init_setting(String[] places) {
+
+        }
+    }
+
 }
