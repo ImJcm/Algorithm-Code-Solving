@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.Arrays;
+
 /*
 가장 큰 정사각형 찾기
 제출 내역
@@ -41,6 +43,36 @@ board	answer
 | 1 | 1 | 1 | 1 |
 로 가장 큰 정사각형의 넓이는 4가 되므로 4를 return합니다.
  */
-public class 가장_큰_정사각형_찾기 {
+/*
+알고리즘 핵심
+구현
 
+초기
+ */
+public class 가장_큰_정사각형_찾기 {
+    static void main() {
+        int[][] board = new int[][] {
+                {0,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1},
+                {0,0,1,0}
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(board));
+    }
+
+    private static class Solve {
+        private int ans;
+
+        public int solution(int[][] board) {
+            init_setting(board);
+
+            return ans;
+        }
+
+        private void init_setting(int[][] board) {
+
+        }
+    }
 }
