@@ -46,16 +46,16 @@ board	answer
 /*
 알고리즘 핵심
 구현
-
-초기
  */
 public class 가장_큰_정사각형_찾기 {
     static void main() {
         int[][] board = new int[][] {
-                {0,1,1,1},
+                /*{0,1,1,1},
                 {1,1,1,1},
                 {1,1,1,1},
-                {0,0,1,0}
+                {0,0,1,0}*/
+
+                {0,0,1,1},{1,1,1,1}
         };
 
         Solve task = new Solve();
@@ -63,16 +63,64 @@ public class 가장_큰_정사각형_찾기 {
     }
 
     private static class Solve {
+        private class Square {
+            int max_width, max_length;
+
+            public Square(int max_width, int max_length) {
+                this.max_width = max_width;
+                this.max_length = max_length;
+            }
+        }
         private int ans;
+        private Square[][] s_board;
 
         public int solution(int[][] board) {
             init_setting(board);
 
+            search_the_largest_square(s_board);
+
             return ans;
         }
 
-        private void init_setting(int[][] board) {
+        private void search_the_largest_square(Square[][] s_board) {
+            for(int i = 0; i < s_board.length; i++) {
+                for(int j = 0; j < s_board[0].length; j++) {
+                    int m_l = Math.min(s_board[i][j].max_width, s_board[i][j].max_length);
+                    boolean flag = true;
 
+                    if(m_l == 0) continue;
+
+                    for(int k = 1; k < m_l && flag; k++) {
+                        if(s_board[i - k][j].max_width < m_l) flag = false;
+                        if(s_board[i][j - k].max_length < m_l) flag = false;
+                    }
+
+                    if(flag) ans = Math.max(ans, (int) Math.pow(m_l, 2));
+                }
+            }
+        }
+
+        private void init_setting(int[][] board) {
+            ans = 0;
+
+            s_board = new Square[board.length][board[0].length];
+
+            for(int i = 0; i < board.length; i++) {
+                for(int j = 0; j < board[0].length; j++) {
+                    int m_w = j - 1 >= 0 ? s_board[i][j - 1].max_width : 0;
+                    int m_l = i - 1 >= 0 ? s_board[i - 1][j].max_length : 0;
+
+                    if(board[i][j] == 1) {
+                        m_w += 1;
+                        m_l += 1;
+                    } else {
+                        m_w = 0;
+                        m_l = 0;
+                    }
+
+                    s_board[i][j] = new Square(m_w, m_l);
+                }
+            }
         }
     }
 }
