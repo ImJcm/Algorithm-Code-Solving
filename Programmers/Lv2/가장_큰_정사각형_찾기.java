@@ -46,6 +46,11 @@ board	answer
 /*
 알고리즘 핵심
 구현
+1. board에서 1로 표시된 위치를 가로와 세로로 최대 길이를 누적하여 s_board에 업데이트한다.
+2. 최대 넓이의 정사각형을 찾기 위해 O(n^2)만큼 반복하여 (r,c) 위치에서 가로와 세로의 최소 길이가 만들 수 있는 정사각형의
+최대 넓이이므로 최소 길이를 결정한다.
+3. 검사하는 과정은 (r,c) 기준으로 O(n)만큼 가로와 세로가 누적한 길이들이 만족하는지 검사한다.
+4. O(N^3)이므로 최대 넓이로 업데이트된 ans에 (r,c) 기준 가능한 최소 길이를 비교하여 가지치기를 수행하여 수행시간을 줄인다.
  */
 public class 가장_큰_정사각형_찾기 {
     static void main() {
@@ -77,7 +82,8 @@ public class 가장_큰_정사각형_찾기 {
         public int solution(int[][] board) {
             init_setting(board);
 
-            search_the_largest_square(s_board);
+            //search_the_largest_square(s_board);
+            search_the_largest_square_TC_timeout(s_board);
 
             return ans;
         }
@@ -88,7 +94,41 @@ public class 가장_큰_정사각형_찾기 {
                     int m_l = Math.min(s_board[i][j].max_width, s_board[i][j].max_length);
                     boolean flag = true;
 
-                    if(m_l == 0) continue;
+                    if(m_l < (int) Math.sqrt(ans)) continue;
+
+                    for(int k = 1; k < m_l && flag; k++) {
+                        if(s_board[i - k][j].max_width < m_l) flag = false;
+                        if(s_board[i][j - k].max_length < m_l) flag = false;
+                    }
+
+                    if(flag) ans = Math.max(ans, (int) Math.pow(m_l, 2));
+                }
+            }
+        }
+
+        /*
+            Wrong Solve : logic error
+         */
+        private void search_the_largest_square_logic_error(Square[][] s_board) {
+            for(int i = 0; i < s_board.length; i++) {
+                for(int j = 0; j < s_board[0].length; j++) {
+                    ans = Math.max(ans, (int) Math.pow(
+                            Math.min(s_board[i][j].max_width, s_board[i][j].max_length),2
+                    ));
+                }
+            }
+        }
+
+        /*
+            Efficiency test : time out
+         */
+        private void search_the_largest_square_TC_timeout(Square[][] s_board) {
+            for(int i = 0; i < s_board.length; i++) {
+                for(int j = 0; j < s_board[0].length; j++) {
+                    int m_l = Math.min(s_board[i][j].max_width, s_board[i][j].max_length);
+                    boolean flag = true;
+
+                    if(m_l < 0) continue;
 
                     for(int k = 1; k < m_l && flag; k++) {
                         if(s_board[i - k][j].max_width < m_l) flag = false;
