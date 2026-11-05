@@ -1,5 +1,7 @@
 package Lv2;
 
+import java.util.*;
+
 /*
 하노이의 탑
 제출 내역
@@ -27,4 +29,99 @@ Imgur
 Imgur
  */
 public class 하노이의_탑 {
+    static void main() {
+        int n = 2;
+
+        Solve task = new Solve();
+        System.out.println(Arrays.deepToString(task.solution(n)));
+    }
+
+    private static class Solve {
+        private class Move {
+            int state;
+            ArrayList<int[]> order;
+
+            public Move(int state, ArrayList<int[]> order) {
+                this.state = state;
+                this.order = new ArrayList<>(order);
+            }
+
+            private void addOrder(int[] order) {
+                this.order.add(order);
+            }
+        }
+        private final int T = 3;
+        private int N,E;
+        private int[][] ans;
+
+        public int[][] solution(int n) {
+            init_setting(n);
+
+            hanoi_tower(0);
+
+            return ans;
+        }
+
+        private void hanoi_tower(int start) {
+            Queue<Move> q = new LinkedList<>();
+            q.add(new Move(start,new ArrayList<>()));       // start = 0 => 모든 원반이 0번째 탑에 있다.
+
+            boolean[] visited = new boolean[1 << (N * 2)];
+            visited[0] = true;
+
+            while(!q.isEmpty()) {
+                Move s = q.poll();
+
+                if(s.state == E) {
+                    ans = s.order.toArray(new int[s.order.size()][N]);
+                    return;
+                }
+
+                int[] top = new int[] {-1, -1, -1};
+                for(int i = N - 1; i >= 0; i--) {
+                    top[get_location(s.state,i)] = i;
+                }
+
+                for(int i = 0; i < T; i++) {
+                    if(top[i] != -1) {
+                        for(int j = 0; j < T; j++) {
+                            if(i != j && (top[j] == -1 || top[i] < top[j])) {
+                                int ns = set_location(s.state, top[i], j);
+                                if(!visited[ns]) {
+                                    visited[ns] = true;
+                                    ArrayList<int[]> norder = new ArrayList<>(s.order);
+                                    norder.add(new int[] {i + 1, j + 1});
+                                    q.add(new Move(ns, norder));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private int set_location(int s, int i, int j) {
+            /*
+                i번째 원반의 위치를 j번 타워로 변경
+                (s & ~(3 << (i * 2))) : 상태 정보에서 i번째 원반의 위치 2비트를 00으로 초기화
+                | (j << (i * 2)) : i번째 원반의 위치를 j번째 타워로 변경
+             */
+            return (s & ~(3 << (i * 2))) | (j << (i * 2));
+        }
+
+        private int get_location(int s, int i) {
+            return (s >> (i * 2)) & 3;
+        }
+
+        private void init_setting(int n) {
+            ans = null;
+
+            N = n;
+            E = 0;
+
+            for(int i = 0; i < n; i++) {
+                E = (E << 2) + 2;
+            }
+        }
+    }
 }
