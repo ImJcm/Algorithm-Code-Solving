@@ -57,12 +57,63 @@ public class 하노이의_탑 {
         public int[][] solution(int n) {
             init_setting(n);
 
-            hanoi_tower(0);
+            hanoi_tower(0,E);
 
             return ans;
         }
 
-        private void hanoi_tower(int start) {
+        /*
+            하노이의 탑 과정에 방향성을 두어 양 끝의 상태에서 중간부분에서 만나는 상태를 비교하여 순서를 종합한다.
+         */
+        private void hanoi_tower(int start, int end) {
+            Queue<Move> q = new LinkedList<>();
+            q.add(new Move(start,new ArrayList<>()));       // start = 0 => 모든 원반이 0번째 탑에 있다.
+            q.add(new Move(,new ArrayList<>()));
+
+            boolean[] visited = new boolean[1 << (N * 2)];
+            visited[0] = true;
+
+            while(!q.isEmpty()) {
+                Move s = q.poll();
+
+                if(s.state == E) {
+                    ans = s.order.toArray(new int[s.order.size()][N]);
+                    return;
+                }
+
+                int[] top = new int[] {-1, -1, -1};
+                for(int i = N - 1; i >= 0; i--) {
+                    top[get_location(s.state,i)] = i;
+                }
+
+                for(int i = 0; i < T; i++) {
+                    if(top[i] != -1) {
+                        for(int j = 0; j < T; j++) {
+                            if(i != j && (top[j] == -1 || top[i] < top[j])) {
+                                int ns = set_location(s.state, top[i], j);
+                                if(!visited[ns]) {
+                                    visited[ns] = true;
+                                    ArrayList<int[]> norder = new ArrayList<>(s.order);
+                                    norder.add(new int[] {i + 1, j + 1});
+                                    q.add(new Move(ns, norder));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
+            32bit의 정수에서 각각의 2bit를 원반으로 가정하고, 해당하는 2bit의 값을 하노이 탑의 위치로 설정하여
+            방문여부와 원반의 위치를 구할 수 있다. (1번탑 : 00, 2번탑 : 01, 3번탑 : 10)
+            즉, n = 3)
+            000000 => 1번 원판은 1번 탑, 2번 원판은 1번탑, 3번 원판은 1번탑을 의미
+            100100 => 1번 원판은 1번 탑, 2번 원판은 2번탑, 3번 원판은 3번탑을 의미
+
+            WrongSolve : timeout TC#11~13
+         */
+        private void hanoi_tower_timeout(int start) {
             Queue<Move> q = new LinkedList<>();
             q.add(new Move(start,new ArrayList<>()));       // start = 0 => 모든 원반이 0번째 탑에 있다.
 
