@@ -28,6 +28,19 @@ Imgur
 Imgur
 Imgur
  */
+/*
+알고리즘 핵심
+재귀(Recursive)
+하노이의 탑 규칙 (1번째 탑에서 3번째 탑으로 이동 시)
+1. 1 ~ n-1번째 원반을 2번 타워로 옮긴다.
+2. n번째 원반을 1번 타워에서 3번 타워로 옮긴다.
+3. 2번 타워에 있는 n-1개의 원반을 3번 타워로 옮긴다.
+
+처음 접근으로 하노이의 탑에 원반들을 dfs로 구현했지만, 로직 오류 : 하노이의 탑의 중복된 상태를 잘못처리함.
+다음 접근으로 bfs를 사용하여 상태 정보를 비트마스크를 이용하여 원반의 위치를 저장하는 형태로 하였지만, 시간초과.
+다음 접근은 시간초과를 해결하기 위해 양끝에서 시작한 bfs가 처음 만나는 지점에서의 경로를 저장하였지만, 시간초과 + 메모리초과
+그래서 해당 문제의 원리를 찾아보았는데 위와 같은 하노이의 탑 규칙을 적용하여 재귀적으로 최적 경로가 정해진 문제였다.
+ */
 public class 하노이의_탑 {
     static void main() {
         int n = 2;
@@ -59,20 +72,34 @@ public class 하노이의_탑 {
         private final int T = 3;
         private int N,E;
         private int[][] ans;
+        private ArrayList<int[]> arr;
 
         public int[][] solution(int n) {
             init_setting(n);
 
-            hanoi_tower(0,E);
+            //hanoi_tower_wrong2(0,E);
+            //hanoi_tower_wrong(0,E);
+            hanoi_tower(n,1,2,3);
 
-            return ans;
+            return ans = arr.toArray(new int[0][]);
+        }
+
+        private void hanoi_tower(int n, int from, int by, int to) {
+            if(n == 1) {
+                arr.add(new int[] {from,to});
+                return;
+            }
+
+            hanoi_tower(n - 1, from, to, by);
+            hanoi_tower(1, from, by, to);
+            hanoi_tower(n - 1, by, from, to);
         }
 
         /*
             #1 : 하노이의 탑 과정에 방향성을 두어 양 끝의 상태에서 중간부분에서 만나는 상태를 비교하여 순서를 종합한다.
             #2 : Wrong Solve : TC#11,12 - timeout, TC#13 : Memory dump
          */
-        private void hanoi_tower(int start, int end) {
+        private void hanoi_tower_wrong2(int start, int end) {
             Queue<Move> q = new LinkedList<>();
             q.add(new Move(start,1,new ArrayList<>()));       // start = 0 => 모든 원반이 0번째 탑에 있다.
             q.add(new Move(end,-1,new ArrayList<>()));
@@ -143,7 +170,7 @@ public class 하노이의_탑 {
 
             WrongSolve : timeout TC#11~13
          */
-        private void hanoi_tower_timeout(int start) {
+        private void hanoi_tower_wrong(int start) {
             Queue<Move> q = new LinkedList<>();
             q.add(new Move(start,new ArrayList<>()));       // start = 0 => 모든 원반이 0번째 탑에 있다.
 
@@ -203,6 +230,8 @@ public class 하노이의_탑 {
             for(int i = 0; i < n; i++) {
                 E = (E << 2) + 2;
             }
+
+            arr = new ArrayList<>();
         }
     }
 }
