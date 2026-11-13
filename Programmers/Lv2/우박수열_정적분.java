@@ -1,5 +1,8 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /*
 우박수열 정적분
 제출 내역
@@ -42,8 +45,89 @@ k	ranges	result
 ※ 공지 - 2023년 08월 11일 문제 지문이 리뉴얼되었습니다. 기존에 제출한 코드가 통과하지 못할 수도 있습니다.
 ※ 공지 - 2023년 09월 06일 지문 오탈자가 수정되었습니다.
  */
+/*
+알고리즘 핵심
+구현
+1. k에 해당하는 콜라츠 추측 규칙으로 우박수열을 구한다.
+2. 우박수열의 값으로 구간별 넓이를 구한다. 이때, 구간별 넓이를 빠르게 구하기 위해 누적합을 이용한다.
+3. 구간에 해당하는 넓이를 구하여 ans에 저장한다.
+ */
 public class 우박수열_정적분 {
     static void main() {
+        int k = 5; // 3;
+        int[][] range = new int[][] {
+                //{0,0},{0,-1},{2,-3},{3,-3}
+                //{0,0}, {1,-2}, {3,-3}
+        };
 
+        Solve task = new Solve();
+        System.out.println(Arrays.toString(task.solution(k,range)));
+    }
+
+    private static class Solve {
+        private int n;
+        private double[] ans;
+        private ArrayList<Integer> hailstone_sequence;
+        private ArrayList<Double> areas;
+
+        public double[] solution(int k, int[][] range) {
+            init_setting(range);
+
+            collatz_conjecture(k);
+
+            areas_of_segments_in_a_hailstone_sequence();
+
+            hailstorm_sequence_definite_integral(range);
+
+            return ans;
+        }
+
+        private void hailstorm_sequence_definite_integral(int[][] range) {
+            for(int i = 0; i < range.length; i++) {
+                int a = range[i][0];
+                int b = range[i][1];
+
+                b = n - 1 + b;
+
+                if(a < 0 || a >= n || b < 0 || b >= n || a > b) ans[i] = -1.0;
+                else ans[i] = areas.get(b) - areas.get(a);
+            }
+        }
+
+        private void areas_of_segments_in_a_hailstone_sequence() {
+            areas.add(0.0);
+
+            for(int i = 1; i < n; i++) {
+                int h1 = hailstone_sequence.get(i);
+                int h2 = hailstone_sequence.get(i-1);
+
+                double a = Math.min(h1,h2) + Math.abs(h1-h2) / 2.0;
+
+                areas.add(a + areas.get(i-1));
+            }
+        }
+
+        private void collatz_conjecture(int k) {
+            hailstone_sequence.add(k);
+
+            while(k > 1) {
+                if(k % 2 == 0) {
+                    k /= 2;
+                } else {
+                    k *= 3;
+                    k++;
+                }
+                hailstone_sequence.add(k);
+            }
+
+            n = hailstone_sequence.size();
+        }
+
+        private void init_setting(int[][] range) {
+            ans = new double[range.length];
+
+            hailstone_sequence = new ArrayList<>();
+            areas = new ArrayList<>();
+        }
     }
 }
