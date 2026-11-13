@@ -43,4 +43,7 @@ k	ranges	result
 ※ 공지 - 2023년 09월 06일 지문 오탈자가 수정되었습니다.
  */
 public class 우박수열_정적분 {
+    static void main() {
+
+    }
 }
