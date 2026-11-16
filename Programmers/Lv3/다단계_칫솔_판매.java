@@ -82,7 +82,10 @@ enroll	referral	seller	amount	result
  */
 /*
 알고리즘 핵심
-
+구현
+1. 문자열로 구분할 수 있는 객체가 필요하기 때문에 Map으로 key, value형태로 객체를 생성한다.
+2. 생성한 객체에서 초대한 구성원을 식별하기 위해 자기 참조형태로 구성한다.
+3. 판매 금액 계산을 위해 자기 참조 객체를 참조하여 판매금액을 계산한다.
  */
 public class 다단계_칫솔_판매 {
     static void main() {
