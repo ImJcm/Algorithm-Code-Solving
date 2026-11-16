@@ -80,6 +80,10 @@ enroll	referral	seller	amount	result
 
 ※ 공지 - 2021년 5월 21일 테스트케이스가 추가되었습니다.
  */
+/*
+알고리즘 핵심
+
+ */
 public class 다단계_칫솔_판매 {
     static void main() {
         String[] enroll = new String[] {
@@ -147,7 +151,7 @@ public class 다단계_칫솔_판매 {
                         s.addProfits(m);
                         break;
                     } else {
-                        int m_10_p = (int) Math.round(m / 10.0);
+                        int m_10_p = (int) (m * 0.1);
                         s.addProfits(m - m_10_p);
                         s = s.refs;
                         m = m_10_p;
@@ -183,7 +187,9 @@ public class 다단계_칫솔_판매 {
 
     /*
         Wrong Solve : logic error
-        이름이 같을 경우, HashMap에서 중복처리하여 틀린 것으로 예상함.
+        1. 이름이 같을 경우, HashMap에서 중복처리하여 틀린 것으로 예상함. -> 중복되는 이름문제는 아니였다.
+        2. 로직 자체 문제 : Math.round(m / 10.0) -> 이 부분에서 잘못된 계산이 이루어짐
+                  해결  => (int) (m * 0.1)
      */
     private static class WrongSolve {
         private class Seller {
