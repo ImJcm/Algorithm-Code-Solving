@@ -45,4 +45,30 @@ picks	minerals	result
 철 곡괭이로 다이아몬드 5개를 캐고 돌 곡괭이고 철 5개를 캐면 50의 피로도로 캘 수 있으며, 이때가 최소값입니다.
  */
 public class 광물_캐기 {
+    static void main() {
+        int[] picks = new int[] {
+                1, 3, 2
+        };
+
+        String[] minerals = new String[] {
+                "diamond", "diamond", "diamond", "iron", "iron", "diamond", "iron", "stone"
+        };
+
+        Solve task = new Solve();
+        System.out.println(task.solution(picks, minerals));
+    }
+
+    private static class Solve {
+        private int ans;
+
+        public int solution(int[] picks, String[] minerals) {
+            init_setting();
+
+            return ans;
+        }
+
+        private void init_setting() {
+
+        }
+    }
 }
