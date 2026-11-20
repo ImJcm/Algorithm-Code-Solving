@@ -1,5 +1,9 @@
 package Lv2;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
 /*
 광물 캐기
 문제 설명
@@ -44,31 +48,176 @@ picks	minerals	result
 
 철 곡괭이로 다이아몬드 5개를 캐고 돌 곡괭이고 철 5개를 캐면 50의 피로도로 캘 수 있으며, 이때가 최소값입니다.
  */
+/*
+알고리즘 핵심
+Greedy or Exhaustive Search
+Greedy
+1. 광물들을 다이아 : 100, 철 : 10, 돌 : 1만큼 가중치를 두어 5개씩 끊어서 그룹화하여 가중치의 합을 곡갱이의 개수만큼만 저장한다.
+2. 가중치를 기준으로 내림차순으로 정렬하고, 가중치가 큰 그룹을 순차적으로 다이아, 철, 돌 곡갱이 순으로 배정하여 최소 피로도을 구한다.
+
+Exhaustive Search
+1. 곡갱이를 각각 5개의 광물에 모두 배정하여 가능한 모든 경우를 탐색하여 피로도를 누적하여 기저사례에 도달 시, 누적된 피로도의 최소를 저장한다.
+ */
 public class 광물_캐기 {
     static void main() {
         int[] picks = new int[] {
-                1, 3, 2
+                //1, 3, 2
+                //0, 1, 1
+                1,1,0
         };
 
         String[] minerals = new String[] {
-                "diamond", "diamond", "diamond", "iron", "iron", "diamond", "iron", "stone"
+                //"diamond", "diamond", "diamond", "iron", "iron", "diamond", "iron", "stone"
+                //"diamond", "diamond", "diamond", "diamond", "diamond", "iron", "iron", "iron", "iron", "iron", "diamond"
+                "iron", "iron", "iron", "iron", "diamond", "diamond", "diamond", "diamond", "diamond", "diamond"
         };
 
-        Solve task = new Solve();
-        System.out.println(task.solution(picks, minerals));
+        /*Solve task = new Solve();
+        System.out.println(task.solution(picks, minerals));*/
+
+        Solve2 task2 = new Solve2();
+        System.out.println(task2.solution(picks, minerals));
     }
 
+    /*
+        Solve : Greedy
+     */
     private static class Solve {
+        private int ans;
+        private ArrayList<Integer> fatigue_level;
+
+        public int solution(int[] picks, String[] minerals) {
+            init_setting();
+
+            fatigue_handling(picks, minerals);
+
+            pickaxe_distribution(picks);
+
+            return ans;
+        }
+
+        private void pickaxe_distribution(int[] picks) {
+            for(int i = 0, j = 0; i < fatigue_level.size() || j >= picks.length;) {
+                if(picks[j] <= 0) {
+                    j++;
+                    continue;
+                }
+                picks[j]--;
+
+                int diamond = fatigue_level.get(i) / 100;
+                int iron = fatigue_level.get(i) % 100 / 10;
+                int stone = fatigue_level.get(i) % 10;
+
+                int fatigue = 0;
+
+                switch (j) {
+                    case 0: // diamond pickaxe
+                        fatigue = diamond + iron + stone;
+                        break;
+                    case 1: // iron pickaxe
+                        fatigue = 5 * diamond + iron + stone;
+                        break;
+                    case 2: // stone pickaxe
+                        fatigue = 25 * diamond + 5 * iron + stone;
+                        break;
+                }
+
+                ans += fatigue;
+                i++;
+            }
+        }
+
+        private void fatigue_handling(int[] picks, String[] minerals) {
+            int fatigue = 0;
+            for(int i = 0; i < minerals.length; i++) {
+                if(i >= (picks[0] + picks[1] + picks[2]) * 5) break;
+
+                fatigue += minerals[i].equals("diamond") ? 100 :
+                    minerals[i].equals("iron") ? 10 :
+                    minerals[i].equals("stone") ? 1 : 0;
+
+                if((i + 1) % 5 == 0 || (i + 1) == minerals.length) {
+                    fatigue_level.add(fatigue);
+                    fatigue = 0;
+                }
+            }
+
+            fatigue_level.sort(Collections.reverseOrder());
+        }
+
+        private void init_setting() {
+            ans = 0;
+
+            fatigue_level = new ArrayList<>();
+        }
+    }
+
+    /*
+        Solve : Exhaustive Search
+     */
+    private static class Solve2 {
         private int ans;
 
         public int solution(int[] picks, String[] minerals) {
             init_setting();
 
+            mining_minerals(0, picks, minerals, 0);
+
             return ans;
         }
 
-        private void init_setting() {
+        private void mining_minerals(int i, int[] picks, String[] minerals, int fatigue) {
+            if(i >= minerals.length || (picks[0] == 0 && picks[1] == 0 && picks[2] == 0)) {
+                ans = Math.min(ans, fatigue);
+                return;
+            }
 
+            int fs = 0;
+            int cnt = 0;
+
+            if(picks[0] > 0) {
+                fs = 0;
+                cnt = 0;
+                while(i + cnt < minerals.length && cnt < 5) {
+                    fs += 1;
+                    cnt++;
+                }
+
+                picks[0]--;
+                mining_minerals(i + cnt, picks, minerals, fatigue + fs);
+                picks[0]++;
+            }
+
+            if(picks[1] > 0) {
+                fs = 0;
+                cnt = 0;
+                while(i + cnt < minerals.length && cnt < 5) {
+                    fs += minerals[i + cnt].equals("diamond") ? 5 : 1;
+                    cnt++;
+                }
+
+                picks[1]--;
+                mining_minerals(i + cnt, picks, minerals, fatigue + fs);
+                picks[1]++;
+            }
+
+            if(picks[2] > 0) {
+                fs = 0;
+                cnt = 0;
+                while(i + cnt < minerals.length && cnt < 5) {
+                    fs += minerals[i + cnt].equals("diamond") ? 25 :
+                            minerals[i + cnt].equals("iron") ? 5 : 1;
+                    cnt++;
+                }
+
+                picks[2]--;
+                mining_minerals(i + cnt, picks, minerals, fatigue + fs);
+                picks[2]++;
+            }
+        }
+
+        private void init_setting() {
+            ans = Integer.MAX_VALUE;
         }
     }
 }
